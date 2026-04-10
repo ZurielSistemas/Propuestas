@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CT1 · Propuesta de Activación — Liceo Los Robles</title>
+
+  <!-- Open Graph / WhatsApp preview -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="Comité de Transformación Digital — Liceo Los Robles" />
+  <meta property="og:description" content="CT1 · Primer Camino de Transformación. Propuesta de Activación para la constitución del Comité de Transformación Digital del Liceo Los Robles." />
+  <meta property="og:image"       content="https://losroblesenlinea.com.ve/site/wp-content/uploads/2015/02/logo2021.png" />
+  <meta property="og:image:width"  content="300" />
+  <meta property="og:image:height" content="300" />
+  <meta name="description"        content="CT1 · Primer Camino de Transformación. Propuesta de Activación para la constitución del Comité de Transformación Digital del Liceo Los Robles." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;0,900;1,400&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Variables ───────────────────────────────────────────── */
+    :root {
+      /* Paleta del Liceo Los Robles — fuente de verdad */
+      --rojo:          #E53132;
+      --rojo-dark:     #C82929;
+      --negro:         #000000;
+      --gris-carbon:   #464646;
+      --gris-texto:    #424242;
+      --gris-sup:      #F8F8F8;
+      --blanco:        #FFFFFF;
+
+      /* Firma Zuriel — presencia mínima */
+      --zuriel-naranja: #EB5E28;
+      --zuriel-dark:    #252422;
+
+      /* Layout */
+      --max-w:  860px;
+      --gap:    clamp(2.5rem, 6vw, 4.5rem);
+
+      /* Tipografía */
+      --font-serif:  'Merriweather', 'Georgia', serif;
+      --font-sans:   'Open Sans', 'Arial', sans-serif;
+    }
+
+    /* ─── Reset ───────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--gris-texto);
+      background: var(--blanco);
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; display: block; }
+    a   { color: inherit; text-decoration: none; }
+
+    /* ─── Layout helper ───────────────────────────────────────── */
+    .container {
+      width: 100%;
+      max-width: var(--max-w);
+      margin-inline: auto;
+      padding-inline: clamp(1.5rem, 5vw, 3rem);
+    }
+
+    /* ─── Barra superior (firma Zuriel, muy sutil) ────────────── */
+    .topbar {
+      background: var(--zuriel-dark);
+      padding: 8px 0;
+    }
+    .topbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .topbar-label {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.55);
+    }
+    .topbar-firma {
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+      color: var(--zuriel-naranja);
+      opacity: .85;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       PORTADA / HERO
+    ════════════════════════════════════════════════════════════ */
+    .hero {
+      background: var(--blanco);
+      padding-block: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 3vw, 2rem);
+      border-bottom: 3px solid var(--rojo);
+    }
+    .hero .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.5rem;
+    }
+    .hero-logo {
+      width: 110px;
+      height: auto;
+      display: block;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,.10));
+    }
+    .hero-inst {
+      font-family: var(--font-serif);
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 900;
+      color: var(--gris-texto);
+      letter-spacing: -.01em;
+      line-height: 1.2;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .75rem;
+      font-family: var(--font-sans);
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--rojo);
+    }
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1.5px;
+      background: var(--rojo);
+      opacity: .5;
+    }
+    .hero-titulo {
+      font-family: var(--font-serif);
+      font-size: clamp(1.15rem, 3vw, 1.5rem);
+      font-weight: 700;
+      color: var(--gris-texto);
+      line-height: 1.35;
+      max-width: 620px;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem 1.5rem;
+      margin-top: .25rem;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-family: var(--font-sans);
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--blanco);
+      background: var(--rojo);
+      padding: 5px 14px;
+      border-radius: 3px;
+    }
+    .hero-fecha {
+      font-family: var(--font-sans);
+      font-size: .78rem;
+      color: #888888;
+      font-weight: 400;
+    }
+    .hero-presentado {
+      font-family: var(--font-sans);
+      font-size: .8rem;
+      font-weight: 500;
+      color: #888888;
+      letter-spacing: .04em;
+    }
+    .hero-presentado strong {
+      color: var(--gris-carbon);
+      font-weight: 600;
+    }
+    /* Firma Zuriel como pie de portada */
+    .hero-divider {
+      width: 48px;
+      height: 3px;
+      background: var(--rojo);
+      border-radius: 2px;
+      margin-top: .75rem;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       SECCIONES GENÉRICAS
+    ════════════════════════════════════════════════════════════ */
+    .section {
+      padding-block: clamp(2rem, 4.5vw, 3rem);
+    }
+    .section-alt {
+      background: var(--gris-sup);
+    }
+    .section-dark {
+      background: var(--gris-carbon);
+      color: var(--blanco);
+    }
+    .section-red {
+      background: var(--rojo);
+      color: var(--blanco);
+    }
+
+    /* Block title — estilo institucional Liceo Los Robles */
+    .block-title {
+      display: inline-block;
+      font-family: var(--font-serif);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--blanco);
+      background: var(--rojo);
+      padding: 6px 16px;
+      border-radius: 2px;
+      margin-bottom: 1.25rem;
+    }
+    .section-dark .block-title {
+      background: rgba(255,255,255,.15);
+      color: var(--blanco);
+    }
+
+    /* Heading H2 con separador rojo */
+    .section-heading {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 3.5vw, 2rem);
+      font-weight: 700;
+      color: var(--gris-texto);
+      line-height: 1.25;
+      margin-bottom: .75rem;
+    }
+    .section-dark .section-heading,
+    .section-red .section-heading {
+      color: var(--blanco);
+    }
+    .section-rule {
+      width: 48px;
+      height: 3px;
+      background: var(--rojo);
+      border-radius: 2px;
+      margin-bottom: 1.75rem;
+    }
+    .section-dark .section-rule {
+      background: rgba(255,255,255,.35);
+    }
+    .section-red .section-rule {
+      background: rgba(255,255,255,.5);
+    }
+
+    .body-text {
+      font-family: var(--font-sans);
+      font-size: 15.5px;
+      line-height: 1.8;
+      color: var(--gris-texto);
+      max-width: 680px;
+    }
+    .section-dark .body-text,
+    .section-red .body-text {
+      color: rgba(255,255,255,.88);
+    }
+    .body-text + .body-text {
+      margin-top: 1.1rem;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       LA FRICCIÓN — diagnóstico con tono diferenciado
+    ════════════════════════════════════════════════════════════ */
+    .friction-block {
+      background: var(--blanco);
+      border-left: 4px solid var(--rojo);
+      padding: 1.5rem 1.75rem;
+      border-radius: 0 4px 4px 0;
+      box-shadow: 0 2px 12px rgba(0,0,0,.06);
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       LA RESOLUCIÓN — destacado
+    ════════════════════════════════════════════════════════════ */
+    .resolution-card {
+      background: var(--blanco);
+      border: 1.5px solid rgba(229,49,50,.20);
+      border-radius: 4px;
+      padding: clamp(1.75rem, 5vw, 2.75rem);
+      box-shadow: 0 4px 24px rgba(229,49,50,.08);
+      position: relative;
+      overflow: hidden;
+    }
+    .resolution-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 5px;
+      height: 100%;
+      background: var(--rojo);
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       EL CAMINO — timeline de tres tramos
+    ════════════════════════════════════════════════════════════ */
+    .camino-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .tramo-card {
+      background: var(--blanco);
+      border-radius: 4px;
+      padding: 1.75rem 1.5rem;
+      border: 1px solid #E3E3E3;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      position: relative;
+    }
+    .tramo-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--rojo);
+      border-radius: 4px 4px 0 0;
+    }
+    .tramo-num {
+      font-family: var(--font-sans);
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--rojo);
+    }
+    .tramo-nombre {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--gris-texto);
+      line-height: 1.2;
+    }
+    .tramo-desc {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.7;
+      color: #5a5a5a;
+    }
+
+    /* Flecha conectora entre tramos (desktop) */
+    .camino-connector {
+      display: none;
+    }
+    @media (min-width: 700px) {
+      .camino-grid {
+        grid-template-columns: 1fr 24px 1fr 24px 1fr;
+        align-items: start;
+        gap: 0;
+      }
+      .camino-connector {
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        padding-top: calc(1.75rem + 4px + .75rem + .68rem + .5rem);
+      }
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       PLATAFORMAS
+    ════════════════════════════════════════════════════════════ */
+    .platform-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      margin-top: 1.5rem;
+    }
+    .platform-item {
+      display: flex;
+      align-items: flex-start;
+      gap: .85rem;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--gris-texto);
+    }
+    .platform-icon {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      margin-top: 1px;
+      color: var(--rojo);
+    }
+    .platform-item strong {
+      font-weight: 700;
+      color: var(--gris-carbon);
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       EL DESTINO — hero secundario
+    ════════════════════════════════════════════════════════════ */
+    .destino-inner {
+      text-align: center;
+      max-width: 700px;
+      margin-inline: auto;
+    }
+    .destino-quote {
+      font-family: var(--font-serif);
+      font-size: clamp(1.1rem, 2.8vw, 1.45rem);
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.65;
+      color: var(--blanco);
+    }
+    .destino-quote::before { content: '\201C'; }
+    .destino-quote::after  { content: '\201D'; }
+
+    /* ════════════════════════════════════════════════════════════
+       PARA ACTIVAR
+    ════════════════════════════════════════════════════════════ */
+    .activar-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      margin-top: 1.75rem;
+    }
+    .activar-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .activar-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--rojo);
+      color: var(--blanco);
+      font-family: var(--font-serif);
+      font-size: .85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+    .activar-content {
+      flex: 1;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.65;
+      color: var(--gris-texto);
+    }
+    .activar-content strong {
+      font-weight: 700;
+      color: var(--gris-carbon);
+      display: block;
+      margin-bottom: .15rem;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════════════════════════ */
+    .footer-main {
+      background: var(--gris-carbon);
+      padding-block: 2.5rem;
+    }
+    .footer-main .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      text-align: center;
+    }
+    .footer-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      opacity: .75;
+    }
+    .footer-logo-img {
+      width: 44px;
+      height: auto;
+      filter: brightness(0) invert(1);
+      opacity: .7;
+    }
+    .footer-credits {
+      font-family: var(--font-sans);
+      font-size: .78rem;
+      color: rgba(255,255,255,.55);
+      letter-spacing: .06em;
+    }
+    .footer-credits strong {
+      color: rgba(255,255,255,.80);
+      font-weight: 600;
+    }
+    .footer-sep {
+      color: rgba(255,255,255,.25);
+    }
+
+    .footer-bottom {
+      background: var(--rojo);
+      padding: 10px 0;
+    }
+    .footer-bottom .container {
+      text-align: center;
+    }
+    .footer-status {
+      font-family: var(--font-sans);
+      font-size: .72rem;
+      font-weight: 500;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+    }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.6);
+      display: inline-block;
+    }
+
+    /* ════════════════════════════════════════════════════════════
+       UTILITARIOS
+    ════════════════════════════════════════════════════════════ */
+    .mt-xs  { margin-top: .5rem; }
+    .mt-sm  { margin-top: 1rem; }
+    .mt-md  { margin-top: 1.5rem; }
+    .mt-lg  { margin-top: 2rem; }
+
+    /* ─── Impresión ────────────────────────────────────────────── */
+    @media print {
+      .topbar { display: none; }
+      body { font-size: 14px; }
+      .hero { padding-block: 2rem; }
+      .section { padding-block: 2rem; }
+      .camino-grid { grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    /* ─── Responsive ───────────────────────────────────────────── */
+    @media (max-width: 767px) {
+      .hero-meta { flex-direction: column; gap: .5rem; }
+      .topbar .container { justify-content: center; gap: .5rem; flex-direction: column; }
+      .topbar-label { display: none; }
+      .camino-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Barra superior: firma Zuriel ──────────────────────────── -->
+  <div class="topbar">
+    <div class="container">
+      <span class="topbar-label">Propuesta de Activación · Tekton Framework</span>
+      <span class="topbar-firma">Zuriel Sistemas</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       PORTADA / HERO
+  ════════════════════════════════════════════════════════════ -->
+  <header class="hero">
+    <div class="container">
+
+      <!-- Escudo institucional -->
+      <img
+        class="hero-logo"
+        src="https://losroblesenlinea.com.ve/site/wp-content/uploads/2015/02/logo2021.png"
+        alt="Escudo del Liceo Los Robles"
+        width="110"
+        height="auto"
+      />
+
+      <!-- Nombre de la institución -->
+      <h1 class="hero-inst">Liceo Los Robles</h1>
+
+      <!-- Eyebrow separador -->
+      <div class="hero-eyebrow">Propuesta de Activación</div>
+
+      <!-- Título de la propuesta -->
+      <p class="hero-titulo">
+        Constitución del Comité de Transformación Digital
+      </p>
+
+      <!-- Metadatos -->
+      <div class="hero-meta">
+        <span class="hero-badge">CT1 · Primer Camino de Transformación</span>
+        <span class="hero-fecha">Abril 2026</span>
+      </div>
+
+      <p class="hero-presentado">
+        Presentado por <strong>Zuriel Sistemas</strong> bajo el Tekton Framework
+      </p>
+
+      <div class="hero-divider"></div>
+
+    </div>
+  </header>
+
+  <!-- ════════════════════════════════════════════════════════════
+       LA SEÑAL
+  ════════════════════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="container">
+      <span class="block-title">La señal</span>
+      <h2 class="section-heading">El mundo al que egresen sus alumnos ya cambió.</h2>
+      <div class="section-rule"></div>
+
+      <p class="body-text">
+        El Liceo Los Robles existe para formar personas. Cincuenta años de egresados que han dejado su huella en el mundo lo confirman.
+      </p>
+      <p class="body-text">
+        Esa misión no ha cambiado. El mundo al que esos alumnos van a egresar, sí.
+      </p>
+      <p class="body-text">
+        La inteligencia artificial está redefiniendo el trabajo y el aprendizaje más rápido de lo que la mayoría de las instituciones está respondiendo. Las que no se transforman no pierden una oportunidad: pierden, poco a poco, la capacidad de cumplir su razón de ser. Sus egresados llegan sin las herramientas que el mercado ya exige. Sus procesos internos se convierten en un freno para quienes intentan hacer bien su trabajo.
+      </p>
+      <p class="body-text">
+        El Liceo tiene historia, valores y un programa de robótica que ya está adelantado. Tiene una comunidad de exalumnos comprometida. Pero hoy no tiene la estructura para convertir todo eso en avance concreto, ni hacia adentro ni hacia afuera.
+      </p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       LA FRICCIÓN
+  ════════════════════════════════════════════════════════════ -->
+  <section class="section section-alt">
+    <div class="container">
+      <span class="block-title">La fricción</span>
+      <h2 class="section-heading">La oportunidad sin cauce</h2>
+      <div class="section-rule"></div>
+
+      <div class="friction-block">
+        <p class="body-text" style="color: var(--gris-carbon);">
+          Sin un cuerpo que coordine las iniciativas, cada buena idea compite con las demás. El Director aprueba propuestas sin un marco que las integre o las priorice. El Director de Robótica opera con excelencia técnica sin articularse al resto de la institución. Los representantes con visión y recursos no tienen canal formal donde su aporte se convierta en acción. Los procesos internos siguen igual, porque nadie tiene la misión explícita de cambiarlos. Las ideas valiosas aparecen y desaparecen. No por falta de talento, sino por falta de estructura.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       LA RESOLUCIÓN
+  ════════════════════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="container">
+      <span class="block-title">La resolución</span>
+      <h2 class="section-heading">El Comité de Transformación Digital</h2>
+      <div class="section-rule"></div>
+
+      <div class="resolution-card">
+        <p class="body-text">
+          Activar el CT1: el Comité de Transformación Digital del Liceo Los Robles. Un cuerpo pequeño y metodológico, diseñado con el Tekton Framework, que lleva al Liceo desde la energía dispersa de hoy hacia una capacidad organizada de decidir, ejecutar y escalar.
+        </p>
+        <p class="body-text mt-sm">
+          El Comité es también la primera evidencia concreta de que la transformación es posible: opera con herramientas digitales, hace su trabajo visible y le da a la institución algo real a lo que mirar. No transforma el Liceo de golpe. Crea la estructura que hace posible la transformación sostenida en dos frentes: la operación interna y la proyección educativa.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       EL CAMINO
+  ════════════════════════════════════════════════════════════ -->
+  <section class="section section-alt">
+    <div class="container">
+      <span class="block-title">El Camino</span>
+      <h2 class="section-heading">Tres tramos, un avance sostenido</h2>
+      <div class="section-rule"></div>
+
+      <div class="camino-grid">
+
+        <!-- Tramo 1 -->
+        <div class="tramo-card">
+          <span class="tramo-num">Tramo 01</span>
+          <span class="tramo-nombre">Constitución</span>
+          <p class="tramo-desc">
+            El Liceo tiene su Comité de Transformación Digital formalmente constituido: miembros definidos, mandato claro, herramientas activas y ritmo de trabajo establecido. El Comité opera de forma visible y alineada desde su primera sesión.
+          </p>
+        </div>
+
+        <!-- Conector -->
+        <div class="camino-connector" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="#E53132" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Tramo 2 -->
+        <div class="tramo-card">
+          <span class="tramo-num">Tramo 02</span>
+          <span class="tramo-nombre">Primera victoria</span>
+          <p class="tramo-desc">
+            El Comité ha ejecutado su primer proyecto concreto, una iniciativa interna o educativa que la comunidad reconoce como evidencia de que la transformación del Liceo está en marcha.
+          </p>
+        </div>
+
+        <!-- Conector -->
+        <div class="camino-connector" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="#E53132" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+
+        <!-- Tramo 3 -->
+        <div class="tramo-card">
+          <span class="tramo-num">Tramo 03</span>
+          <span class="tramo-nombre">Escalamiento</span>
+          <p class="tramo-desc">
+            El Comité opera con autonomía metodológica, coordina la modernización de procesos internos, conecta la institución con su red de exalumnos y patrocinadores, e integra robótica, IA y formación digital en una visión coherente al servicio de la misión del Liceo.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       PLATAFORMAS REQUERIDAS
+  ════════════════════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="container">
+      <span class="block-title">Plataformas requeridas</span>
+      <h2 class="section-heading">Infraestructura digital del Comité</h2>
+      <div class="section-rule"></div>
+
+      <ul class="platform-list">
+        <li class="platform-item">
+          <!-- Google Workspace icon -->
+          <svg class="platform-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          <span>
+            <strong>Google Workspace</strong>
+            Ya operativo en el Liceo (correo @losroblesenlinea.com.ve). Base de comunicación y colaboración del Comité.
+          </span>
+        </li>
+        <li class="platform-item">
+          <!-- Notion icon -->
+          <svg class="platform-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="2" y="2" width="9" height="9" rx="2" fill="#E53132"/>
+            <rect x="13" y="2" width="9" height="9" rx="2" fill="#E53132" opacity=".6"/>
+            <rect x="2" y="13" width="9" height="9" rx="2" fill="#E53132" opacity=".6"/>
+            <rect x="13" y="13" width="9" height="9" rx="2" fill="#E53132" opacity=".35"/>
+          </svg>
+          <span>
+            <strong>Notion</strong>
+            Documentación accesible del Comité hacia la institución y la comunidad.
+          </span>
+        </li>
+        <li class="platform-item">
+          <!-- Whimsical icon -->
+          <svg class="platform-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 3L4 7.5V16.5L12 21L20 16.5V7.5L12 3Z" stroke="#E53132" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M12 3V21" stroke="#E53132" stroke-width="1.8" stroke-linecap="round" opacity=".4"/>
+            <path d="M4 7.5L20 7.5" stroke="#E53132" stroke-width="1.8" stroke-linecap="round" opacity=".4"/>
+          </svg>
+          <span>
+            <strong>Whimsical</strong>
+            Alineación visual y mapas de trabajo del Comité: flujos, estructuras y tableros compartidos.
+          </span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       EL DESTINO
+  ════════════════════════════════════════════════════════════ -->
+  <section class="section section-red">
+    <div class="container">
+      <div class="destino-inner">
+        <span class="block-title" style="background: rgba(255,255,255,.18);">El Destino</span>
+        <h2 class="section-heading" style="color: var(--blanco); margin-top: .5rem;">A dónde vamos</h2>
+        <div class="section-rule"></div>
+        <p class="destino-quote">
+          El Liceo Los Robles opera con un Comité de Transformación Digital activo que evalúa, prioriza e implementa iniciativas con método, tanto en sus procesos internos como en la formación de sus alumnos. La dirección, los docentes, los representantes y la comunidad trabajan coordinados hacia una institución que cumple su misión en el mundo que ya existe: formar personas sólidas, con criterio y con las herramientas que este tiempo exige.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       PARA ACTIVAR
+  ════════════════════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="container">
+      <span class="block-title">Para activar</span>
+      <h2 class="section-heading">Una decisión abre el Camino</h2>
+      <div class="section-rule"></div>
+
+      <p class="body-text">
+        Confirmar esta propuesta activa el CT1 como primer Camino de la Ruta del Liceo Los Robles. A partir de ese momento, se diseña el Camino: sus tramos, sus pasos y los primeros entregables concretos.
+      </p>
+      <p class="body-text mt-sm">
+        Lo único que se necesita para comenzar es la decisión.
+      </p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════════════════════════════
+       FOOTER
+  ════════════════════════════════════════════════════════════ -->
+  <footer>
+    <div class="footer-main">
+      <div class="container">
+        <div class="footer-logo-wrap">
+          <img
+            src="zuriel-logo.png"
+            alt="Zuriel Sistemas"
+            height="44"
+            style="opacity: .85;"
+          />
+        </div>
+        <p class="footer-credits">
+          <strong>Zuriel Sistemas</strong>
+          <span class="footer-sep">&nbsp;·&nbsp;</span>
+          Tekton Framework
+          <span class="footer-sep">&nbsp;·&nbsp;</span>
+          2026
+        </p>
+        <p class="footer-credits">
+          Propuesta preparada para el Liceo Los Robles, Maracaibo, Venezuela
+        </p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <span class="footer-status">
+          <span class="status-dot"></span>
+          Pendiente de presentación formal
+          <span class="footer-sep">&nbsp;·&nbsp;</span>
+          Una vez confirmada, el CT1 queda activo como primer Camino de la Ruta
+        </span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
