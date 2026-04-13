@@ -1,0 +1,3082 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Hackeador Supremo — Estudio Interactivo</title>
+<style>
+  :root {
+    --bg: #1e1e2e; --surface: #2a2a3e; --surface2: #313145;
+    --border: #44445a; --text: #cdd6f4; --muted: #7f849c;
+    --blue: #89b4fa; --green: #a6e3a1; --red: #f38ba8;
+    --yellow: #f9e2af; --orange: #fab387; --purple: #cba6f7;
+    --cyan: #89dceb; --accent: #89b4fa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); padding: 24px 32px; border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 1.6rem; color: var(--blue); margin-bottom: 4px; }
+  header p { color: var(--muted); font-size: 0.9rem; }
+  .badge-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 3px 12px; font-size: 0.78rem; color: var(--muted); }
+  .badge.blue { border-color: var(--blue); color: var(--blue); }
+  .badge.green { border-color: var(--green); color: var(--green); }
+  .badge.orange { border-color: var(--orange); color: var(--orange); }
+
+  .tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); overflow-x: auto; }
+  .tab { padding: 14px 24px; cursor: pointer; font-size: 0.9rem; color: var(--muted); border-bottom: 2px solid transparent; white-space: nowrap; transition: all 0.2s; }
+  .tab:hover { color: var(--text); background: var(--surface2); }
+  .tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+  .tab-content { display: none; padding: 24px 32px; max-width: 1100px; margin: 0 auto; }
+  .tab-content.active { display: block; }
+
+  .section-block { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer; user-select: none; transition: background 0.15s; }
+  .section-header:hover { background: var(--surface2); }
+  .section-title { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.95rem; }
+  .section-num { background: var(--blue); color: var(--bg); border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; }
+  .section-num.green  { background: var(--green); }
+  .section-num.orange { background: var(--orange); }
+  .section-num.purple { background: var(--purple); }
+  .section-num.red    { background: var(--red); }
+  .section-num.cyan   { background: var(--cyan); }
+  .chevron { transition: transform 0.2s; color: var(--muted); font-size: 1.1rem; }
+  .section-block.open .chevron { transform: rotate(180deg); }
+  .section-body { display: none; border-top: 1px solid var(--border); }
+  .section-block.open .section-body { display: block; }
+
+  pre { background: #12121f; padding: 18px; overflow-x: auto; font-size: 0.82rem; line-height: 1.6; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; }
+  .kw  { color: #cba6f7; }
+  .fn  { color: #89b4fa; }
+  .str { color: #a6e3a1; }
+  .num { color: #fab387; }
+  .cm  { color: #6c7086; font-style: italic; }
+  .param { color: #89dceb; }
+  .cls   { color: #f9e2af; }
+
+  .explanation { padding: 18px; background: var(--surface2); }
+  .explanation h4 { color: var(--blue); margin-bottom: 10px; font-size: 0.88rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .explanation p  { color: var(--text); line-height: 1.7; margin-bottom: 10px; font-size: 0.9rem; }
+  .explanation p:last-child { margin-bottom: 0; }
+  .explanation ul { padding-left: 20px; }
+  .explanation li { color: var(--text); line-height: 1.8; font-size: 0.9rem; }
+
+  .key-point     { background: #1e3a5f; border-left: 3px solid var(--blue);   padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.88rem; color: var(--cyan); }
+  .warning-point { background: #3a1e1e; border-left: 3px solid var(--red);    padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.88rem; color: var(--red); }
+  .tip-point     { background: #1e3a2a; border-left: 3px solid var(--green);  padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.88rem; color: var(--green); }
+  .formula-box   { background: #12121f; border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 12px 0; font-family: 'Cascadia Code', monospace; font-size: 0.85rem; color: var(--yellow); }
+
+  .diff-block { padding: 0; }
+  .diff-line  { display: flex; font-family: 'Cascadia Code','Fira Code','Consolas',monospace; font-size: 0.82rem; line-height: 1.6; }
+  .diff-line.removed { background: #3d1a1a; color: #f38ba8; }
+  .diff-line.added   { background: #1a3d1a; color: #a6e3a1; }
+  .diff-line.context { background: #12121f; color: #7f849c; }
+  .diff-prefix { width: 24px; flex-shrink: 0; text-align: center; padding: 0 4px; user-select: none; font-weight: 700; }
+  .diff-line.removed .diff-prefix { background: #5a2020; color: #f38ba8; }
+  .diff-line.added   .diff-prefix { background: #1f5a1f; color: #a6e3a1; }
+  .diff-code  { padding: 0 12px; white-space: pre; overflow-x: auto; flex: 1; }
+  .diff-title { padding: 10px 16px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 0.85rem; color: var(--orange); font-weight: 600; }
+  .diff-explanation { padding: 14px 16px; background: var(--surface); border-top: 1px solid var(--border); font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
+  .diff-explanation strong { color: var(--text); }
+
+  .quiz-question { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
+  .quiz-q { padding: 16px 18px; cursor: pointer; display: flex; align-items: flex-start; gap: 14px; transition: background 0.15s; }
+  .quiz-q:hover { background: var(--surface2); }
+  .q-num { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px; font-size: 0.75rem; color: var(--muted); flex-shrink: 0; margin-top: 2px; }
+  .q-num.basic { border-color: var(--green);  color: var(--green); }
+  .q-num.inter { border-color: var(--yellow); color: var(--yellow); }
+  .q-num.adv   { border-color: var(--red);    color: var(--red); }
+  .q-text { font-size: 0.9rem; line-height: 1.5; flex: 1; }
+  .quiz-answer { display: none; padding: 14px 18px 16px; background: var(--surface2); border-top: 1px solid var(--border); font-size: 0.88rem; line-height: 1.7; color: var(--text); }
+  .quiz-answer.visible { display: block; }
+  .quiz-answer code { background: #12121f; padding: 1px 6px; border-radius: 4px; font-family: 'Cascadia Code','Consolas',monospace; color: var(--cyan); font-size: 0.83rem; }
+  .level-label { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin: 24px 0 10px; }
+  .level-label.basic { color: var(--green); }
+  .level-label.inter { color: var(--yellow); }
+  .level-label.adv   { color: var(--red); }
+
+  .checklist-group  { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
+  .checklist-title  { padding: 12px 16px; background: var(--surface2); font-weight: 600; font-size: 0.9rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .check-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.15s; }
+  .check-item:last-child { border-bottom: none; }
+  .check-item:hover { background: var(--surface2); }
+  .check-box { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px; transition: all 0.15s; }
+  .check-item.checked .check-box { background: var(--green); border-color: var(--green); color: var(--bg); font-weight: 700; font-size: 0.85rem; }
+  .check-text { font-size: 0.88rem; line-height: 1.5; flex: 1; }
+  .check-item.checked .check-text { text-decoration: line-through; color: var(--muted); }
+  .check-note { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+  .progress-bar-wrap { background: var(--surface2); border-radius: 4px; height: 6px; margin: 12px 16px 16px; overflow: hidden; }
+  .progress-bar { height: 100%; background: var(--green); border-radius: 4px; transition: width 0.3s ease; }
+  .progress-label { padding: 0 16px 4px; font-size: 0.78rem; color: var(--muted); }
+  .reset-btn { margin: 0 16px 16px; padding: 6px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--muted); cursor: pointer; font-size: 0.82rem; transition: all 0.15s; }
+  .reset-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+  .intro-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 20px; font-size: 0.9rem; line-height: 1.7; color: var(--muted); }
+  .intro-card strong { color: var(--text); }
+  hr.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  /* ── Estilo de explicaciones para Código Original / Código Mejorado ── */
+  #tab-guia-orig .explanation,
+  #tab-guia-v1   .explanation {
+    background: transparent;
+    border-left: none;
+    padding: 14px 20px 6px;
+    margin: 0;
+  }
+
+  /* Párrafo que solo tiene un <strong> → actúa como título de sección */
+  #tab-guia-orig .explanation p:has(> strong:only-child),
+  #tab-guia-v1   .explanation p:has(> strong:only-child) {
+    color: var(--cyan);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 14px 0 6px;
+  }
+  #tab-guia-orig .explanation p:has(> strong:only-child) strong,
+  #tab-guia-v1   .explanation p:has(> strong:only-child) strong {
+    color: inherit;
+  }
+  #tab-guia-orig .explanation p:has(> strong:only-child):first-child,
+  #tab-guia-v1   .explanation p:has(> strong:only-child):first-child {
+    margin-top: 0;
+  }
+
+  /* Párrafos normales de cuerpo */
+  #tab-guia-orig .explanation p,
+  #tab-guia-v1   .explanation p {
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.8;
+    margin-bottom: 10px;
+  }
+
+  /* strong inline dentro de párrafo normal */
+  #tab-guia-orig .explanation p strong,
+  #tab-guia-v1   .explanation p strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* code inline */
+  #tab-guia-orig .explanation code,
+  #tab-guia-v1   .explanation code {
+    background: #12121f;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'Cascadia Code','Consolas',monospace;
+    color: var(--cyan);
+    font-size: 0.82rem;
+  }
+
+  /* h4 (subsecciones ### del Markdown) */
+  #tab-guia-orig .explanation h4,
+  #tab-guia-v1   .explanation h4 {
+    color: var(--cyan);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 16px 0 6px;
+  }
+
+  /* Listas → caja resaltada estilo key-point */
+  #tab-guia-orig .explanation ul,
+  #tab-guia-v1   .explanation ul {
+    background: #1a2e4a;
+    border-left: 3px solid var(--blue);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 16px;
+    margin: 10px 0 12px;
+    list-style: none;
+  }
+  #tab-guia-orig .explanation li,
+  #tab-guia-v1   .explanation li {
+    font-size: 0.87rem;
+    color: var(--cyan);
+    line-height: 1.75;
+    margin-bottom: 2px;
+  }
+  #tab-guia-orig .explanation li strong,
+  #tab-guia-v1   .explanation li strong {
+    color: var(--text);
+  }
+
+  /* pre sin margen extra — la explicación da el espaciado */
+  #tab-guia-orig pre,
+  #tab-guia-v1   pre {
+    margin: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>&#9889; El Hackeador Supremo</h1>
+  <p>Estudio interactivo del código — WRO 2026 Elementary</p>
+  <div class="badge-row">
+    <span class="badge blue">Equipo Hacker Bros</span>
+    <span class="badge green">Liceo Los Robles</span>
+    <span class="badge">PyBricks / Spike Prime</span>
+    <span class="badge orange">4 motores · 2 sensores · IMU</span>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('original',this)">Conceptos</div>
+  <div class="tab" onclick="switchTab('mejorado',this)">Mejoras</div>
+  <div class="tab" onclick="switchTab('guia-orig',this)">Código Original</div>
+  <div class="tab" onclick="switchTab('guia-v1',this)">Código Mejorado</div>
+  <div class="tab" onclick="switchTab('quiz',this)">Quiz</div>
+  <div class="tab" onclick="switchTab('protocolo',this)">Protocolo</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- TAB 1: CÓDIGO ORIGINAL — 9 secciones en orden pedagógico  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div id="tab-original" class="tab-content active">
+  <div class="intro-card">
+    <strong>Cómo usar esta sección:</strong> haz clic en cada bloque para abrirlo. Estudia en orden — cada sección asume que entendiste la anterior. Si algo no está claro, vuelve a la sección anterior antes de avanzar.
+  </div>
+
+  <!-- 1. HARDWARE -->
+  <div class="section-block" onclick="toggleSection(this)">
+    <div class="section-header">
+      <div class="section-title"><span class="section-num">1</span> Hardware — Importaciones y definición del robot</div>
+      <span class="chevron">&#9662;</span>
+    </div>
+    <div class="section-body">
+      <pre><span class="kw">from</span> pybricks.hubs       <span class="kw">import</span> <span class="cls">PrimeHub</span>
+<span class="kw">from</span> pybricks.pupdevices <span class="kw">import</span> <span class="cls">Motor</span>, <span class="cls">ColorSensor</span>
+<span class="kw">from</span> pybricks.parameters <span class="kw">import</span> <span class="cls">Button</span>, <span class="cls">Direction</span>, <span class="cls">Port</span>, <span class="cls">Stop</span>
+<span class="kw">from</span> pybricks.tools      <span class="kw">import</span> wait, <span class="cls">StopWatch</span>
+
+hub         = <span class="cls">PrimeHub</span>()
+hub.imu.<span class="fn">reset_heading</span>(<span class="num">0</span>)   <span class="cm"># Resetear giroscopio al encender</span>
+
+left_motor  = <span class="cls">Motor</span>(<span class="cls">Port</span>.A, <span class="cls">Direction</span>.COUNTERCLOCKWISE)  <span class="cm"># Tracción izquierda</span>
+right_motor = <span class="cls">Motor</span>(<span class="cls">Port</span>.E)                                <span class="cm"># Tracción derecha</span>
+back        = <span class="cls">Motor</span>(<span class="cls">Port</span>.B, <span class="cls">Direction</span>.COUNTERCLOCKWISE)  <span class="cm"># Gripper trasero</span>
+front       = <span class="cls">Motor</span>(<span class="cls">Port</span>.F, <span class="cls">Direction</span>.COUNTERCLOCKWISE)  <span class="cm"># Gripper frontal</span>
+back.control.<span class="fn">limits</span>(<span class="num">1200</span>, <span class="num">10000</span>, <span class="num">250</span>)   <span class="cm"># Límites para run_target()</span>
+front.control.<span class="fn">limits</span>(<span class="num">1200</span>, <span class="num">10000</span>, <span class="num">250</span>)
+
+floor = <span class="cls">ColorSensor</span>(<span class="cls">Port</span>.C)   <span class="cm"># Sensor de piso — seguimiento de línea</span>
+scan  = <span class="cls">ColorSensor</span>(<span class="cls">Port</span>.D)   <span class="cm"># Sensor lateral — escaneo de bloques</span>
+time  = <span class="cls">StopWatch</span>()            <span class="cm"># Cronómetro global</span></pre>
+      <div class="explanation">
+        <h4>¿Por qué COUNTERCLOCKWISE en el motor izquierdo?</h4>
+        <p>Los motores A y E están montados en espejo: el eje de uno sale por la izquierda y el del otro por la derecha. Sin la inversión, cuando les das velocidad positiva a los dos, uno empuja hacia adelante y el otro hacia atrás. Con <code>COUNTERCLOCKWISE</code>, ambos empujan en la misma dirección al recibir el mismo número.</p>
+        <div class="key-point">Puerto A = tracción izquierda · Puerto E = tracción derecha · Puerto B = gripper trasero · Puerto F = gripper frontal · Puerto C = sensor de piso · Puerto D = sensor de escaneo</div>
+        <h4>control.limits — solo en los grippers</h4>
+        <p><code>control.limits(1200, 10000, 250)</code> configura el controlador PID interno de los grippers. Solo aplica a motores que usan <code>run_target()</code> (posición precisa). Los motores de tracción usan <code>dc()</code> (voltaje directo) y no pasan por ese controlador — los límites no los afectan.</p>
+        <h4>¿Por qué reset_heading(0) al arrancar?</h4>
+        <p>El giroscopio acumula ángulos entre runs. Si el robot terminó el intento anterior en 270°, al encender el Hub de nuevo ese valor sigue allí. El reset fuerza que 0° sea siempre "recto hacia adelante" al inicio de cada run.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. CALIBRATE -->
+  <div class="section-block" onclick="toggleSection(this)">
+    <div class="section-header">
+      <div class="section-title"><span class="section-num green">2</span> Calibrate() — El primer ritual de competencia</div>
+      <span class="chevron">&#9662;</span>
+    </div>
+    <div class="section-body">
+      <pre><span class="kw">def</span> <span class="fn">Calibrate</span>():
+    hub.speaker.<span class="fn">beep</span>(<span class="num">880</span>, <span class="num">250</span>)    <span class="cm"># Beep: "listo para calibrar"</span>
+    <span class="kw">while</span>(<span class="cls">Button</span>.RIGHT <span class="kw">in</span> hub.buttons.<span class="fn">pressed</span>()):
+        <span class="kw">pass</span>                         <span class="cm"># Esperar que suelten el botón</span>
+    hub.speaker.<span class="fn">beep</span>(<span class="num">1760</span>, <span class="num">250</span>)   <span class="cm"># Beep: "arrancando calibración"</span>
+    <span class="fn">wait</span>(<span class="num">500</span>)
+
+    CalibrateHigh = <span class="num">0</span>
+    CalibrateLow  = <span class="num">100</span>
+
+    calibrateStart = time.<span class="fn">time</span>()
+    <span class="fn">run</span>(<span class="num">40</span>, <span class="num">40</span>)                       <span class="cm"># Avanzar despacio</span>
+    <span class="kw">while</span> (time.<span class="fn">time</span>() - calibrateStart &lt; <span class="num">1500</span>):   <span class="cm"># Durante 1.5 segundos</span>
+        CalibrateNow  = floor.<span class="fn">reflection</span>()
+        CalibrateLow  = <span class="fn">min</span>(CalibrateLow,  CalibrateNow)
+        CalibrateHigh = <span class="fn">max</span>(CalibrateHigh, CalibrateNow)
+    <span class="fn">stop</span>()
+
+    <span class="cm"># Guardar en la memoria permanente del Hub</span>
+    hub.system.<span class="fn">storage</span>(<span class="num">0</span>, write=<span class="fn">bytes</span>([CalibrateLow, CalibrateHigh]))</pre>
+      <div class="explanation">
+        <h4>¿Qué hace exactamente Calibrate()?</h4>
+        <p>El sensor de piso mide qué tan brillante es la superficie (0=negro total, 100=blanco total). El problema: esos valores cambian con la iluminación del lugar. En casa pueden ser 8 y 85. En el gimnasio de competencia, 12 y 92. Calibrate() detecta los valores reales del lugar y los guarda.</p>
+        <div class="key-point">Calibrar SIEMPRE en el tapete del lugar de competencia — nunca reutilizar la calibración de casa.</div>
+        <h4>¿Dónde se guardan los valores?</h4>
+        <p><code>hub.system.storage(0, write=bytes([CalibrateLow, CalibrateHigh]))</code> escribe los dos valores en la memoria permanente del Hub — sobrevive apagados y reinicios. El slot 0 guarda el negro, el slot 1 el blanco. setup() los lee de allí al inicio de cada run.</p>
+        <div class="tip-point">El robot debe pasar por zonas negras Y blancas durante los 1.5 segundos de calibración — si solo pasa por un color, CalibrateHigh o CalibrateLow quedarán en valores incorrectos.</div>
+        <h4>¿Cómo activar la calibración?</h4>
+        <p>Mantener presionado el botón <strong>DERECHO</strong> del Hub mientras se enciende. Al soltar, el robot avanza sobre el tapete. Asegurarse de que el recorrido cubra la línea negra y el área blanca del tapete.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. SETUP -->
+  <div class="section-block" onclick="toggleSection(this)">
+    <div class="section-header">
+      <div class="section-title"><span class="section-num">3</span> setup() — Batería y parámetros iniciales</div>
+      <span class="chevron">&#9662;</span>
+    </div>
+    <div class="section-body">
+      <pre><span class="kw">def</span> <span class="fn">setup</span>():
+    BatteryVoltage    = hub.battery.<span class="fn">voltage</span>()            <span class="cm"># Leer en mV</span>
+    BatteryPercentage = <span class="fn">round</span>((BatteryVoltage - <span class="num">7000</span>) / <span class="num">1.25</span>) / <span class="num">10</span>
+    BatteryScale      = BatteryPercentage / <span class="num">100</span>          <span class="cm"># 0.0 a 1.0</span>
+
+    <span class="cm"># Batería llena (8250 mV) → BatteryScale = 1.0</span>
+    <span class="cm"># Batería media (7625 mV) → BatteryScale = 0.5</span>
+    <span class="cm"># Batería baja  (7000 mV) → BatteryScale = 0.0</span>
+
+    lightPD    = [<span class="num">0.55</span>, <span class="num">9</span>]    <span class="cm"># PD para seguir línea</span>
+    junctionPD = [<span class="num">0.45</span>, <span class="num">5</span>]    <span class="cm"># PD para detectar cruce</span>
+    gyroPD     = [<span class="num">6</span>, <span class="num">30</span>]      <span class="cm"># PD para movimiento recto</span>
+    minSpeed   = <span class="num">45</span> - <span class="fn">round</span>(<span class="num">5</span>  * BatteryScale)  <span class="cm"># llena: 50 / baja: 45</span>
+    accLength  = <span class="num">65</span> + <span class="fn">round</span>(<span class="num">15</span> * BatteryScale)  <span class="cm"># llena: 80 / baja: 65</span>
+    decLength  = <span class="num">110</span>+ <span class="fn">round</span>(<span class="num">15</span> * BatteryScale)  <span class="cm"># llena:125 / baja:110</span>
+
+    <span class="cm"># Leer calibración guardada por Calibrate()</span>
+    lightLow    = <span class="fn">int.from_bytes</span>(hub.system.<span class="fn">storage</span>(<span class="num">0</span>, read=<span class="num">1</span>), <span class="str">"big"</span>)
+    lightHigh   = <span class="fn">int.from_bytes</span>(hub.system.<span class="fn">storage</span>(<span class="num">1</span>, read=<span class="num">1</span>), <span class="str">"big"</span>)
+    lightTarget = (lightHigh + lightLow) / <span class="num">2</span> - <span class="num">10</span>  <span class="cm"># Promedio, sesgado al negro</span>
+    blackThreshold = lightLow  + <span class="num">5</span>
+    whiteThreshold = lightHigh - <span class="num">8</span>
+
+    heading = <span class="num">0</span>             <span class="cm"># Rumbo inicial: recto</span>
+    hub.imu.<span class="fn">reset_heading</span>(<span class="num">0</span>)
+    time.<span class="fn">reset</span>()             <span class="cm"># Iniciar cronómetro del run</span></pre>
+      <div class="explanation">
+        <h4>La fórmula de BatteryScale</h4>
+        <p>La batería varía entre 7000 mV y 8250 mV. La fórmula <code>(voltaje - 7000) / 1.25 / 10</code> mapea ese rango a 0.0–1.0. Este factor se usa para ajustar velocidades y constantes PD — sin él el robot se comportaría diferente según el nivel de batería.</p>
+        <div class="key-point">8.25V → Scale = 1.0 &nbsp;·&nbsp; 7.63V → Scale = 0.5 &nbsp;·&nbsp; 7.0V → Scale = 0.0</div>
+        <h4>La conexión con Calibrate()</h4>
+        <p><code>lightLow</code> y <code>lightHigh</code> vienen exactamente de lo que guardó Calibrate(). Si no se calibró primero, setup() lee valores del intento anterior — potencialmente de otro lugar con otra iluminación. Por eso Calibrate() debe ir siempre antes del primer run.</p>
+        <h4>¿Por qué lightTarget = promedio − 10?</h4>
+        <p>Si el target fuera el promedio exacto, el robot seguiría el centro de la línea. Al restar 10, el punto de seguimiento se mueve hacia el negro — el robot "prefiere" estar sobre el lado oscuro. Esto lo hace más robusto ante sombras de jueces, ondulaciones del tapete o variaciones de luz en competencia.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. GETYAW -->
+  <div class="section-block" onclick="toggleSection(this)">
+    <div class="section-header">
+      <div class="section-title"><span class="section-num cyan">4</span> getYaw() — El giroscopio y el problema del salto angular</div>
+      <span class="chevron">&#9662;</span>
+    </div>
+    <div class="section-body">
+      <pre><span class="kw">def</span> <span class="fn">getYaw</span>():
+    <span class="kw">global</span> yaw
+    yaw = hub.imu.<span class="fn">heading</span>() * gyroRatio
+    <span class="cm"># gyroRatio corrige si el Hub sobre/subestima ángulos reales</span>
+
+    yaw = yaw - <span class="fn">round</span>((yaw - heading) / <span class="num">370</span>) * <span class="num">360</span>
+    <span class="cm"># ANTI-WRAPAROUND: evita el salto de +180° a -180°</span>
+
+<span class="kw">def</span> <span class="fn">resetYaw</span>():
+    <span class="kw">global</span> heading
+    hub.imu.<span class="fn">reset_heading</span>(<span class="num">0</span>)
+    heading = <span class="num">0</span>
+
+<span class="cm"># Valores típicos de gyroRatio:</span>
+<span class="cm"># gyroRatio = 1.0   → giroscopio normal (usar por defecto)</span>
+<span class="cm"># gyroRatio = 0.98  → Hub gira de más  (leer 92° cuando giró 90°)</span>
+<span class="cm"># gyroRatio = 1.02  → Hub gira de menos (leer 88° cuando giró 90°)</span></pre>
+      <div class="explanation">
+        <h4>El problema del salto angular</h4>
+        <p>El giroscopio acumula ángulos — si el robot hace varios giros, puede llegar a valores como 375° o 450°. Si el heading objetivo es 15°, la diferencia real es 0°, pero <code>375 - 15 = 360°</code>. El controlador PD vería un error enorme y haría girar el robot en círculos.</p>
+        <div class="formula-box">yaw = yaw - round((yaw - heading) / 370) * 360</div>
+        <div class="key-point">Esta fórmula detecta cuántas vueltas completas de diferencia hay entre yaw y heading, y las resta. Yaw siempre queda en el rango correcto. Se usa 370 (no 360) para evitar ambigüedad en el borde exacto de 180°.</div>
+        <h4>¿Qué es gyroRatio y cómo ajustarlo?</h4>
+        <p>Algunos Hubs leen ángulos ligeramente diferentes a los reales. Si el Hub dice 92° cuando el robot giró 90° físicamente, todos los giros acumularán error.</p>
+        <div class="tip-point">Prueba: haz 4 veces turn(3, 90). El robot debe quedar exactamente donde empezó. Si queda desviado a la derecha: gira de más → bajar gyroRatio a ~0.98. Si queda desviado a la izquierda: subir a ~1.02. Ajustar en pasos de 0.01.</div>
+        <h4>¿Qué es "heading" como variable global?</h4>
+        <p><code>heading</code> es el rumbo objetivo del robot — siempre empieza en 0 (recto hacia adelante). Cada vez que el robot ejecuta <code>turn()</code>, <code>heading</code> se actualiza sumando el cambio de ángulo. getYaw() compara el ángulo real del giroscopio con este objetivo para calcular la corrección.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. CONTROL PD -->
+  <div class="section-block" onclick="toggleSection(this)">
+    <div class="section-header">
+      <div class="section-title"><span class="section-num orange">5</span> Control PD — El corazón del movimiento</div>
+      <span class="chevron">&#9662;</span>
+    </div>
+    <div class="section-body">
+      <pre><span class="kw">def</span> <span class="fn">PD</span>(<span class="param">input1</span>, <span class="param">input2</span>):
+    <span class="kw">global</span> lastError, PDscale
+    PDscale   = (<span class="fn">abs</span>(power) / <span class="num">100</span>) * <span class="num">0.7</span> + <span class="num">0.3</span>  <span class="cm"># Entre 0.3 y 1.0</span>
+    error     = input1 - input2                   <span class="cm"># Diferencia: objetivo - actual</span>
+    result    = (error * kP) + ((error - lastError) * kD)
+    result    = result * PDscale
+    lastError = error
+    <span class="kw">return</span> result
+
+<span class="kw">def</span> <span class="fn">setPD</span>(<span class="param">PD</span>, <span class="param">reset</span>):
+    <span class="kw">global</span> kP, kD, lastError
+    kP, kD = PD[<span class="num">0</span>], PD[<span class="num">1</span>]
+    <span class="kw">if</span> reset == <span class="num">1</span>: lastError = <span class="num">0</span>   <span class="cm"># reset=0 mantiene el error anterior (transición suave)</span>
+
+<span class="kw">def</span> <span class="fn">acceleration</span>(<span class="param">movedDistance</span>, <span class="param">totalDistance</span>, <span class="param">targetSpeed</span>, <span class="param">acc</span>, <span class="param">dec</span>):
+    speedChange = <span class="fn">abs</span>(targetSpeed) - minSpeed
+    acc_speed = speedChange * (movedDistance / accLength) + minSpeed
+    dec_speed = speedChange * ((totalDistance - movedDistance) / decLength) + minSpeed
+    <span class="kw">return</span> <span class="fn">min</span>(acc_speed, dec_speed, <span class="fn">abs</span>(targetSpeed))
+    <span class="cm"># min() siempre toma la curva más baja → perfil trapecial suave</span></pre>
+      <div class="explanation">
+        <h4>Proporcional (P) — reacciona al error actual</h4>
+        <p><code>error × kP</code>: si el robot se desvió 10°, aplica corrección proporcional a 10. Problema: con solo P el robot llega al objetivo pero lo sobrepasa y oscila — se corrige de más, vuelve, se corrige de más otra vez.</p>
+        <h4>Derivativo (D) — reacciona al cambio del error</h4>
+        <p><code>(error - lastError) × kD</code>: mide qué tan rápido está cambiando el error. Si el error está disminuyendo rápido (el robot se está corrigiendo agresivamente), D aplica un freno para que no sobrepase. Es la amortiguación del sistema.</p>
+        <div class="key-point">P empuja hacia el objetivo. D frena para no pasarse. Juntos logran llegada rápida y precisa sin oscilación.</div>
+        <h4>PDscale — corrección dinámica por velocidad</h4>
+        <p>Cuando el robot va lento (power bajo), la corrección se reduce automáticamente. A velocidad 0: PDscale = 0.3. A velocidad 100: PDscale = 1.0. Evita correcciones violentas durante el arranque y el frenado, donde una corrección exagerada haría que el robot saliese de la línea.</p>
+        <h4>Aceleración trapezoidal</h4>
+        <p>El robot sube suavemente de <code>minSpeed</code> a <code>targetSpeed</code> (rampa de aceleración), mantiene velocidad, y baja suavemente al acercarse al destino (rampa de frenado). <code>min()</code> siempre toma la más baja de las tres curvas — en distancias cortas los perfiles se solapan y el robot nunca supera la velocidad que corresponde.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. MOVIMIENTO -->
+  <div class="section-block" onclick="toggleSection(this)">
+    <div class="section-header">
+      <div class="section-title"><span class="section-num purple">6</span> Movimiento — avanzar, girar y seguir línea</div>
+      <span class="chevron">&#9662;</span>
+    </div>
+    <div class="section-body">
+      <pre><span class="cm"># ── move() ───────────────────────────────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">move</span>(<span class="param">speed</span>, <span class="param">totalDistance</span>, <span class="param">acc</span>=<span class="kw">True</span>, <span class="param">dec</span>=<span class="kw">True</span>):
+    <span class="fn">resetMotors</span>()
+    movedDistance = <span class="num">0</span>
+    <span class="fn">setPD</span>(gyroPD, <span class="num">1</span>)
+    <span class="kw">while</span>(movedDistance &lt;= totalDistance):
+        movedDistance = (<span class="fn">abs</span>(left_motor.<span class="fn">angle</span>()) + <span class="fn">abs</span>(right_motor.<span class="fn">angle</span>())) / <span class="num">2</span>
+        power = <span class="fn">acceleration</span>(movedDistance, totalDistance, speed, acc, dec)
+        power = <span class="fn">round</span>((<span class="fn">abs</span>(speed)/speed) * power)   <span class="cm"># Conservar el signo</span>
+        <span class="fn">getYaw</span>()
+        correction = <span class="fn">round</span>(<span class="fn">PD</span>(yaw, heading))
+        <span class="fn">run</span>(power - correction, power + correction)
+    <span class="fn">stop</span>()
+
+<span class="cm"># ── moveWhite / moveBlack ─────────────────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">moveWhite</span>(<span class="param">speed</span>):   <span class="cm"># Avanza hasta encontrar superficie brillante</span>
+    <span class="kw">while</span>(floor.<span class="fn">reflection</span>() &lt; whiteThreshold):
+        <span class="fn">getYaw</span>(); correction = <span class="fn">round</span>(<span class="fn">PD</span>(yaw, heading))
+        <span class="fn">run</span>(speed - correction, speed + correction)
+    <span class="fn">stop</span>()
+
+<span class="kw">def</span> <span class="fn">moveBlack</span>(<span class="param">speed</span>):   <span class="cm"># Avanza hasta encontrar superficie oscura</span>
+    <span class="kw">while</span>(floor.<span class="fn">reflection</span>() &gt; blackThreshold):
+        <span class="fn">getYaw</span>(); correction = <span class="fn">round</span>(<span class="fn">PD</span>(yaw, heading))
+        <span class="fn">run</span>(speed - correction, speed + correction)
+    <span class="fn">stop</span>()
+
+<span class="cm"># ── turn() ────────────────────────────────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">turn</span>(<span class="param">mode</span>, <span class="param">change</span>, <span class="param">speed</span>=<span class="num">100</span>, <span class="param">checking</span>=<span class="num">15</span>):
+    heading = heading + change
+    <span class="cm"># kP baja con batería llena (motores más fuertes → no sobrepasar)</span>
+    <span class="cm"># kD sube con batería llena (más amortiguación necesaria)</span>
+    <span class="kw">if</span> mode &lt;= <span class="num">2</span>:
+        <span class="fn">setPD</span>([<span class="num">15</span> - <span class="fn">round</span>(<span class="num">3</span>*BatteryScale), <span class="num">180</span> + <span class="fn">round</span>(<span class="num">50</span>*BatteryScale)], <span class="num">1</span>)
+    <span class="kw">else</span>:
+        <span class="fn">setPD</span>([<span class="num">12</span> - <span class="fn">round</span>(<span class="num">3</span>*BatteryScale), <span class="num">220</span> + <span class="fn">round</span>(<span class="num">50</span>*BatteryScale)], <span class="num">1</span>)
+    count = <span class="num">0</span>
+    <span class="kw">while</span>(count &lt;= checking):
+        <span class="fn">getYaw</span>()
+        correction = <span class="fn">round</span>(<span class="fn">PD</span>(yaw, heading))
+        <span class="kw">if</span>   mode == <span class="num">1</span>: <span class="fn">run</span>(-correction, <span class="num">0</span>)          <span class="cm"># Pivote izquierda</span>
+        <span class="kw">elif</span> mode == <span class="num">2</span>: <span class="fn">run</span>(<span class="num">0</span>, correction)           <span class="cm"># Pivote derecha</span>
+        <span class="kw">else</span>:           <span class="fn">run</span>(-correction, correction)  <span class="cm"># Giro en sitio</span>
+        count = count + <span class="num">1</span> <span class="kw">if</span> <span class="fn">abs</span>(yaw - heading) &lt;= <span class="num">2.5</span> <span class="kw">else</span> <span class="num">0</span>
+    <span class="fn">stop</span>()
+
+<span class="cm"># ── follow / followUntilJunction ─────────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">follow</span>(<span class="param">side</span>, <span class="param">speed</span>, <span class="param">totalDistance</span>, <span class="param">acc</span>=<span class="kw">True</span>, <span class="param">dec</span>=<span class="kw">True</span>, <span class="param">reset</span>=<span class="kw">False</span>):
+    <span class="fn">setPD</span>(lightPD, <span class="num">1</span>)
+    lightFiltered = floor.<span class="fn">reflection</span>()
+    <span class="kw">while</span>(movedDistance &lt;= totalDistance):
+        raw = floor.<span class="fn">reflection</span>()
+        lightFiltered = (lightFiltered * <span class="num">3</span> + raw) / <span class="num">4</span>  <span class="cm"># Filtro promedio móvil</span>
+        correction = <span class="fn">PD</span>(lightTarget, lightFiltered)
+        <span class="kw">if</span> side == <span class="num">2</span>: correction *= -<span class="num">1</span>
+        <span class="fn">run</span>(power - correction, power + correction)
+    <span class="fn">stop</span>()
+
+<span class="kw">def</span> <span class="fn">followUntilJunction</span>(<span class="param">side</span>, <span class="param">speed</span>):
+    <span class="fn">setPD</span>(junctionPD, <span class="num">0</span>)   <span class="cm"># reset=0 → transición suave desde follow()</span>
+    <span class="kw">while</span>(floor.<span class="fn">reflection</span>() &gt; blackThreshold):
+        correction = <span class="fn">PD</span>(lightTarget, floor.<span class="fn">reflection</span>())
+        <span class="kw">if</span> side == <span class="num">2</span>: correction *= -<span class="num">1</span>
+        <span class="fn">run</span>(speed - correction, speed + correction)
+    <span class="fn">stop</span>()</pre>
+      <div class="explanation">
+        <h4>move() — distancia en grados de rueda</h4>
+        <p>360° de rueda ≈ 19.6 cm con la rueda grande del robot. El código promedia ambos encoders para que si una rueda patina o la corrección gyro la hace girar más, el error se distribuya. Ejemplo: <code>move(100, 720)</code> ≈ avanzar 39 cm.</p>
+        <h4>moveWhite y moveBlack — navegación por sensor</h4>
+        <p>En vez de distancia fija, el robot avanza hasta encontrar un color específico. Esto lo hace robusto ante pequeñas variaciones de posición inicial — si el robot arrancó 1 cm adelante del lugar ideal, una distancia fija lo posicionaría mal, pero moveBlack() siempre para exactamente sobre la línea.</p>
+        <h4>turn() — tres modos de giro</h4>
+        <ul>
+          <li><strong>mode=1</strong>: solo rueda izquierda — gira sobre la derecha (radio grande)</li>
+          <li><strong>mode=2</strong>: solo rueda derecha — gira sobre la izquierda (radio grande)</li>
+          <li><strong>mode=3</strong>: ambas en sentido contrario — giro en sitio (más rápido, más preciso)</li>
+        </ul>
+        <div class="key-point">checking=15 obliga al robot a estar dentro de ±2.5° durante 15 ciclos consecutivos antes de parar. Evita que pare mientras todavía tiene inercia y está oscilando.</div>
+        <h4>follow() — el filtro de promedio móvil</h4>
+        <p><code>(lightFiltered × 3 + raw) / 4</code> promedia la lectura nueva con 3 veces la anterior. Suaviza el ruido del sensor — sin esto, una variación brusca (sombra de un juez, polvo en el tapete) causaría una corrección violenta que sacaría al robot de la línea.</p>
+        <h4>followUntilJunction vs follow</h4>
+        <p>followUntilJunction usa <code>junctionPD</code> más conservador que <code>lightPD</code> — menos corrección agresiva para que el robot no pase de largo el cruce. También llama <code>setPD(..., 0)</code> sin resetear <code>lastError</code>, para que la transición desde un <code>follow()</code> previo sea fluida.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. GRIPPERS -->
+  <div class="section-block" onclick="toggleSection(this)">
+    <div class="section-header">
+      <div class="section-title"><span class="section-num red">7</span> Grippers — Control de agarre y ejecución en paralelo</div>
+      <span class="chevron">&#9662;</span>
+    </div>
+    <div class="section-body">
+      <pre><span class="kw">def</span> <span class="fn">backDegree</span>(<span class="param">speed</span>, <span class="param">angle</span>, <span class="param">pause</span>=<span class="kw">False</span>):
+    <span class="cm"># angle: 0=cerrado, 100=abierto</span>
+    back.<span class="fn">run_target</span>(<span class="fn">abs</span>(<span class="fn">round</span>(speed * <span class="num">12</span>)), angle * -<span class="num">1</span>, wait=pause)
+
+<span class="kw">def</span> <span class="fn">frontDegree</span>(<span class="param">speed</span>, <span class="param">angle</span>, <span class="param">pause</span>=<span class="kw">False</span>):
+    <span class="cm"># angle: 0=abierto, 100=cerrado</span>
+    front.<span class="fn">run_target</span>(<span class="fn">abs</span>(<span class="fn">round</span>(speed * <span class="num">12</span>)), <span class="fn">abs</span>(angle), wait=pause)
+
+<span class="cm"># Ejemplo de uso en paralelo (pause=False — default):</span>
+front.<span class="fn">dc</span>(-<span class="num">40</span>)             <span class="cm"># Abrir frontal directo (voltaje, sin esperar)</span>
+back.<span class="fn">dc</span>(<span class="num">40</span>)              <span class="cm"># Cerrar trasero directo (voltaje, sin esperar)</span>
+<span class="fn">move</span>(<span class="num">100</span>, <span class="num">350</span>, dec=<span class="kw">False</span>) <span class="cm"># ← Esto se ejecuta MIENTRAS los grippers se mueven</span>
+
+<span class="cm"># Ejemplo de uso secuencial (pause=True — esperar posición):</span>
+<span class="fn">backDegree</span>(<span class="num">100</span>, <span class="num">55</span>, pause=<span class="kw">True</span>)  <span class="cm"># Espera a que llegue a 55° antes de continuar</span>
+<span class="fn">move</span>(-<span class="num">100</span>, <span class="num">150</span>)                  <span class="cm"># Ahora sí avanza</span></pre>
+      <div class="explanation">
+        <h4>run_target vs dc — dos formas de mover un motor</h4>
+        <p><code>motor.dc(velocidad)</code>: control directo de voltaje. El motor gira a esa potencia sin saber ni importarle en qué ángulo está. Rápido pero sin precisión de posición — se usa para mover rápido sin importar dónde para.</p>
+        <p><code>motor.run_target(velocidad, ángulo, wait=...)</code>: el motor usa su controlador PID interno para llegar exactamente al ángulo indicado y mantenerse allí. Preciso y controlado — usa para posicionamientos exactos de agarre.</p>
+        <div class="key-point">control.limits(1200, 10000, 250) configura el controlador interno de run_target: velocidad máxima, aceleración máxima, torque. Sin esto, run_target puede moverse demasiado despacio o ser demasiado brusco.</div>
+        <h4>pause=False — ejecución en paralelo</h4>
+        <p>Cuando <code>pause=False</code> (default), el código llama a <code>run_target</code> y continúa inmediatamente a la siguiente línea sin esperar que el gripper llegue. Esto permite que el robot avance mientras el gripper se mueve simultáneamente — ahorra tiempo en las misiones.</p>
+        <div class="tip-point">Si el gripper no llega a posición antes de que el robot intente agarrar el bloque, usar pause=True o agregar wait() para darle tiempo suficiente.</div>
+        <h4>¿Por qué angle × -1 en backDegree?</h4>
+        <p>El motor B tiene <code>COUNTERCLOCKWISE</code> como dirección. Para que "0=cerrado, 100=abierto" sea la misma convención física independientemente del montaje, se invierte el signo del ángulo. Así el código que llama <code>backDegree(100, 0)</code> siempre significa "cerrar el gripper trasero".</p>
+        <h4>speed × 12 — conversión de escala</h4>
+        <p><code>run_target</code> acepta velocidad en grados por segundo. Multiplicar el parámetro de "0 a 100%" por 12 convierte a la escala interna — speed=100 → 1200 °/s, que es el límite configurado en control.limits.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. SCAN + PROCESSCOLOUR -->
+  <div class="section-block" onclick="toggleSection(this)">
+    <div class="section-header">
+      <div class="section-title"><span class="section-num">8</span> Scan() + ProcessColour() — Ver y clasificar los bloques</div>
+      <span class="chevron">&#9662;</span>
+    </div>
+    <div class="section-body">
+      <pre><span class="kw">def</span> <span class="fn">readColour</span>():
+    <span class="kw">global</span> h, s, v
+    HSVresult = scan.<span class="fn">hsv</span>()      <span class="cm"># Leer sensor lateral D</span>
+    h.<span class="fn">append</span>(HSVresult[<span class="num">0</span>])       <span class="cm"># H = Hue (tono de color: 0–360°)</span>
+    s.<span class="fn">append</span>(HSVresult[<span class="num">1</span>])       <span class="cm"># S = Saturation (intensidad: 0–100)</span>
+    v.<span class="fn">append</span>(HSVresult[<span class="num">2</span>])       <span class="cm"># V = Value (brillo: 0–100)</span>
+
+<span class="kw">def</span> <span class="fn">Scan</span>():
+    <span class="kw">for</span> section <span class="kw">in</span> <span class="fn">range</span>(<span class="num">2</span>):         <span class="cm"># 2 secciones del tapete</span>
+        <span class="kw">for</span> blocks <span class="kw">in</span> <span class="fn">range</span>(<span class="num">2</span>):      <span class="cm"># 2 bloques por sección</span>
+            <span class="fn">followUntilJunction</span>(<span class="num">2</span>, <span class="num">90</span>)
+            <span class="fn">move</span>(<span class="num">90</span>, <span class="num">20</span>, acc=<span class="kw">False</span>, dec=<span class="kw">False</span>)  <span class="cm"># Offset: 20° para alinear sensor D</span>
+            <span class="fn">readColour</span>()
+            <span class="fn">move</span>(<span class="num">90</span>, <span class="num">110</span>, acc=<span class="kw">False</span>, dec=<span class="kw">False</span>) <span class="cm"># Avanzar al próximo bloque</span>
+        <span class="kw">if</span> section &lt; <span class="num">1</span>:
+            <span class="fn">follow</span>(<span class="num">2</span>, <span class="num">100</span>, <span class="num">500</span>, acc=<span class="kw">False</span>, dec=<span class="kw">False</span>)  <span class="cm"># Cruzar a otra sección</span>
+        <span class="kw">else</span>:
+            <span class="fn">follow</span>(<span class="num">2</span>, <span class="num">90</span>, <span class="num">300</span>, acc=<span class="kw">False</span>, reset=<span class="kw">True</span>)    <span class="cm"># Fin del escaneo</span>
+
+<span class="kw">def</span> <span class="fn">ProcessColour</span>():
+    <span class="cm"># MODIFY AT YOUR OWN RISK / OTHERWISE, DO NOT CHANGE</span>
+    green = <span class="num">2</span>  <span class="cm"># Fijo — siempre en posición 2</span>
+    red   = <span class="num">3</span>  <span class="cm"># Fijo — siempre en posición 3</span>
+
+    <span class="cm"># PASO 1: Alta saturación → azul o amarillo</span>
+    top2 = <span class="fn">sorted</span>(<span class="fn">range</span>(<span class="fn">len</span>(s)), key=<span class="kw">lambda</span> i: (-s[i], i))[:2]
+    test1, test2 = top2[<span class="num">0</span>], top2[<span class="num">1</span>]
+    blue, yellow = (test1, test2) <span class="kw">if</span> h[test1] &gt; h[test2] <span class="kw">else</span> (test2, test1)
+
+    <span class="cm"># PASO 2: Baja saturación → blanco o negro</span>
+    low2 = <span class="fn">sorted</span>(<span class="fn">range</span>(<span class="fn">len</span>(s)), key=<span class="kw">lambda</span> i: (s[i], i))[:2]
+    test1, test2 = low2[<span class="num">0</span>], low2[<span class="num">1</span>]
+    white, black = (test1, test2) <span class="kw">if</span> v[test1] &gt; v[test2] <span class="kw">else</span> (test2, test1)
+
+    <span class="cm"># PASO 3: Ajustar índices por posiciones fijas de verde y rojo</span>
+    blue, white, yellow, black = (
+        x + <span class="num">2</span> <span class="kw">if</span> x &gt; <span class="num">1</span> <span class="kw">else</span> x
+        <span class="kw">for</span> x <span class="kw">in</span> (blue, white, yellow, black)
+    )</pre>
+      <div class="explanation">
+        <h4>El offset de 20° después del cruce — detalle crítico</h4>
+        <p>Después de <code>followUntilJunction</code>, el código hace <code>move(90, 20)</code> antes de leer. Esto es porque el robot detecta el cruce cuando el sensor C (piso, frente-centro) ve negro, pero el sensor D (lateral) está físicamente más adelante del cuerpo del robot. Sin el offset, el sensor D escanearía el bloque equivocado.</p>
+        <div class="key-point">Detectar la línea ≠ estar en posición de escaneo. Los 20° compensan la distancia física entre el sensor de detección y el sensor lateral.</div>
+        <h4>¿Qué es HSV?</h4>
+        <ul>
+          <li><strong>H (Hue)</strong>: el tono de color — 0°=rojo, 60°=amarillo, 120°=verde, 240°=azul</li>
+          <li><strong>S (Saturation)</strong>: intensidad — 0=gris/blanco/negro sin color, 100=color puro vivo</li>
+          <li><strong>V (Value)</strong>: brillo — 0=negro total, 100=blanco brillante</li>
+        </ul>
+        <h4>La lógica de clasificación de ProcessColour()</h4>
+        <p><strong>Paso 1 — Alta saturación:</strong> Azul y amarillo son colores vivos → S alto. Se toman los 2 índices con mayor S. Dentro de ellos, el que tiene mayor H es azul (H≈240°), el otro es amarillo (H≈60°).</p>
+        <p><strong>Paso 2 — Baja saturación:</strong> Blanco y negro no tienen color definido → S bajo. Se toman los 2 con menor S. El que tiene mayor V (más brillante) es blanco, el otro es negro.</p>
+        <p><strong>Paso 3 — Ajuste de índices:</strong> Como verde está fijo en posición 2 y rojo en posición 3, cualquier índice mayor a 1 debe ajustarse sumando 2 para compensar esas posiciones fijas.</p>
+        <div class="warning-point">Esta función está marcada "MODIFY AT YOUR OWN RISK". Si se modifica sin entenderla completamente, todo el sistema de notas puede fallar. Entender primero, modificar después.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. MISIONES -->
+  <div class="section-block" onclick="toggleSection(this)">
+    <div class="section-header">
+      <div class="section-title"><span class="section-num">9</span> Misiones — El flujo completo de competencia</div>
+      <span class="chevron">&#9662;</span>
+    </div>
+    <div class="section-body">
+      <pre><span class="kw">def</span> <span class="fn">Main</span>():
+    <span class="fn">setup</span>()             <span class="cm"># Batería + leer calibración + reset variables</span>
+
+    <span class="fn">Start</span>()             <span class="cm"># Salir de zona inicio, alinearse con línea</span>
+    <span class="fn">Scan</span>()              <span class="cm"># Leer 4 bloques aleatorios en HSV</span>
+    <span class="fn">ProcessColour</span>()     <span class="cm"># Clasificar: posición de cada color (1–6)</span>
+    <span class="fn">TakeBlueWhite</span>()     <span class="cm"># Recoger azul + blanco con gripper frontal</span>
+    <span class="fn">TakeGreen</span>()         <span class="cm"># Recoger verde con gripper trasero</span>
+    <span class="fn">Put1</span>()              <span class="cm"># Depositar grupo 1 ← angleX=25 (AJUSTAR)</span>
+    <span class="fn">TakeRed</span>()           <span class="cm"># Recoger rojo (posición fija)</span>
+    <span class="fn">TakeBlackYellow</span>()   <span class="cm"># Recoger negro + amarillo (orden dinámico)</span>
+    <span class="fn">GoToJunction</span>()      <span class="cm"># Navegar al cruce central</span>
+    <span class="fn">Put2</span>()              <span class="cm"># Depositar rojo/negro/amarillo ← redAngle=39 (AJUSTAR)</span>
+    <span class="fn">Cable1</span>()            <span class="cm"># Entregar cable 1 al amplificador</span>
+    <span class="fn">Cable2</span>()            <span class="cm"># Entregar cable 2</span>
+    <span class="fn">Microphone</span>()        <span class="cm"># Llevar micrófono al escenario</span>
+    <span class="fn">Instruments</span>()       <span class="cm"># Llevar instrumentos detrás del escenario</span>
+
+    <span class="fn">print</span>(<span class="str">"Tiempo total:"</span>, time.<span class="fn">time</span>()/<span class="num">1000</span>, <span class="str">"s"</span>)
+    <span class="fn">stop</span>(<span class="num">1000</span>)
+
+<span class="cm"># ── Selector de botones al encender ────────────────────────────</span>
+<span class="kw">if</span> <span class="cls">Button</span>.RIGHT <span class="kw">in</span> hub.buttons.<span class="fn">pressed</span>():
+    <span class="fn">Calibrate</span>()         <span class="cm"># Botón derecho → guardar negro y blanco</span>
+<span class="kw">elif</span> <span class="cls">Button</span>.LEFT <span class="kw">in</span> hub.buttons.<span class="fn">pressed</span>():
+    <span class="kw">while</span>(<span class="kw">True</span>): <span class="fn">run</span>(<span class="num">100</span>, <span class="num">100</span>)  <span class="cm"># Botón izquierdo → limpiar ruedas</span>
+<span class="kw">else</span>:
+    <span class="fn">Main</span>()              <span class="cm"># Sin botón → run de competencia</span></pre>
+      <div class="explanation">
+        <h4>¿Por qué este orden de misiones?</h4>
+        <p>Las misiones de notas musicales (bloques de colores) se agrupan al inicio porque están todas en la misma zona del tapete. Separarlas de los cables causaría recorridos innecesarios. El orden minimiza la distancia total recorrida dentro del límite de 2 minutos.</p>
+        <h4>Navegación dinámica — currentPosition y currentDirection</h4>
+        <div class="key-point">El robot no tiene un camino fijo. TakeBlueWhite y TakeBlackYellow usan currentPosition/currentDirection para adaptarse a dónde quedaron los bloques aleatorios. La lógica de target[] y taking decide la ruta óptima en tiempo real.</div>
+        <h4>Parámetros críticos a ajustar para tu tapete</h4>
+        <ul>
+          <li><code>angleX = 25</code> en Put1() — ángulo de depósito del primer grupo. Ajustar si los bloques no quedan en la posición correcta.</li>
+          <li><code>redAngle = 39</code> en Put2() — ángulo hacia la caja roja desde el cruce. Crítico: si está mal, rojo/negro/amarillo van al lugar equivocado.</li>
+          <li><code>underturn = 5</code> en Instruments() — ajuste fino de la aproximación final al escenario.</li>
+        </ul>
+        <h4>El selector de botones — el programa no empieza en Main()</h4>
+        <p>Al encender, el Hub ejecuta el código desde arriba. Las últimas líneas del archivo detectan qué botón está presionado: Botón DERECHO → Calibrate(). Botón IZQUIERDO → limpiar ruedas (correr sin parar). Sin botón → Main(). Esto es el "menú" del robot.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-mejorado" class="tab-content">
+  <div class="intro-card">
+    Las líneas en <span style="color:var(--red)">rojo</span> son el código original. Las líneas en <span style="color:var(--green)">verde</span> son la mejora propuesta. Estos cambios están implementados en <strong>hackeador_v1.py</strong>.
+  </div>
+
+  <!-- C2 -->
+  <div class="section-block" onclick="toggleSection(this)">
+    <div class="section-header">
+      <div class="section-title"><span class="section-num red">C2</span> readColour() — Promediar lecturas HSV</div>
+      <span class="chevron">&#9662;</span>
+    </div>
+    <div class="section-body">
+      <div class="diff-title">Impacto: MUY ALTO — evita clasificación errónea de colores</div>
+      <div class="diff-block">
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">def readColour():</span></div>
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">    HSVresult = scan.hsv()   # Una sola lectura — puede ser ruidosa</span></div>
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">    h.append(HSVresult[0])</span></div>
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">    s.append(HSVresult[1])</span></div>
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">    v.append(HSVresult[2])</span></div>
+        <div class="diff-line context"><span class="diff-prefix"> </span><span class="diff-code"></span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">def readColour():</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    readings_h, readings_s, readings_v = [], [], []</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    for _ in range(5):             # 5 lecturas en ~25ms</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">        HSVresult = scan.hsv()</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">        readings_h.append(HSVresult[0])</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">        readings_s.append(HSVresult[1])</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">        readings_v.append(HSVresult[2])</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">        wait(5)</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    h.append(sum(readings_h) // len(readings_h))</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    s.append(sum(readings_s) // len(readings_s))</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    v.append(sum(readings_v) // len(readings_v))</span></div>
+      </div>
+      <div class="diff-explanation"><strong>¿Por qué?</strong> Una sola lectura HSV puede estar afectada por la vibración al detenerse, un reflejo puntual o el ángulo exacto del sensor. Si ProcessColour() recibe un dato ruidoso puede clasificar azul como amarillo — y todo el run falla. 5 lecturas en 25ms extra es una inversión mínima con impacto máximo en puntaje.</div>
+    </div>
+  </div>
+
+  <!-- C3 -->
+  <div class="section-block" onclick="toggleSection(this)">
+    <div class="section-header">
+      <div class="section-title"><span class="section-num red">C3</span> followUntilJunction() — Timeout de seguridad</div>
+      <span class="chevron">&#9662;</span>
+    </div>
+    <div class="section-body">
+      <div class="diff-title">Impacto: ALTO — evita loop infinito que pierde todo el puntaje restante</div>
+      <div class="diff-block">
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">def followUntilJunction(side, speed):</span></div>
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">    while(light > blackThreshold):  # Sin salida si nunca ve negro</span></div>
+        <div class="diff-line context"><span class="diff-prefix"> </span><span class="diff-code"></span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">def followUntilJunction(side, speed, timeout=10000):</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    startTime = time.time()</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    while(floor.reflection() > blackThreshold):</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">        if time.time() - startTime > timeout:</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">            print("ADVERTENCIA: junction timeout", timeout, "ms")</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">            break   # Salir y continuar — no perder el resto del run</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">        # ... resto del loop igual ...</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    stop()</span></div>
+      </div>
+      <div class="diff-explanation"><strong>¿Por qué?</strong> Si el robot se sale de la línea y el sensor nunca detecta negro, el loop original corre hasta que se agoten los 2 minutos. Con el timeout, el robot sale del loop después de N ms y continúa con la siguiente instrucción — puede perder puntos de esa misión, pero salva todas las demás.</div>
+    </div>
+  </div>
+
+  <!-- M1 -->
+  <div class="section-block" onclick="toggleSection(this)">
+    <div class="section-header">
+      <div class="section-title"><span class="section-num orange">M1</span> Bloque CONFIGURACION — parámetros centralizados</div>
+      <span class="chevron">&#9662;</span>
+    </div>
+    <div class="section-body">
+      <div class="diff-title">Impacto: MEDIO — facilita ajuste rápido y evidencia de código propio</div>
+      <div class="diff-block">
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">def Put1():         # parámetro enterrado en línea 470</span></div>
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">    angleX = 25</span></div>
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">def Put2():         # parámetro enterrado en línea 547</span></div>
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">    redAngle = 39</span></div>
+        <div class="diff-line context"><span class="diff-prefix"> </span><span class="diff-code"></span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code"># ── CONFIGURACION ─────────────────────────────────</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">GYRO_RATIO  = 1.0   # Ajustar si el robot gira de más o de menos</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">LIGHT_PD    = [0.55, 9]    # PD seguimiento de línea</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">JUNCTION_PD = [0.45, 5]   # PD detección de cruce</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">GYRO_PD     = [6, 30]      # PD navegación giroscópica</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code"># ───────────────────────────────────────────────────</span></div>
+      </div>
+      <div class="diff-explanation"><strong>¿Por qué?</strong> Cuando algo falla en competencia, Rafael necesita encontrar el parámetro a ajustar en segundos. Con todos en un bloque al inicio no hay que buscar en 700 líneas bajo presión. Además, los jueces pueden ver de un vistazo qué valores modificó el equipo — evidencia directa de trabajo propio.</div>
+    </div>
+  </div>
+
+  <!-- M2 -->
+  <div class="section-block" onclick="toggleSection(this)">
+    <div class="section-header">
+      <div class="section-title"><span class="section-num">M2</span> Timestamps en Main() — diagnóstico de tiempos</div>
+      <span class="chevron">&#9662;</span>
+    </div>
+    <div class="section-body">
+      <div class="diff-title">Impacto: MEDIO — diagnóstico preciso durante ensayos</div>
+      <div class="diff-block">
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">def Main():</span></div>
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">    setup()</span></div>
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">    Start()</span></div>
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">    # ... sin información de progreso en consola</span></div>
+        <div class="diff-line context"><span class="diff-prefix"> </span><span class="diff-code"></span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">def Main():</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    setup()</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    print("--- Inicio de misiones ---")</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    Start()</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    print("Hora Start:", time.time(), "ms")</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    Scan(); ProcessColour()</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    print("Hora post-Scan:", time.time(), "ms")</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    # ... un print por fase importante ...</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">    print("Tiempo total:", time.time()/1000, "s")</span></div>
+      </div>
+      <div class="diff-explanation"><strong>¿Por qué?</strong> Con la laptop conectada por USB, estos prints aparecen en tiempo real. Rafael puede ver exactamente cuánto tarda cada misión, si ProcessColour clasificó bien, y en qué punto exacto falló el run. Sin timestamps, los fallos son muy difíciles de diagnosticar.</div>
+    </div>
+  </div>
+
+  <!-- M4 -->
+  <div class="section-block" onclick="toggleSection(this)">
+    <div class="section-header">
+      <div class="section-title"><span class="section-num">M4</span> Eliminar sync *= 1 en turn() — código limpio</div>
+      <span class="chevron">&#9662;</span>
+    </div>
+    <div class="section-body">
+      <div class="diff-title">Impacto: BAJO — limpieza de código muerto</div>
+      <div class="diff-block">
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">sync = left_motor.angle() + right_motor.angle()</span></div>
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">sync *= 1   # ← multiplicar por 1 no cambia nada</span></div>
+        <div class="diff-line removed"><span class="diff-prefix">&#8722;</span><span class="diff-code">run(-correction-sync, correction-sync)</span></div>
+        <div class="diff-line context"><span class="diff-prefix"> </span><span class="diff-code"></span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code"># sync se calcula solo en el modo 3 (ambas ruedas)</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">sync = left_motor.angle() + right_motor.angle()</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code">run(-correction - sync, correction - sync)</span></div>
+        <div class="diff-line added"><span class="diff-prefix">+</span><span class="diff-code"># sync *= 1 eliminado — era un placeholder sin efecto</span></div>
+      </div>
+      <div class="diff-explanation"><strong>¿Por qué?</strong> El código original tiene <code>sync *= 1</code> — un placeholder de sincronización que no hace nada (multiplicar por 1 no cambia el valor). Eliminarlo demuestra que Rafael leyó y entendió el código. Cualquier juez que lo revise puede notarlo.</div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-guia-orig" class="tab-content">
+  <div class="intro-card">
+    <strong>Gu&#237;a de Estudio del C&#243;digo Original</strong> &#8212; Cada secci&#243;n del archivo original
+    explicada en detalle. Sigue el orden del c&#243;digo fuente. Haz clic en cada secci&#243;n para expandirla.
+  </div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num blue">1</span>
+      Importaciones y definición del hardware
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>from pybricks.hubs import PrimeHub
+from pybricks.pupdevices import Motor, ColorSensor, UltrasonicSensor, ForceSensor
+from pybricks.parameters import Button, Color, Direction, Port, Side, Stop
+from pybricks.robotics import DriveBase
+from pybricks.tools import wait, StopWatch</pre>
+    <div class="explanation">
+<p><strong>¿Qué es esto?</strong></p>
+<p>PyBricks es la librería que permite controlar el Hub Spike Prime con Python.</p>
+<p>Al importar <code>Motor</code>, <code>ColorSensor</code>, etc., le dices al programa qué tipos de dispositivos</p>
+<p>vas a usar. Solo importas lo que necesitas — aunque aquí importan <code>UltrasonicSensor</code></p>
+<p>y <code>ForceSensor</code> que el robot no usa (son &quot;por si acaso&quot;).</p>
+    </div>
+    <pre>hub = PrimeHub()
+hub.imu.reset_heading(0)</pre>
+    <div class="explanation">
+<p><strong><code>PrimeHub()</code></strong> crea el objeto que representa el Hub físico — desde aquí accedes</p>
+<p>a la batería, los botones, el giroscopio (IMU) y el parlante.</p>
+<p><strong><code>hub.imu.reset_heading(0)</code></strong> reinicia el giroscopio a 0 grados. El giroscopio</p>
+<p>mide cuánto ha girado el Hub desde que encendió. Si no lo reseteas al inicio,</p>
+<p>el robot empieza con un ángulo &quot;sucio&quot; de la vez anterior.</p>
+    </div>
+    <pre>left_motor  = Motor(Port.A, Direction.COUNTERCLOCKWISE)  # motor izquierdo
+right_motor = Motor(Port.E)                               # motor derecho
+back  = Motor(Port.B, Direction.COUNTERCLOCKWISE)         # gripper trasero
+front = Motor(Port.F, Direction.COUNTERCLOCKWISE)         # gripper frontal</pre>
+    <div class="explanation">
+<p><strong>¿Por qué <code>COUNTERCLOCKWISE</code> en el motor izquierdo?</strong></p>
+<p>Los dos motores de tracción están montados en espejo — uno a la izquierda y otro</p>
+<p>a la derecha. Si les das la misma velocidad positiva a los dos, uno empujaría hacia</p>
+<p>adelante y el otro hacia atrás (porque físicamente están al revés).</p>
+<p>Al invertir la dirección del motor izquierdo, cuando dices &quot;velocidad 100&quot; a los dos,</p>
+<p>ambos empujan hacia adelante. Es un ajuste de instalación mecánica.</p>
+    </div>
+    <pre>back.control.limits(1200, 10000, 250)
+front.control.limits(1200, 10000, 250)</pre>
+    <div class="explanation">
+<p><strong><code>control.limits(velocidad, aceleración, torque)</code></strong> — configura los límites del</p>
+<p>controlador interno de PyBricks para los grippers.</p>
+<ul>
+<li><code>1200</code> deg/s: velocidad máxima del motor de gripper</li>
+<li><code>10000</code> deg/s²: aceleración máxima (muy alta = respuesta inmediata)</li>
+<li><code>250</code> mNm: torque máximo (fuerza de agarre)</li>
+</ul>
+<p>Esto se configura solo para los grippers porque trabajan con <code>run_target()</code>,</p>
+<p>que usa el controlador interno. Los motores de tracción usan <code>dc()</code> (potencia directa),</p>
+<p>que no pasa por este controlador.</p>
+    </div>
+    <pre>floor = ColorSensor(Port.C)  # sensor mirando al piso — para seguir línea
+scan  = ColorSensor(Port.D)  # sensor mirando al frente — para leer bloques
+time  = StopWatch()
+time.reset()</pre>
+    <div class="explanation">
+<p>Dos sensores de color con funciones distintas:</p>
+<ul>
+<li><code>floor</code> (Puerto C): apunta hacia el tapete, mide la reflexión de luz (qué tan blanca/negra es la superficie)</li>
+<li><code>scan</code> (Puerto D): apunta hacia los bloques de colores, lee el color en formato HSV</li>
+</ul>
+<p><code>StopWatch()</code> es un cronómetro que empieza desde que se crea el objeto.</p>
+<p>Se resetea al inicio de <code>setup()</code> para medir el tiempo total del intento.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num blue">2</span>
+      setup() — Inicialización y batería
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>def setup():
+    global lightPD, junctionPD, gyroPD, minSpeed, accLength, decLength, LFslowDistance
+    global heading, gyroRatio
+    global lightTarget, lightHigh, lightLow, blackThreshold, whiteThreshold, correctionLimit
+    global currentPosition, h, s, v
+    global BatteryScale</pre>
+    <div class="explanation">
+<p><strong>¿Por qué <code>global</code>?</strong></p>
+<p>En Python, si una variable se crea dentro de una función, solo existe dentro de esa función.</p>
+<p>Con <code>global</code> le dices al programa: &quot;estas variables deben estar disponibles para TODAS</p>
+<p>las funciones del programa&quot;. Así, cuando <code>move()</code> necesita <code>gyroPD</code>, lo puede leer</p>
+<p>porque <code>setup()</code> lo definió como global.</p>
+<p>Si alguna vez modificas el código y olvidas declarar una variable como global,</p>
+<p>vas a ver el error: <code>UnboundLocalError: local variable referenced before assignment</code>.</p>
+    </div>
+    <div class="explanation"><h4>El sistema de batería</h4></div>
+    <pre>BatteryVoltage    = hub.battery.voltage()                    # Lee voltaje en mV (ej: 8100)
+BatteryPercentage = round((BatteryVoltage - 7000) / 1.25) / 10  # Convierte a porcentaje
+BatteryScale      = BatteryPercentage / 100                  # Factor 0.0 a 1.0
+if BatteryScale &lt; 0:
+    BatteryScale = 0                                         # No puede ser negativo</pre>
+    <div class="explanation">
+<p><strong>¿Por qué <code>(voltaje - 7000) / 1.25 / 10</code>?</strong></p>
+<p>La batería LiPo del Hub Spike Prime trabaja entre 7000 mV (agotada) y 8250 mV (llena).</p>
+<p>La fórmula mapea ese rango a 0–100%:</p>
+<ul>
+<li>7000 mV → (7000-7000)/1.25/10 = 0% → BatteryScale = 0.0</li>
+<li>8250 mV → (8250-7000)/1.25/10 = 100% → BatteryScale = 1.0</li>
+<li>7625 mV → 50% → BatteryScale = 0.5</li>
+</ul>
+<p><strong>¿Para qué sirve BatteryScale?</strong></p>
+<p>A mayor voltaje, los motores giran más rápido con el mismo comando de potencia.</p>
+<p>Si no compensas, el robot se comporta diferente con batería llena vs. batería baja.</p>
+<p>BatteryScale permite ajustar velocidades y constantes automáticamente.</p>
+    </div>
+    <div class="explanation"><h4>Parámetros de movimiento ajustados por batería</h4></div>
+    <pre>minSpeed  = 45 - round(5 * BatteryScale)   # Llena: 50 | Baja: 45
+accLength = 65 + round(15 * BatteryScale)  # Llena: 80 | Baja: 65 (grados de rueda)
+decLength = 110 + round(15 * BatteryScale) # Llena: 125 | Baja: 110 (grados de rueda)</pre>
+    <div class="explanation">
+<ul>
+<li><strong><code>minSpeed</code></strong>: velocidad mínima durante aceleración/frenado. Con batería llena</li>
+</ul>
+<p>  los motores responden más fuerte, por eso la velocidad mínima puede ser mayor.</p>
+<ul>
+<li><strong><code>accLength</code></strong>: cuántos grados de rueda tarda el robot en llegar a la velocidad objetivo.</li>
+</ul>
+<p>  Con batería llena se puede dar más distancia de aceleración (el motor ya tiene más fuerza).</p>
+<ul>
+<li><strong><code>decLength</code></strong>: cuántos grados de rueda antes del final el robot empieza a frenar.</li>
+</ul>
+    </div>
+    <pre>gyroRatio = 1  # Ajustar si el giroscopio lee ángulos incorrectos</pre>
+    <div class="explanation">
+<p>Algunos Hubs leen más o menos grados de los que el robot realmente gira.</p>
+<p>Si el robot gira 90° físicamente pero el Hub registra 92°, debes bajar <code>gyroRatio</code></p>
+<p>a ~0.978 para que la corrección sea exacta.</p>
+<p><strong>Cómo detectarlo</strong>: haz 4 giros de 90° seguidos. El robot debería quedar exactamente</p>
+<p>donde empezó. Si queda desviado, ajusta <code>gyroRatio</code>.</p>
+    </div>
+    <div class="explanation"><h4>Leer calibración guardada en memoria</h4></div>
+    <pre>lightLow  = int.from_bytes(hub.system.storage(0, read=1), &quot;big&quot;)  # Negro
+lightHigh = int.from_bytes(hub.system.storage(1, read=1), &quot;big&quot;)  # Blanco
+lightTarget = (lightHigh + lightLow) / 2   # Punto medio entre negro y blanco
+lightTarget -= 10                           # Sesgar hacia el negro
+blackThreshold = lightLow + 5              # Umbral para detectar &quot;negro&quot;
+whiteThreshold = lightHigh - 8            # Umbral para detectar &quot;blanco&quot;</pre>
+    <div class="explanation">
+<p><strong>¿Por qué guardar en memoria?</strong></p>
+<p>La calibración se hace con el botón derecho del Hub ANTES del intento.</p>
+<p>El programa de calibración guarda los valores en la memoria interna del Hub.</p>
+<p>Luego, cuando corre el programa principal, los LEE de esa memoria.</p>
+<p>Así no tienes que calibrar dentro del programa principal — se hace por separado.</p>
+<p><strong>¿Por qué <code>lightTarget -= 10</code>?</strong></p>
+<p>Si el target fuera exactamente el promedio, el robot seguiría el centro de la línea.</p>
+<p>Al restarle 10, el target se mueve hacia el negro — el robot &quot;prefiere&quot; estar un poco</p>
+<p>más sobre el negro que sobre el blanco. Esto lo hace más robusto: si hay ondas en el</p>
+<p>tapete o sombras, el robot no pierde la línea tan fácilmente.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num green">3</span>
+      Calibrate() — Guardar negro y blanco
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>def Calibrate():
+    hub.speaker.beep(880, 250)                    # Beep de inicio
+    while(Button.RIGHT in hub.buttons.pressed()): # Esperar que suelten el botón
+        pass
+    hub.speaker.beep(1760, 250)                   # Beep de listo
+    wait(500)
+
+    CalibrateHigh = 0
+    CalibrateLow  = 100
+
+    calibrateStart = time.time()
+    run(40, 40)                                   # Avanzar lento
+    while (time.time() - calibrateStart &lt; 1500):  # Durante 1.5 segundos
+        CalibrateNow = floor.reflection()         # Leer reflexión del piso
+        CalibrateLow  = min(CalibrateLow, CalibrateNow)   # Guardar el valor más bajo
+        CalibrateHigh = max(CalibrateHigh, CalibrateNow)  # Guardar el valor más alto
+    stop()
+
+    hub.system.storage(0, write=bytes([CalibrateLow, CalibrateHigh]))</pre>
+    <div class="explanation">
+<p><strong>¿Cómo funciona?</strong></p>
+<p>1. El robot avanza despacio sobre el tapete durante 1.5 segundos</p>
+<p>2. Mientras avanza, lee la reflexión del sensor de piso constantemente</p>
+<p>3. Guarda el valor MÁS BAJO que encontró (negro) y el MÁS ALTO (blanco)</p>
+<p>4. Al final, escribe esos dos valores en la memoria interna del Hub</p>
+<p><strong>¿Por qué hacerlo en el lugar de competencia?</strong></p>
+<p>La cantidad de luz que refleja el tapete depende de la iluminación del lugar.</p>
+<p>Un tapete blanco bajo luz fluorescente de oficina vs. luz de estadio da valores</p>
+<p>completamente distintos. Si calibras en casa y compites en otro lugar, el robot</p>
+<p>puede &quot;ver&quot; negro donde hay blanco y viceversa.</p>
+<p><strong>Procedimiento</strong>: encender Hub → presionar botón DERECHO → robot avanza → listo.</p>
+<p>Hacer esto SIEMPRE antes de cada intento oficial.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num blue">4</span>
+      Funciones de sensores
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>def readColour():
+    global h, s, v
+    HSVresult = scan.hsv()    # Leer el sensor de escaneo en formato HSV
+    h.append(HSVresult[0])    # Guardar el tono (Hue)
+    s.append(HSVresult[1])    # Guardar la saturación (Saturation)
+    v.append(HSVresult[2])    # Guardar el brillo (Value)</pre>
+    <div class="explanation">
+<p><strong>¿Qué es HSV?</strong></p>
+<p>Es una forma de representar colores con 3 números:</p>
+<ul>
+<li><strong>H (Hue / Tono)</strong>: el color en sí — 0°=rojo, 60°=amarillo, 120°=verde, 240°=azul</li>
+<li><strong>S (Saturation / Saturación)</strong>: qué tan &quot;intenso&quot; es el color — 0=gris, 100=color puro</li>
+<li><strong>V (Value / Brillo)</strong>: qué tan brillante — 0=negro, 100=blanco</li>
+</ul>
+<p>Por eso HSV es mejor que RGB para clasificar colores:</p>
+<ul>
+<li>Azul: H≈240, S alto, V alto</li>
+<li>Amarillo: H≈60, S alto, V alto</li>
+<li>Blanco: S≈0, V alto (no importa H)</li>
+<li>Negro: S≈0, V bajo</li>
+</ul>
+<p><strong>¿Por qué <code>h.append()</code>?</strong></p>
+<p><code>h</code>, <code>s</code>, <code>v</code> son listas. Cada vez que llamas <code>readColour()</code> agrega una lectura más.</p>
+<p>En <code>Scan()</code> se llama 4 veces (una por bloque), por eso al final tienes 4 lecturas</p>
+<p>en cada lista. <code>ProcessColour()</code> luego analiza esas 4 lecturas.</p>
+    </div>
+    <pre>def getYaw():
+    global yaw
+    yaw = hub.imu.heading() * gyroRatio
+    yaw = yaw - round((yaw - heading) / 370) * 360</pre>
+    <div class="explanation">
+<p><strong><code>hub.imu.heading()</code></strong> devuelve el ángulo acumulado del giroscopio. Si el robot</p>
+<p>ha girado 90° a la derecha, devuelve 90. Si gira otros 90°, devuelve 180. Y así.</p>
+<p><strong><code>* gyroRatio</code></strong>: multiplica por el factor de corrección (normalmente 1.0).</p>
+<p><strong>La segunda línea — anti-wraparound:</strong></p>
+<p>Imagina que el robot ha dado muchas vueltas y el ángulo acumulado es 375°.</p>
+<p>Pero el <code>heading</code> objetivo es 15°. La diferencia real debería ser 0°, pero</p>
+<p>375° - 15° = 360° (error enorme, el robot giraría en círculos).</p>
+<p>La fórmula <code>round((yaw - heading) / 370) * 360</code> detecta cuántas vueltas completas</p>
+<p>de diferencia hay y las resta. Así <code>yaw</code> siempre queda en el rango correcto</p>
+<p>relativo al <code>heading</code>. Usa 370 en vez de 360 para evitar problemas en el borde exacto.</p>
+    </div>
+    <pre>def resetYaw():
+    global heading
+    hub.imu.reset_heading(0)
+    heading = 0</pre>
+    <div class="explanation">
+<p>Resetea tanto el giroscopio del hardware como la variable <code>heading</code> a 0.</p>
+<p>Se usa después de rutinas de seguimiento de línea (que no usan giroscopio)</p>
+<p>para &quot;olvidar&quot; cualquier deriva acumulada y empezar el giroscopio limpio.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num blue">5</span>
+      Funciones utilitarias
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>def run(left, right):
+    left_motor.dc(left)
+    right_motor.dc(right)</pre>
+    <div class="explanation">
+<p><strong><code>dc()</code></strong> = duty cycle — controla el motor con un porcentaje de potencia directa</p>
+<p>(no velocidad). <code>dc(100)</code> = potencia máxima, <code>dc(-50)</code> = 50% hacia atrás.</p>
+<p>Es la forma más directa de controlar un motor — sin controlador interno,</p>
+<p>sin PID de PyBricks — el programa controla todo manualmente.</p>
+<p><code>run(100, 100)</code> → ambas ruedas al máximo hacia adelante</p>
+<p><code>run(-100, 100)</code> → rueda izq hacia atrás, rueda der hacia adelante = giro en sitio</p>
+    </div>
+    <pre>def stop(duration=0):
+    left_motor.brake()
+    right_motor.brake()
+    wait(duration)</pre>
+    <div class="explanation">
+<p><strong><code>brake()</code></strong> activa el freno eléctrico — cortocircuita las bobinas del motor</p>
+<p>para frenar activamente. Es más fuerte que <code>coast()</code> (que solo suelta el motor).</p>
+<p><code>wait(duration)</code> espera N milisegundos después de frenar (útil para estabilizar</p>
+<p>el robot antes del siguiente movimiento).</p>
+    </div>
+    <pre>def resetMotors():
+    left_motor.reset_angle(0)
+    right_motor.reset_angle(0)</pre>
+    <div class="explanation">
+<p>Resetea el encoder de cada motor a 0. Los encoders miden cuántos grados ha girado</p>
+<p>cada motor desde la última vez que se resetearon. <code>move()</code> y <code>follow()</code> los usan</p>
+<p>para saber cuánta distancia ha recorrido el robot.</p>
+<p><strong>¿Por qué resetear al inicio de cada movimiento?</strong></p>
+<p>Porque de lo contrario el ángulo acumulado de movimientos anteriores interferiría</p>
+<p>con el cálculo de distancia actual.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num orange">6</span>
+      El sistema PD — el corazón del movimiento
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>def setPD(PD, reset):
+    global kP, kD, lastError
+    kP = PD[0]
+    kD = PD[1]
+    if reset == 1:
+        lastError = 0</pre>
+    <div class="explanation">
+<p><strong>¿Qué son kP y kD?</strong></p>
+<p>Son las &quot;ganancias&quot; del controlador PD:</p>
+<ul>
+<li><strong>kP</strong> (Proporcional): qué tan fuerte reacciona el robot al error actual</li>
+<li><strong>kD</strong> (Derivativo): qué tan fuerte reacciona al cambio del error</li>
+</ul>
+<p><code>lastError</code> guarda el error de la iteración anterior — necesario para calcular</p>
+<p>el componente D. Se resetea a 0 cuando empieza un nuevo movimiento.</p>
+    </div>
+    <pre>def PD(input1, input2):
+    global lastError, PDscale
+    PDscale = (abs(power) / 100) * 0.7 + 0.3   # Entre 0.3 y 1.0
+    error = input1 - input2                      # Diferencia entre objetivo y actual
+    result = (error * kP) + ((error - lastError) * kD)  # Cálculo PD
+    result = result * PDscale                    # Escalar según velocidad
+    lastError = error                            # Guardar para la próxima iteración
+    return result</pre>
+    <div class="explanation">
+<p><strong>La fórmula PD explicada:</strong></p>
+<p><code>error = input1 - input2</code></p>
+<p>Por ejemplo, en seguimiento de línea: <code>lightTarget - luz_actual</code>.</p>
+<p>Si el sensor lee menos luz de la que debería → error positivo → corregir a la izquierda.</p>
+<p><code>error * kP</code> = <strong>componente Proporcional</strong></p>
+<p>Corrección directamente proporcional al error. Si el error es grande, corrige fuerte.</p>
+<p>Problema: si solo usas P, el robot llega al objetivo pero lo sobrepasa y oscila.</p>
+<p><code>(error - lastError) * kD</code> = <strong>componente Derivativo</strong></p>
+<p>Mide qué tan rápido está cambiando el error. Si el error está disminuyendo rápido</p>
+<p>(el robot se está corrigiendo), D frena esa corrección para no sobrepasar.</p>
+<p>Es como la amortiguación de un carro: sin ella, el carro rebotaría en cada bache.</p>
+<p><code>PDscale = (abs(power) / 100) * 0.7 + 0.3</code></p>
+<p>Cuando el robot va lento (poco power), la corrección se reduce. A velocidad 0:</p>
+<p>PDscale = 0.3 (corrección mínima). A velocidad 100: PDscale = 1.0 (corrección completa).</p>
+<p>Evita que el robot &quot;luche&quot; con correcciones fuertes cuando va casi detenido.</p>
+    </div>
+    <pre>def acceleration(movedDistance, totalDistance, targetSpeed, acc, dec):
+    speedChange = abs(targetSpeed) - minSpeed
+    if acc:
+        acc_speed = speedChange * (movedDistance / accLength) + minSpeed
+    else:
+        acc_speed = abs(targetSpeed)
+
+    if dec:
+        dec_speed = speedChange * ((totalDistance - movedDistance) / decLength) + minSpeed
+    else:
+        dec_speed = abs(targetSpeed)
+
+    speed = min(acc_speed, dec_speed, abs(targetSpeed))
+    return speed</pre>
+    <div class="explanation">
+<p><strong>Perfil de aceleración trapezoidal:</strong></p>
+<p>En vez de ir de 0 a 100 de golpe (lo que haría patinar las ruedas y perder tracción),</p>
+<p>el robot sube gradualmente de <code>minSpeed</code> a <code>targetSpeed</code>, y luego baja gradualmente</p>
+<p>al acercarse al final.</p>
+<p>Durante la aceleración: <code>speed = minSpeed + (targetSpeed - minSpeed) * (distancia_recorrida / accLength)</code></p>
+<p>Cuando <code>movedDistance == accLength</code>, la velocidad alcanza <code>targetSpeed</code>.</p>
+<p><code>min(acc_speed, dec_speed, targetSpeed)</code> toma siempre la más baja de las tres curvas.</p>
+<p>Esto hace que cuando la distancia total es corta y las curvas de aceleración y frenado</p>
+<p>se solapan, el robot nunca supere la velocidad que debería tener.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num blue">7</span>
+      Funciones de movimiento
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <div class="explanation"><h4>move() — avanzar distancia exacta con giroscopio</h4></div>
+    <pre>def move(speed, totalDistance, acc=True, dec=True):
+    global power
+    resetMotors()
+    movedDistance = 0
+    setPD(gyroPD, 1)
+    while(movedDistance &lt;= totalDistance):
+        movedDistance = (abs(left_motor.angle()) + abs(right_motor.angle())) / 2
+        power = acceleration(movedDistance, totalDistance, speed, acc, dec)
+        power = round((abs(speed) / speed) * power)
+        getYaw()
+        correction = round(PD(yaw, heading))
+        run(power - correction, power + correction)
+    stop()</pre>
+    <div class="explanation">
+<p><strong>¿Cómo mide la distancia?</strong></p>
+<p>Suma los ángulos de los dos encoders y divide entre 2 (promedio).</p>
+<p>Así, si una rueda patina y gira más que la otra, el error se promedia.</p>
+<p>360° de rueda ≈ 19.6 cm (depende del diámetro de la rueda).</p>
+<p><strong>¿Cómo corrige el rumbo?</strong></p>
+<p><code>getYaw()</code> lee el giroscopio → <code>PD(yaw, heading)</code> calcula cuánto se desvió</p>
+<p>→ la corrección se suma a una rueda y se resta a la otra.</p>
+<p>Si la corrección es positiva (robot se desvió a la derecha):</p>
+<ul>
+<li>Rueda izquierda: <code>power - correction</code> (más lenta)</li>
+<li>Rueda derecha: <code>power + correction</code> (más rápida)</li>
+</ul>
+<p>→ el robot gira a la izquierda para volver al rumbo.</p>
+<p><code>acc=False</code> / <code>dec=False</code>: se puede desactivar la aceleración o el frenado.</p>
+<p>Se usa cuando hay movimientos encadenados y no quieres frenar entre ellos.</p>
+    </div>
+    <div class="explanation"><h4>moveMS() — avanzar por tiempo</h4></div>
+    <pre>def moveMS(speed, duration):
+    global power
+    power = speed
+    setPD(gyroPD, 1)
+    startTime = time.time()
+    while(time.time() - startTime &lt;= duration):
+        getYaw()
+        correction = round(PD(yaw, heading))
+        run(speed - correction, speed + correction)
+    stop()</pre>
+    <div class="explanation">
+<p>Mismo principio que <code>move()</code> pero en vez de medir distancia, mide tiempo.</p>
+<p>Se usa cuando la distancia exacta no importa tanto como la consistencia temporal.</p>
+<p><strong>Nota</strong>: no tiene aceleración/desaceleración — va a velocidad constante todo el tiempo.</p>
+    </div>
+    <div class="explanation"><h4>moveWhite() y moveBlack() — moverse hasta detectar superficie</h4></div>
+    <pre>def moveWhite(speed):
+    global power
+    power = speed
+    setPD(gyroPD, 1)
+    light = floor.reflection()
+    while(light &lt; whiteThreshold):     # Mientras NO encuentre blanco
+        getYaw()
+        correction = round(PD(yaw, heading))
+        run(power - correction, power + correction)
+        light = floor.reflection()
+    stop()</pre>
+    <div class="explanation">
+<p>El robot avanza manteniendo el rumbo con el giroscopio hasta que el sensor de piso</p>
+<p>detecta una superficie lo suficientemente blanca (<code>&gt; whiteThreshold</code>).</p>
+<p><code>moveBlack()</code> hace lo mismo pero busca negro (<code>&lt; blackThreshold</code>).</p>
+<p><strong>¿Cuándo se usa?</strong></p>
+<p>Para posicionarse en cruces de línea o bordes de zona sin depender de distancias fijas.</p>
+<p>Más robusto que <code>move()</code> para llegar a puntos de referencia visuales del tapete.</p>
+    </div>
+    <div class="explanation"><h4>turn() — girar en ángulo exacto</h4></div>
+    <pre>def turn(mode, change, speed=100, checking=15):
+    global heading, power
+    resetMotors()
+    heading = heading + change    # Actualizar el heading objetivo
+    if mode &lt;= 2:
+        setPD([15 - round(3*BatteryScale), 180 + round(50*BatteryScale)], 1)
+    else:
+        setPD([12 - round(3*BatteryScale), 220 + round(50*BatteryScale)], 1)</pre>
+    <div class="explanation">
+<p><strong>Los 3 modos de giro:</strong></p>
+<ul>
+<li><code>mode=1</code>: solo gira la rueda izquierda (giro sobre rueda derecha parada)</li>
+<li><code>mode=2</code>: solo gira la rueda derecha (giro sobre rueda izquierda parada)</li>
+<li><code>mode=3</code>: ambas ruedas giran en direcciones opuestas (giro en el lugar — más rápido)</li>
+</ul>
+<p><strong>¿Por qué las constantes PD cambian con la batería?</strong></p>
+<ul>
+<li>Batería llena: motores más potentes → tienden a sobrepasar el ángulo</li>
+</ul>
+<p>  → kP más bajo (menos agresivo), kD más alto (más amortiguación)</p>
+<ul>
+<li>Batería baja: motores débiles → tienden a quedarse cortos</li>
+</ul>
+<p>  → kP más alto (más agresivo), kD más bajo (menos amortiguación)</p>
+    </div>
+    <pre>    count = 0
+    while(count &lt;= checking):
+        getYaw()
+        sync = left_motor.angle() + right_motor.angle()
+        sync *= 1
+        power = 100
+        correction = round(PD(yaw, heading))
+
+        if abs(correction) &gt; speed:
+            correction = speed * (correction / abs(correction))
+
+        if mode == 1:
+            run(-correction, 0)
+        elif mode == 2:
+            run(0, correction)
+        else:
+            run(-correction - sync, correction - sync)
+
+        if abs(yaw - heading) &lt;= 2.5:
+            count += 1
+        else:
+            count = 0
+    stop()</pre>
+    <div class="explanation">
+<p><strong>¿Qué es <code>checking</code>?</strong></p>
+<p>El robot no para apenas llega al ángulo objetivo. Espera que el ángulo se estabilice</p>
+<p>durante <code>checking</code> iteraciones consecutivas dentro de ±2.5°.</p>
+<p>Esto evita que pare cuando pasa por el objetivo pero aún tiene inercia.</p>
+<p><strong>¿Qué es <code>sync</code>?</strong></p>
+<p>En el modo 3 (ambas ruedas), <code>sync</code> sincroniza que ambas ruedas giren la misma</p>
+<p>cantidad. Si una rueda avanza más que la otra, <code>sync</code> la frena ligeramente.</p>
+<p><code>sync *= 1</code> es un placeholder — el coeficiente se puede ajustar si hay desequilibrio.</p>
+<p><strong><code>if abs(correction) &gt; speed</code></strong>: limita la corrección máxima al valor de <code>speed</code>.</p>
+<p>Evita que el controlador PD ordene más velocidad de la permitida.</p>
+    </div>
+    <div class="explanation"><h4>follow() — seguir línea con sensor de luz</h4></div>
+    <pre>def follow(side, speed, totalDistance, acc=True, dec=True, limit=False, reset=False):
+    global power, heading
+    resetMotors()
+    movedDistance = 0
+    setPD(lightPD, 1)
+    raw = floor.reflection()
+    lightFiltered = raw
+    while(movedDistance &lt;= totalDistance):
+        movedDistance = (abs(left_motor.angle()) + abs(right_motor.angle())) / 2
+        power = acceleration(...)
+        raw = floor.reflection()
+        lightFiltered = (lightFiltered * 3 + raw) / 4    # Filtro de promedio móvil
+        light = lightFiltered
+        correction = PD(lightTarget, light)
+        if side == 2:
+            correction = correction * -1
+        run(power - correction, power + correction)
+        wait(3)
+    stop()
+    if reset:
+        resetYaw()</pre>
+    <div class="explanation">
+<p><strong><code>side=1</code> vs <code>side=2</code>:</strong></p>
+<p>El sensor sigue el BORDE de la línea, no el centro. Hay dos bordes posibles:</p>
+<ul>
+<li><code>side=1</code>: borde izquierdo de la línea negra (sensor a la izquierda de la línea)</li>
+<li><code>side=2</code>: borde derecho (sensor a la derecha) → se invierte la corrección</li>
+</ul>
+<p><strong>El filtro <code>(lightFiltered * 3 + raw) / 4</code>:</strong></p>
+<p>Promedia la lectura actual con 3 veces la lectura anterior. Esto suaviza el ruido</p>
+<p>del sensor — si hay una variación brusca (sombra, polvo), no afecta tanto.</p>
+<p>Si el filtro fuera solo <code>raw</code>, pequeñas variaciones causarían correcciones bruscas.</p>
+<p><strong><code>wait(3)</code>:</strong> espera 3ms entre iteraciones. Da tiempo al sensor para hacer una</p>
+<p>lectura estable. Sin este wait, el loop correría tan rápido que las lecturas</p>
+<p>serían menos confiables.</p>
+<p><strong><code>if reset: resetYaw()</code>:</strong> después del seguimiento de línea, el giroscopio puede</p>
+<p>haber acumulado algo de deriva. <code>resetYaw()</code> lo limpia para el siguiente movimiento giroscópico.</p>
+    </div>
+    <div class="explanation"><h4>followUntilJunction() — seguir línea hasta un cruce</h4></div>
+    <pre>def followUntilJunction(side, speed):
+    global power, heading
+    setPD(junctionPD, 0)    # PD diferente, sin resetear lastError
+    power = speed
+    light = floor.reflection()
+    while(light &gt; blackThreshold):    # Mientras no encuentre negro del cruce
+        light = floor.reflection()
+        correction = PD(lightTarget, light)
+        if abs(correction) &gt;= correctionLimit:
+            correction = correctionLimit * (correction / abs(correction))
+        if side == 2:
+            correction = correction * -1
+        run(power - correction, power + correction)
+        wait(3)
+    stop()</pre>
+    <div class="explanation">
+<p><strong>¿Por qué <code>junctionPD</code> diferente a <code>lightPD</code>?</strong></p>
+<p>Al llegar a un cruce, el robot necesita detectar negro muy rápido y parar.</p>
+<p><code>junctionPD = [0.45, 5]</code> es más conservador que <code>lightPD = [0.55, 9]</code></p>
+<p>para evitar que el robot pase de largo el cruce por ir corrigiendo agresivamente.</p>
+<p><strong><code>setPD(junctionPD, 0)</code></strong> — nota el <code>0</code> en lugar de <code>1</code>:</p>
+<p>No resetea <code>lastError</code>. Así el D recuerda el error anterior y la transición</p>
+<p>desde un <code>follow()</code> previo es suave.</p>
+<p><strong><code>correctionLimit</code>:</strong> limita la corrección máxima a 10 unidades. En cruces,</p>
+<p>el sensor puede leer valores extremos (línea muy negra) que darían correcciones</p>
+<p>enormes. Este límite previene giros bruscos en el cruce.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num red">8</span>
+      Control de grippers
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>def backDegree(speed, angle, pause=False):
+    # angle: 0=cerrado, 100=abierto
+    back.run_target(abs(round(speed * 12)), angle * -1, wait=pause)
+
+def frontDegree(speed, angle, pause=False):
+    # angle: 0=abierto, 100=cerrado
+    front.run_target(abs(round(speed * 12)), abs(angle), wait=pause)</pre>
+    <div class="explanation">
+<p><strong><code>run_target(velocidad_deg_s, ángulo_objetivo)</code></strong> mueve el motor hasta un ángulo</p>
+<p>específico usando el controlador interno de PyBricks (con su propio PID).</p>
+<p><strong><code>speed * 12</code></strong>: convierte la escala 0-100 a deg/s. <code>speed=100</code> → 1200 deg/s</p>
+<p>(que coincide con el límite configurado en <code>back.control.limits(1200,...)</code>).</p>
+<p><strong>¿Por qué <code>angle * -1</code> en backDegree?</strong></p>
+<p>Por la dirección de montaje del motor B — está instalado al revés respecto al F.</p>
+<p><code>angle=0</code> debe ser &quot;cerrado&quot; para los dos, pero uno cierra girando positivo</p>
+<p>y el otro girando negativo.</p>
+<p><strong><code>wait=pause</code>:</strong> por defecto <code>False</code> — el programa no espera a que el gripper</p>
+<p>termine antes de continuar. Esto permite que el gripper se mueva mientras el robot</p>
+<p>también se mueve. Cuando necesitas que termine antes de seguir, pasas <code>pause=True</code>.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num blue">9</span>
+      Misiones — la competencia
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <div class="explanation"><h4>Start() — posición inicial y salida</h4></div>
+    <pre>def Start():
+    front.dc(-40)           # Empieza a abrir gripper frontal mientras avanza
+    back.dc(40)             # Empieza a cerrar gripper trasero mientras avanza
+    move(100, 350, dec=False)
+    front.reset_angle(-15)  # Define &quot;ligeramente cerrado&quot; como posición 0 del frente
+    back.reset_angle(15)    # Define &quot;ligeramente cerrado&quot; como posición 0 del trasero
+    frontDegree(100, 100)   # Cerrar gripper frontal completamente
+    backDegree(100, 0)      # Abrir gripper trasero completamente
+    moveBlack(100)
+    move(80, 120, acc=False)
+    turn(3, -90)
+    follow(2, 100, 400, dec=False, reset=True)</pre>
+    <div class="explanation">
+<p><strong>¿Por qué mover los grippers durante el movimiento inicial?</strong></p>
+<p>Eficiencia de tiempo — el robot tiene 2 minutos y cada segundo cuenta.</p>
+<p>Mientras avanza los primeros 350° de rueda, ya está preparando los grippers</p>
+<p>para las misiones que vienen.</p>
+<p><strong><code>front.reset_angle(-15)</code> y <code>back.reset_angle(15)</code>:</strong></p>
+<p>Después de moverlos con <code>dc()</code> (control directo), el encoder no sabe exactamente</p>
+<p>dónde quedó. <code>reset_angle()</code> le dice &quot;donde estás ahora, llámalo -15 (o 15)&quot;.</p>
+<p>Así, cuando luego uses <code>run_target()</code> (que necesita saber la posición), el motor</p>
+<p>sabe cuánto mover para llegar al objetivo.</p>
+    </div>
+    <div class="explanation"><h4>Scan() — escanear las 4 posiciones de bloques aleatorios</h4></div>
+    <pre>def Scan():
+    global block, blue, white, yellow, black
+    for section in range(2):           # Dos secciones del tapete
+        for blocks in range(2):        # Dos bloques por sección
+            followUntilJunction(2, 90)           # Avanzar hasta el cruce del bloque
+            move(90, 20, acc=False, dec=False)   # Avanzar 20° más para centrarse
+            readColour()                          # LEER y guardar HSV
+            move(90, 110, acc=False, dec=False)  # Avanzar al siguiente
+        if section &lt; 1:
+            follow(2, 100, 500, acc=False, dec=False)  # Cruzar al otro lado
+        else:
+            follow(2, 90, 300, acc=False, reset=True)  # Terminar escaneo</pre>
+    <div class="explanation">
+<p><strong>¿Qué posiciones escanea?</strong></p>
+<p>Los 4 cuadros verdes del tapete tienen posiciones 1, 2, 5, 6 (las posiciones 2 y 3</p>
+<p>son verde y rojo, fijas). <code>Scan()</code> lee las posiciones 1, 2 (primera sección) y</p>
+<p>5, 6 (segunda sección, después de cruzar).</p>
+<p>Al terminar, <code>h</code>, <code>s</code>, <code>v</code> tienen 4 lecturas cada uno — una por bloque.</p>
+    </div>
+    <div class="explanation"><h4>ProcessColour() — clasificar los 4 bloques</h4></div>
+    <pre>def ProcessColour():
+    global blue, white, yellow, black, green, red
+    green = 2  # Siempre en posición 2
+    red   = 3  # Siempre en posición 3
+
+    # Los de mayor saturación son azul y amarillo (colores puros)
+    top2 = sorted(range(len(s)), key=lambda i: (-s[i], i))[:2]
+    test1, test2 = top2[0], top2[1]
+    blue, yellow = (test1, test2) if h[test1] &gt; h[test2] else (test2, test1)
+
+    # Los de menor saturación son blanco y negro (sin color)
+    low2 = sorted(range(len(s)), key=lambda i: (s[i], i))[:2]
+    test1, test2 = low2[0], low2[1]
+    white, black = (test1, test2) if v[test1] &gt; v[test2] else (test2, test1)
+
+    # Ajustar índices (las posiciones 1 y 2 son bloques escaneados 0 y 1,
+    # pero hay que saltar las posiciones fijas 2 y 3 en el tapete)
+    blue, white, yellow, black = (
+        x + 2 if x &gt; 1 else x
+        for x in (blue, white, yellow, black)
+    )</pre>
+    <div class="explanation">
+<p><strong>La lógica de clasificación — paso a paso:</strong></p>
+<p><strong>Paso 1</strong>: Separar por saturación.</p>
+<p>Azul y amarillo tienen saturación ALTA (colores vivos).</p>
+<p>Blanco y negro tienen saturación BAJA (sin color definido).</p>
+<p><code>top2</code> = los 2 índices con mayor S → son azul o amarillo.</p>
+<p><code>low2</code> = los 2 índices con menor S → son blanco o negro.</p>
+<p><strong>Paso 2</strong>: Dentro de azul/amarillo, separar por Hue.</p>
+<p>Amarillo tiene H ≈ 60, Azul tiene H ≈ 240. El mayor H es azul.</p>
+<p><code>if h[test1] &gt; h[test2]</code>: el primero es azul, el segundo es amarillo.</p>
+<p><strong>Paso 3</strong>: Dentro de blanco/negro, separar por Value (brillo).</p>
+<p>Blanco tiene V alto, Negro tiene V bajo.</p>
+<p><code>if v[test1] &gt; v[test2]</code>: el más brillante es blanco.</p>
+<p><strong>Paso 4</strong>: Ajustar índices.</p>
+<p>Los bloques escaneados están en las posiciones 1, 2, 5, 6 del tapete (con verde=2 y rojo=3).</p>
+<p>Los índices 0 y 1 de las listas corresponden a posiciones 1 y 2.</p>
+<p>Los índices 2 y 3 corresponden a posiciones 5 y 6.</p>
+<p>Como verde y rojo ocupan las posiciones 2 y 3, los índices 2 y 3 de los escaneados</p>
+<p>se convierten en posiciones 4 y 5 → se suma 2 si el índice &gt; 1.</p>
+<p>⚠️ <strong>Esta función está marcada &quot;MODIFY AT YOUR OWN RISK&quot;</strong> — el autor la considera</p>
+<p>su parte más delicada. Entiéndela bien antes de tocarla.</p>
+    </div>
+    <div class="explanation"><h4>TakeBlueWhite(), TakeGreen() — recolección del primer grupo</h4></div>
+    <pre>def TakeBlueWhite():
+    global currentPosition, target, taking, currentDirection
+    currentPosition = 6        # El robot empieza en la posición más lejana
+    taking = 0                 # Contador: cuántos bloques ha tomado
+    currentDirection = -1      # -1 = moviéndose hacia el inicio (home)
+    target = [blue, white, green]  # Secuencia fija: azul → blanco → verde</pre>
+    <div class="explanation">
+<p><strong>El sistema de navegación por posición:</strong></p>
+<p>El tapete tiene 6 posiciones numeradas 1–6. El robot siempre sabe en qué posición</p>
+<p>está (<code>currentPosition</code>) y a cuál va (<code>target[taking]</code>).</p>
+<p>Cuando necesita ir a la siguiente posición, compara dónde está con dónde quiere ir</p>
+<p>y avanza o retrocede según corresponda.</p>
+<p>Esta lógica permite que el robot adapte su ruta dependiendo de cómo quedaron</p>
+<p>los bloques aleatorios — no tiene un camino fijo, sino navegación dinámica.</p>
+    </div>
+    <div class="explanation"><h4>Put1() — depositar primer grupo con ángulo raro</h4></div>
+    <pre>def Put1():
+    global angleX
+    angleX = 25    # Ángulo de inclinación para depositar blanco y verde en línea recta
+    ...
+    turn(2, -(90 + angleX), checking=100)  # Gira 115° (no 90°) para un ángulo específico</pre>
+    <div class="explanation">
+<p><strong>¿Por qué 115° en vez de 90°?</strong></p>
+<p>El diseño del tapete hace que para depositar los bloques blanco y verde alineados</p>
+<p>correctamente en sus zonas, el robot necesita entrar en un ángulo que no es recto.</p>
+<p><code>angleX=25</code> es un parámetro que NECESITAS ajustar para tu tapete específico.</p>
+<p>Comienza con 25 y ajusta hasta que los bloques queden en la zona correcta.</p>
+<p><strong><code>checking=100</code></strong>: el giro de 115° necesita mucha estabilización antes de soltar</p>
+<p>los bloques — espera 100 ciclos dentro de ±2.5° antes de continuar.</p>
+    </div>
+    <div class="explanation"><h4>GoToJunction() — navegación al cruce central</h4></div>
+    <pre>def GoToJunction():
+    move(-100, 170)
+    wait(100)
+    turn(3, -90)
+    wait(50)
+    speed = 100 if currentPosition &lt; 4 else 75  # Más lento si viene de lejos
+    follow(1, speed, 1650 - (240 * currentPosition), reset=True)
+    followUntilJunction(1, minSpeed)
+    wait(100)</pre>
+    <div class="explanation">
+<p><strong><code>1650 - (240 * currentPosition)</code></strong> — distancia de seguimiento de línea:</p>
+<p>Cuanto más lejos esté el robot de la zona de inicio (mayor <code>currentPosition</code>),</p>
+<p>menos distancia queda hasta el cruce central. Esta fórmula ajusta la distancia</p>
+<p>automáticamente según dónde quedó el robot después de recoger los bloques.</p>
+<p><strong><code>speed = 100 if currentPosition &lt; 4 else 75</code>:</strong></p>
+<p>Si el robot viene desde las posiciones 4, 5 o 6 (lejos), reduce velocidad</p>
+<p>a 75% para tener más margen al llegar al cruce y no pasarse.</p>
+    </div>
+    <div class="explanation"><h4>Cable1() y Cable2() — entregar cables al amplificador</h4></div>
+    <div class="explanation">
+<p>Estas son las rutinas más largas y con más parámetros de distancia.</p>
+<p>Cada número en <code>move()</code>, <code>follow()</code> y <code>turn()</code> fue ajustado para un tapete específico.</p>
+<p><strong>Todos estos valores necesitarás ajustar para tu tapete</strong>.</p>
+<p>El flujo general de Cable1():</p>
+<p>1. Retroceder al inicio de la zona de cables</p>
+<p>2. Girar hacia la zona del amplificador</p>
+<p>3. Seguir línea hasta el cruce del amplificador</p>
+<p>4. Depositar el cable con el gripper trasero</p>
+<p>5. Volver a posición central</p>
+    </div>
+    <div class="explanation"><h4>Instruments() — última misión</h4></div>
+    <pre>def Instruments():
+    underturn = 5
+    turn(1, 90 - underturn)   # Gira 85° en vez de 90° — ajuste fino
+    frontDegree(100, 0)
+    wait(100)
+    move(100, 300)
+    turn(1, underturn)         # Gira los 5° restantes — aproximación en dos tiempos</pre>
+    <div class="explanation">
+<p><strong>¿Por qué dividir el giro de 90° en dos pasos (85° + 5°)?</strong></p>
+<p>Técnica de &quot;underturn&quot;: girar casi todo el ángulo, avanzar un poco, y terminar el giro.</p>
+<p>Esto permite posicionar el robot con más precisión al acercarse a los instrumentos.</p>
+<p>El valor <code>underturn=5</code> puede necesitar ajuste para tu tapete.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num blue">10</span>
+      El flujo principal Main()
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>def Main():
+    setup()           # 1. Inicializar batería, leer calibración, resetear variables
+    Start()           # 2. Salir de la posición inicial, girar, alinearse
+    Scan()            # 3. Leer los 4 bloques aleatorios en HSV
+    ProcessColour()   # 4. Clasificar: dónde está azul, blanco, amarillo, negro
+    TakeBlueWhite()   # 5. Recoger azul y blanco con gripper frontal
+    TakeGreen()       # 6. Recoger verde con gripper trasero
+    Put1()            # 7. Depositar azul, blanco y verde en zona 1
+    TakeRed()         # 8. Recoger rojo
+    TakeBlackYellow() # 9. Recoger negro y amarillo (orden dinámico por posición)
+    GoToJunction()    # 10. Navegar al cruce central
+    Put2()            # 11. Depositar rojo, negro y amarillo en zonas 2/3/4
+    Cable1()          # 12. Entregar primer cable al amplificador
+    Cable2()          # 13. Entregar segundo cable
+    Microphone()      # 14. Llevar micrófono al escenario
+    Instruments()     # 15. Llevar instrumentos detrás del escenario
+
+    print(&quot;Time:&quot;, time.time() / 1000, &quot;s&quot;)
+    stop(1000)</pre>
+    <div class="explanation">
+<p><strong>¿Por qué este orden?</strong></p>
+<p>El orden de las misiones está optimizado para minimizar la distancia total recorrida.</p>
+<p>Las notas (bloques de colores) se hacen todas juntas antes de los cables,</p>
+<p>porque están en la misma zona del tapete. Separar notas y cables causaría</p>
+<p>recorridos innecesarios de un lado al otro.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num blue">11</span>
+      Selector de modo con botones
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>if Button.RIGHT in hub.buttons.pressed():   # Botón derecho → calibrar
+    Calibrate()
+elif Button.LEFT in hub.buttons.pressed():  # Botón izquierdo → limpiar ruedas
+    hub.speaker.beep(880, 100)
+    hub.speaker.beep(1760, 100)
+    while(True):
+        run(100, 100)
+else:                                        # Botón central (o ninguno) → competencia
+    Main()</pre>
+    <div class="explanation">
+<p><strong>Protocolo de uso:</strong></p>
+<p>1. <strong>Antes de cada intento</strong>: encender → presionar DERECHO → calibrar → apagar → encender → presionar CENTRAL → competir</p>
+<p>2. <strong>Si las ruedas tienen polvo</strong>: encender → presionar IZQUIERDO → las ruedas giran para limpiarse → apagar manualmente</p>
+<p>3. <strong>Modo competencia</strong>: encender sin presionar nada → <code>Main()</code> corre automáticamente</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<div id="tab-guia-v1" class="tab-content">
+  <div class="intro-card">
+    <strong>Gu&#237;a de Estudio del C&#243;digo v1 &#8212; hackeador_v1.py</strong> &#8212;
+    Las secciones marcadas con <span style="color:var(--orange)">&#128295; [MEJORA]</span>
+    son cambios respecto al original. L&#233;elos con especial atenci&#243;n.
+  </div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num blue">1</span>
+      Importaciones y definición del hardware
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>from pybricks.hubs       import PrimeHub
+from pybricks.pupdevices import Motor, ColorSensor, UltrasonicSensor, ForceSensor
+from pybricks.parameters import Button, Color, Direction, Port, Side, Stop
+from pybricks.robotics   import DriveBase
+from pybricks.tools      import wait, StopWatch</pre>
+    <div class="explanation">
+<p><strong>¿Qué es esto?</strong></p>
+<p>PyBricks es la librería que permite controlar el Hub Spike Prime con Python.</p>
+<p>Importar <code>Motor</code>, <code>ColorSensor</code>, etc. le dice al programa qué tipos de dispositivos</p>
+<p>vas a usar. Nota que se importan <code>UltrasonicSensor</code> y <code>ForceSensor</code> aunque el robot</p>
+<p>no los usa — están como &quot;por si acaso&quot; en caso de querer expandir el robot.</p>
+    </div>
+    <pre>hub         = PrimeHub()
+hub.imu.reset_heading(0)   # Resetear giroscopio al encender</pre>
+    <div class="explanation">
+<p><strong><code>PrimeHub()</code></strong> crea el objeto que representa el Hub físico — desde aquí accedes</p>
+<p>a la batería, los botones, el giroscopio (IMU) y el parlante.</p>
+<p><strong><code>hub.imu.reset_heading(0)</code></strong> reinicia el giroscopio a 0 grados. Si no lo haces,</p>
+<p>el robot empieza con el ángulo acumulado del intento anterior. Siempre empieza en 0.</p>
+    </div>
+    <pre>left_motor  = Motor(Port.A, Direction.COUNTERCLOCKWISE)  # Tracción izquierda
+right_motor = Motor(Port.E)                               # Tracción derecha
+back        = Motor(Port.B, Direction.COUNTERCLOCKWISE)  # Gripper trasero
+front       = Motor(Port.F, Direction.COUNTERCLOCKWISE)  # Gripper frontal
+back.control.limits(1200, 10000, 250)
+front.control.limits(1200, 10000, 250)</pre>
+    <div class="explanation">
+<p><strong>¿Por qué <code>COUNTERCLOCKWISE</code> en left_motor?</strong></p>
+<p>Los motores A y E están montados en espejo — uno a la izquierda y otro a la derecha.</p>
+<p>Si les das la misma velocidad positiva a los dos sin invertir, uno empujaría hacia</p>
+<p>adelante y el otro hacia atrás. Al invertir el motor izquierdo, ambos empujan hacia</p>
+<p>el mismo lado con el mismo comando.</p>
+<p><strong><code>control.limits(1200, 10000, 250)</code></strong> — configura el controlador interno para <code>run_target()</code>:</p>
+<ul>
+<li><code>1200</code> deg/s: velocidad máxima del gripper</li>
+<li><code>10000</code> deg/s²: aceleración máxima (respuesta inmediata)</li>
+<li><code>250</code> mNm: torque máximo (fuerza de agarre)</li>
+</ul>
+<p>Solo se configura en los grippers porque usan <code>run_target()</code> (posición precisa).</p>
+<p>Los motores de tracción usan <code>dc()</code> (potencia directa) y no necesitan esto.</p>
+    </div>
+    <pre>floor = ColorSensor(Port.C)   # Sensor de piso — seguimiento de línea
+scan  = ColorSensor(Port.D)   # Sensor lateral — escaneo de bloques de color
+time  = StopWatch()
+time.reset()</pre>
+    <div class="explanation">
+<p>Dos sensores de color con funciones distintas:</p>
+<ul>
+<li><code>floor</code> (Puerto C): apunta al tapete, mide reflexión (qué tan blanca/negra es la superficie)</li>
+<li><code>scan</code> (Puerto D): apunta a los bloques, lee color en formato HSV</li>
+</ul>
+<p><code>StopWatch()</code> es el cronómetro global del run. Se resetea al inicio de <code>setup()</code></p>
+<p>para que <code>time.time()</code> siempre dé el tiempo transcurrido desde que empezó el intento.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num orange">2</span>
+      🔧 Bloque CONFIGURACION
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <div class="explanation">
+<p><strong>[MEJORA M1]</strong> — En el código original, los parámetros ajustables estaban dispersos</p>
+<p>dentro de las funciones donde se usaban (por ejemplo, <code>angleX = 25</code> estaba enterrado</p>
+<p>en la línea 470 dentro de <code>Put1()</code>). En v1, todos los parámetros que se tocan entre</p>
+<p>intento e intento están reunidos aquí, al principio del archivo.</p>
+<p><strong>¿Por qué importa esto?</strong> Cuando algo falla en competencia y hay 30 segundos para</p>
+<p>ajustar, buscar un número en 700 líneas bajo presión es muy difícil. Con este bloque,</p>
+<p>solo hay que mirar las primeras líneas.</p>
+    </div>
+    <pre># =================================================
+#                  CONFIGURACION
+# =================================================
+# Ajustar estos valores entre intentos.
+# NO tocar el resto del código sin entender bien lo que hace.
+
+GYRO_RATIO   = 1      # 1.0 = giroscopio normal. Ajustar si el robot no gira recto.
+LIGHT_PD     = [0.55, 9]   # PD para seguimiento de línea (kP, kD)
+JUNCTION_PD  = [0.45, 5]   # PD para seguimiento hasta cruce
+GYRO_PD      = [6, 30]     # PD para movimiento recto con giroscopio
+
+# =================================================</pre>
+    <div class="explanation">
+<p><strong>¿Qué es cada parámetro?</strong></p>
+<ul>
+<li><strong><code>GYRO_RATIO</code></strong>: factor de corrección del giroscopio. Si el robot termina desviado</li>
+</ul>
+<p>  después de 4 giros de 90° → ajustar. Valores típicos: 0.97–1.03.</p>
+<ul>
+<li><strong><code>LIGHT_PD = [kP, kD]</code></strong>: constantes del controlador PD para seguir la línea.</li>
+<li><code>kP = 0.55</code> → corrección proporcional al error de luz</li>
+<li><code>kD = 9</code> → corrección proporcional a cuánto cambió el error</li>
+</ul>
+<ul>
+<li><strong><code>JUNCTION_PD</code></strong>: mismas constantes pero más conservadoras para detectar cruces.</li>
+</ul>
+<p>  Valores más bajos = menos agresividad = el robot no pasa de largo el cruce.</p>
+<ul>
+<li><strong><code>GYRO_PD</code></strong>: constantes para movimiento recto con giroscopio.</li>
+</ul>
+<p>  <code>kP = 6</code> es mucho más alto que el PD de línea porque el giroscopio es más preciso</p>
+<p>  que el sensor de luz y necesita correcciones más fuertes.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num blue">3</span>
+      setup() — Inicialización y batería
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>def setup():
+    global lightPD, junctionPD, gyroPD, minSpeed, accLength, decLength, LFslowDistance
+    global heading, gyroRatio
+    global lightTarget, lightHigh, lightLow, blackThreshold, whiteThreshold, correctionLimit
+    global currentPosition, h, s, v
+    global BatteryScale</pre>
+    <div class="explanation">
+<p><strong>¿Por qué <code>global</code>?</strong></p>
+<p>En Python, las variables creadas dentro de una función solo existen en esa función.</p>
+<p>Con <code>global</code> declaras que esas variables pertenecen al programa completo — cualquier</p>
+<p>otra función puede leerlas y modificarlas. Si olvidas declarar una variable como global</p>
+<p>y tratas de usarla en otra función, verás:</p>
+<p><code>UnboundLocalError: local variable referenced before assignment</code></p>
+    </div>
+    <div class="explanation"><h4>El sistema de batería</h4></div>
+    <pre>BatteryVoltage    = hub.battery.voltage()
+BatteryPercentage = round((BatteryVoltage - 7000) / 1.25) / 10
+BatteryScale      = BatteryPercentage / 100
+if BatteryScale &lt; 0:
+    BatteryScale = 0
+print(&quot;-----------------------------------------&quot;)
+print(&quot;Hora inicio:&quot;, time.time(), &quot;ms&quot;)   # 🔧 MEJORA M2 — ver sección 11
+print(&quot;Battery Voltage:&quot;, BatteryVoltage / 1000, &quot;V&quot;)
+print(&quot;Battery Level:&quot;, BatteryPercentage, &quot;%&quot;)</pre>
+    <div class="explanation">
+<p><strong>¿Por qué <code>(voltaje - 7000) / 1.25 / 10</code>?</strong></p>
+<p>La batería LiPo del Hub trabaja entre 7000 mV (agotada) y 8250 mV (llena).</p>
+<p>La fórmula mapea ese rango a 0–100%:</p>
+<ul>
+<li>7000 mV → 0% → <code>BatteryScale = 0.0</code></li>
+<li>8250 mV → 100% → <code>BatteryScale = 1.0</code></li>
+<li>7625 mV → 50% → <code>BatteryScale = 0.5</code></li>
+</ul>
+<p>A mayor voltaje los motores giran más rápido con el mismo comando.</p>
+<p><code>BatteryScale</code> permite compensar eso ajustando velocidades y constantes automáticamente.</p>
+    </div>
+    <div class="explanation"><h4>🔧 Leer parámetros del bloque CONFIGURACION</h4></div>
+    <pre># Cargar valores de CONFIGURACION
+lightPD    = LIGHT_PD
+junctionPD = JUNCTION_PD
+gyroPD     = GYRO_PD
+gyroRatio  = GYRO_RATIO</pre>
+    <div class="explanation">
+<p><strong>[MEJORA M1 continuación]</strong> — En el código original, los valores de <code>lightPD</code>,</p>
+<p><code>junctionPD</code> y <code>gyroPD</code> estaban escritos directamente aquí dentro de <code>setup()</code>.</p>
+<p>En v1, <code>setup()</code> los lee desde el bloque <code>CONFIGURACION</code> al inicio del archivo.</p>
+<p><strong>¿Qué ventaja tiene?</strong> Hay un solo lugar para cambiar los valores — el bloque</p>
+<p>CONFIGURACION. Si los cambias allí, setup() los carga automáticamente.</p>
+<p>Sin este cambio, tendrías que buscar dónde están los valores dentro de setup()</p>
+<p>para modificarlos.</p>
+    </div>
+    <div class="explanation"><h4>Parámetros ajustados por batería</h4></div>
+    <pre>minSpeed  = 45 - round(5  * BatteryScale)  # Llena: 50 | Baja: 45
+accLength = 65 + round(15 * BatteryScale)  # Llena: 80 | Baja: 65 (grados de rueda)
+decLength = 110 + round(15 * BatteryScale) # Llena: 125 | Baja: 110 (grados de rueda)</pre>
+    <div class="explanation">
+<ul>
+<li><strong><code>minSpeed</code></strong>: velocidad mínima durante aceleración y frenado. Con batería llena,</li>
+</ul>
+<p>  los motores responden con más fuerza, así que la velocidad mínima puede ser mayor.</p>
+<ul>
+<li><strong><code>accLength</code></strong>: cuántos grados de rueda tarda el robot en llegar a la velocidad objetivo.</li>
+<li><strong><code>decLength</code></strong>: cuántos grados antes del final el robot empieza a frenar.</li>
+</ul>
+<p>Nota el patrón: para <code>minSpeed</code> la batería alta da número MAYOR. Para <code>accLength</code></p>
+<p>y <code>decLength</code> también da número MAYOR. Esto es porque con batería llena los motores</p>
+<p>son más fuertes y necesitan más distancia para acelerar y frenar suavemente.</p>
+    </div>
+    <div class="explanation"><h4>Leer calibración guardada en memoria</h4></div>
+    <pre>lightLow    = int.from_bytes(hub.system.storage(0, read=1), &quot;big&quot;)
+lightHigh   = int.from_bytes(hub.system.storage(1, read=1), &quot;big&quot;)
+print(&quot;From storage: Low =&quot;, lightLow, &quot;| High =&quot;, lightHigh)
+lightTarget = (lightHigh + lightLow) / 2
+lightTarget -= 10
+blackThreshold = lightLow  + 5
+whiteThreshold = lightHigh - 8</pre>
+    <div class="explanation">
+<p><strong>¿Por qué leer de la memoria?</strong></p>
+<p><code>Calibrate()</code> (sección 4) guarda los valores de negro y blanco antes del run.</p>
+<p><code>setup()</code> los lee de esa memoria. Así no tienes que calibrar dentro del programa</p>
+<p>principal — es una operación separada con el botón derecho del Hub.</p>
+<p><strong>¿Por qué <code>lightTarget -= 10</code>?</strong></p>
+<p>Si el target fuera el promedio exacto, el robot seguiría el centro de la línea.</p>
+<p>Al restarle 10, el punto de seguimiento se mueve hacia el negro — el robot</p>
+<p>&quot;prefiere&quot; estar un poco sobre el negro. Más robusto ante sombras y variaciones de luz.</p>
+<p><strong><code>blackThreshold = lightLow + 5</code></strong>: cualquier lectura por debajo de este valor</p>
+<p>se considera &quot;negro&quot; (con un margen de 5 para no ser demasiado estricto).</p>
+<p><strong><code>whiteThreshold = lightHigh - 8</code></strong>: cualquier lectura por encima es &quot;blanco&quot;.</p>
+    </div>
+    <div class="explanation"><h4>Reset final</h4></div>
+    <pre># RESET (DO NOT CHANGE)
+heading = 0
+h, s, v = [], [], []
+currentPosition = 0
+time.reset()
+hub.imu.reset_heading(0)</pre>
+    <div class="explanation">
+<ul>
+<li><strong><code>heading = 0</code></strong>: el rumbo objetivo empieza en 0 (recto hacia adelante).</li>
+</ul>
+<p>  Cada <code>turn()</code> actualiza esta variable sumando el cambio de ángulo.</p>
+<ul>
+<li><strong><code>h, s, v = [], [], []</code></strong>: listas vacías para las lecturas HSV de <code>Scan()</code>.</li>
+<li><strong><code>time.reset()</code></strong>: el cronómetro empieza a contar desde aquí.</li>
+<li><strong><code>hub.imu.reset_heading(0)</code></strong>: segundo reset del giroscopio, ahora en contexto</li>
+</ul>
+<p>  de run (el primero fue al encender).</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num green">4</span>
+      Calibrate() — Guardar negro y blanco
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>def Calibrate():
+    hub.speaker.beep(880, 250)
+    while(Button.RIGHT in hub.buttons.pressed()):
+        pass                              # Esperar que suelten el botón
+    hub.speaker.beep(1760, 250)
+    wait(500)
+
+    CalibrateHigh = 0
+    CalibrateLow  = 100
+
+    calibrateStart = time.time()
+    run(40, 40)                           # Avanzar lento
+    while (time.time() - calibrateStart &lt; 1500):   # Durante 1.5 segundos
+        CalibrateNow  = floor.reflection()
+        CalibrateLow  = min(CalibrateLow,  CalibrateNow)
+        CalibrateHigh = max(CalibrateHigh, CalibrateNow)
+    stop()
+    print(&quot;Saved to storage: Low =&quot;, CalibrateLow, &quot;| High =&quot;, CalibrateHigh)
+    hub.system.storage(0, write=bytes([CalibrateLow, CalibrateHigh]))</pre>
+    <div class="explanation">
+<p><strong>¿Cómo funciona?</strong></p>
+<p>1. El robot avanza despacio sobre el tapete durante 1.5 segundos</p>
+<p>2. Mientras avanza, lee la reflexión del sensor de piso constantemente</p>
+<p>3. <code>CalibrateLow</code> guarda el valor MÁS BAJO encontrado (= negro)</p>
+<p>4. <code>CalibrateHigh</code> guarda el valor MÁS ALTO (= blanco)</p>
+<p>5. Ambos se escriben en la memoria interna del Hub (slots 0 y 1)</p>
+<p><strong>¿Por qué en el lugar de competencia?</strong></p>
+<p>La iluminación cambia completamente los valores de reflexión. Un tapete blanco</p>
+<p>bajo luz de estadio da 92; en casa bajo luz natural puede dar 78. Si calibras</p>
+<p>en casa y compites en otro lugar, <code>blackThreshold</code> y <code>whiteThreshold</code> quedan</p>
+<p>calculados para la iluminación incorrecta y el robot falla en seguir la línea.</p>
+<p><strong>Procedimiento</strong>: encender Hub → mantener botón DERECHO → soltar → robot avanza → listo.</p>
+<p>Hacerlo SIEMPRE antes de cada intento oficial.</p>
+<p>⚠️ <strong>Importante</strong>: el robot debe pasar por zonas NEGRAS y BLANCAS durante</p>
+<p>los 1.5 segundos. Si solo pasa por blanco, <code>CalibrateLow</code> queda en 100</p>
+<p>(el valor inicial) y <code>blackThreshold</code> = 105 — el robot nunca detectaría negro.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num orange">5</span>
+      Funciones de sensores — 🔧 readColour mejorado
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <div class="explanation"><h4>readColour()</h4></div>
+    <pre>def readColour():
+    # 🔧 MEJORA C2 — promedio de 5 lecturas para reducir ruido del sensor
+    global h, s, v
+    readings_h, readings_s, readings_v = [], [], []
+    for _ in range(5):
+        HSVresult = scan.hsv()
+        readings_h.append(HSVresult[0])
+        readings_s.append(HSVresult[1])
+        readings_v.append(HSVresult[2])
+        wait(5)
+    h.append(sum(readings_h) // len(readings_h))
+    s.append(sum(readings_s) // len(readings_s))
+    v.append(sum(readings_v) // len(readings_v))</pre>
+    <div class="explanation">
+<p><strong>[MEJORA C2]</strong> — En el código original, <code>readColour()</code> hacía UNA sola lectura HSV</p>
+<p>y la guardaba directamente. En v1, hace 5 lecturas y guarda el promedio.</p>
+<p><strong>¿Por qué esto importa?</strong></p>
+<p>Cuando el robot para bruscamente (después de <code>followUntilJunction</code>), el chasis</p>
+<p>vibra levemente. Una lectura tomada en ese momento puede tener ruido — el sensor</p>
+<p>puede leer H=230 cuando el valor real es H=245 (azul). Si <code>ProcessColour()</code> recibe</p>
+<p>ese dato ruidoso puede clasificar azul como amarillo y todo el run falla.</p>
+<p>Con 5 lecturas en 25 ms (5 lecturas × 5 ms de espera), el promedio suaviza esas</p>
+<p>variaciones puntuales. Es una inversión de 25 ms que puede salvar puntos críticos.</p>
+<p><strong><code>//</code> en vez de <code>/</code></strong>: división entera — el promedio de ángulos HSV es un entero,</p>
+<p>no necesitamos decimales. <code>sum(readings_h) // len(readings_h)</code> = promedio sin decimales.</p>
+    </div>
+    <div class="explanation"><h4>getYaw()</h4></div>
+    <pre>def getYaw():
+    global yaw
+    yaw = hub.imu.heading() * gyroRatio
+    yaw = yaw - round((yaw - heading) / 370) * 360</pre>
+    <div class="explanation">
+<p><strong><code>hub.imu.heading()</code></strong> devuelve el ángulo acumulado del giroscopio. Si el robot</p>
+<p>giró 90° a la derecha, devuelve 90. Si luego gira 90° más, devuelve 180.</p>
+<p><strong><code>* gyroRatio</code></strong>: aplica el factor de corrección definido en CONFIGURACION.</p>
+<p>Si <code>GYRO_RATIO = 0.98</code>, multiplica todos los ángulos por 0.98 — compensa un Hub</p>
+<p>que registra más grados de los reales.</p>
+<p><strong>La segunda línea — anti-wraparound:</strong></p>
+<p>Imagina que el robot ha dado muchas vueltas y <code>yaw</code> acumulado es 375°.</p>
+<p>El <code>heading</code> objetivo es 15°. La diferencia real debería ser 0°, pero</p>
+<p>sin corrección: <code>375 - 15 = 360°</code> — el PD vería un error enorme.</p>
+<p><code>round((yaw - heading) / 370) * 360</code> calcula cuántas vueltas completas de diferencia</p>
+<p>hay y las resta de <code>yaw</code>. Con 370 en vez de 360 se evita la ambigüedad exacta en 180°.</p>
+    </div>
+    <div class="explanation"><h4>resetYaw()</h4></div>
+    <pre>def resetYaw():
+    global heading
+    hub.imu.reset_heading(0)
+    heading = 0</pre>
+    <div class="explanation">
+<p>Resetea el giroscopio del hardware Y la variable <code>heading</code> a 0.</p>
+<p>Se llama en <code>follow()</code> cuando <code>reset=True</code> — después de un tramo de seguimiento</p>
+<p>de línea, &quot;olvida&quot; la deriva acumulada del giroscopio y empieza limpio.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num blue">6</span>
+      Funciones utilitarias
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>def run(left, right):
+    left_motor.dc(left)
+    right_motor.dc(right)</pre>
+    <div class="explanation">
+<p><strong><code>dc()</code></strong> = duty cycle — controla el motor con porcentaje de potencia directa.</p>
+<p><code>dc(100)</code> = potencia máxima adelante, <code>dc(-50)</code> = 50% hacia atrás.</p>
+<p>Sin controlador interno — el programa calcula todo manualmente con el PD.</p>
+<p><code>run(100, 100)</code> → ambas ruedas al máximo hacia adelante</p>
+<p><code>run(-100, 100)</code> → giro en sitio (izquierda atrás, derecha adelante)</p>
+    </div>
+    <pre>def stop(duration=0):
+    left_motor.brake()
+    right_motor.brake()
+    wait(duration)</pre>
+    <div class="explanation">
+<p><strong><code>brake()</code></strong> activa el freno eléctrico — cortocircuita las bobinas del motor</p>
+<p>para frenar activamente. Más fuerte que <code>coast()</code> (que solo suelta el motor y deja</p>
+<p>que se detenga por fricción). <code>wait(duration)</code> deja al robot estabilizarse.</p>
+    </div>
+    <pre>def resetMotors():
+    left_motor.reset_angle(0)
+    right_motor.reset_angle(0)</pre>
+    <div class="explanation">
+<p>Resetea el encoder de cada motor a 0. <code>move()</code> y <code>follow()</code> usan los encoders</p>
+<p>para medir distancia recorrida. Sin resetear al inicio de cada movimiento, los</p>
+<p>grados acumulados del movimiento anterior interfieren con la distancia actual.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num orange">7</span>
+      El sistema PD — el corazón del movimiento
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>def setPD(PD, reset):
+    global kP, kD, lastError
+    kP = PD[0]
+    kD = PD[1]
+    if reset == 1:
+        lastError = 0</pre>
+    <div class="explanation">
+<p><strong>¿Qué son kP y kD?</strong></p>
+<p>Son las &quot;ganancias&quot; del controlador PD:</p>
+<ul>
+<li><strong>kP</strong> (Proporcional): qué tan fuerte reacciona al error actual</li>
+<li><strong>kD</strong> (Derivativo): qué tan fuerte reacciona al cambio del error</li>
+</ul>
+<p><code>if reset == 1: lastError = 0</code> — resetea el error previo para transición limpia.</p>
+<p>Se llama con <code>reset=0</code> cuando se quiere transición suave (como al pasar de</p>
+<p><code>follow()</code> a <code>followUntilJunction()</code>).</p>
+    </div>
+    <pre>def PD(input1, input2):
+    global lastError, PDscale
+    PDscale = (abs(power) / 100) * 0.7 + 0.3   # Entre 0.3 y 1.0
+    error   = input1 - input2
+    result  = (error * kP) + ((error - lastError) * kD)
+    result  = result * PDscale
+    lastError = error
+    return result</pre>
+    <div class="explanation">
+<p><strong>La fórmula PD explicada:</strong></p>
+<p><code>error = input1 - input2</code> — diferencia entre objetivo y actual.</p>
+<p>En seguimiento de línea: <code>lightTarget - luz_actual</code>.</p>
+<p>En movimiento recto: <code>yaw - heading</code>.</p>
+<p><strong><code>error * kP</code></strong> = componente Proporcional</p>
+<p>Corrección proporcional al error. Si el error es grande, corrige fuerte.</p>
+<p>Problema solo con P: el robot llega al objetivo pero lo sobrepasa y oscila.</p>
+<p><strong><code>(error - lastError) * kD</code></strong> = componente Derivativo</p>
+<p>Mide qué tan rápido cambia el error. Si el error está bajando rápido</p>
+<p>(el robot se está corrigiendo), D frena esa corrección para que no sobrepase.</p>
+<p>Es la amortiguación del sistema.</p>
+<p><strong><code>PDscale = (abs(power)/100) * 0.7 + 0.3</code></strong> — escala la corrección según la velocidad.</p>
+<p>A velocidad 0: PDscale = 0.3 (corrección mínima).</p>
+<p>A velocidad 100: PDscale = 1.0 (corrección completa).</p>
+<p>Evita correcciones violentas durante arranque y frenado.</p>
+    </div>
+    <pre>def acceleration(movedDistance, totalDistance, targetSpeed, acc, dec):
+    speedChange = abs(targetSpeed) - minSpeed
+    if acc:
+        acc_speed = speedChange * (movedDistance / accLength) + minSpeed
+    else:
+        acc_speed = abs(targetSpeed)
+
+    if dec:
+        dec_speed = speedChange * ((totalDistance - movedDistance) / decLength) + minSpeed
+    else:
+        dec_speed = abs(targetSpeed)
+
+    speed = min(acc_speed, dec_speed, abs(targetSpeed))
+    return speed</pre>
+    <div class="explanation">
+<p><strong>Aceleración trapezoidal:</strong></p>
+<p>El robot no arranca de golpe a velocidad máxima — sube gradualmente.</p>
+<ul>
+<li><code>acc_speed</code>: sube de <code>minSpeed</code> a <code>targetSpeed</code> proporcional a <code>movedDistance</code></li>
+<li><code>dec_speed</code>: baja de <code>targetSpeed</code> a <code>minSpeed</code> proporcional a la distancia restante</li>
+<li><code>min(acc_speed, dec_speed, targetSpeed)</code>: siempre toma el menor de los tres</li>
+</ul>
+<p>En distancias cortas, las dos curvas se solapan — el robot nunca llega a <code>targetSpeed</code></p>
+<p>y hace una curva triangular suave. En distancias largas hace el perfil trapezoidal</p>
+<p>completo: sube, mantiene velocidad máxima, baja.</p>
+<p><code>acc=False</code> o <code>dec=False</code> desactivan la rampa correspondiente para movimientos</p>
+<p>que deben ser inmediatos (por ejemplo, posicionamiento fino después de un cruce).</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num orange">8</span>
+      Funciones de movimiento — 🔧 followUntilJunction con timeout
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <div class="explanation"><h4>move()</h4></div>
+    <pre>def move(speed, totalDistance, acc=True, dec=True):
+    global power
+    resetMotors()
+    movedDistance = 0
+    setPD(gyroPD, 1)
+    while(movedDistance &lt;= totalDistance):
+        movedDistance = (abs(left_motor.angle()) + abs(right_motor.angle())) / 2
+        power = acceleration(movedDistance, totalDistance, speed, acc, dec)
+        power = round((abs(speed) / speed) * power)
+        getYaw()
+        correction = round(PD(yaw, heading))
+        run(power - correction, power + correction)
+    stop()</pre>
+    <div class="explanation">
+<p><strong>¿Por qué promediar los dos encoders?</strong></p>
+<p>Si el robot está corrigiendo el rumbo (un motor más rápido que el otro),</p>
+<p>uno registra más grados que el otro. Usar solo uno daría una distancia incorrecta.</p>
+<p>El promedio <code>(abs(left) + abs(right)) / 2</code> refleja la distancia lineal real del centro.</p>
+<p><strong><code>(abs(speed)/speed) * power</code></strong> — preserva el signo original de <code>speed</code>.</p>
+<p>Si <code>speed = -100</code> (ir hacia atrás), <code>acceleration()</code> devuelve un valor positivo,</p>
+<p>y esta línea lo convierte de vuelta a negativo.</p>
+<p><strong>La corrección giroscópica:</strong></p>
+<p><code>run(power - correction, power + correction)</code> — si el robot se desvió a la derecha</p>
+<p>(yaw &gt; heading, correction positiva), disminuye la rueda izquierda y aumenta la derecha</p>
+<p>para corregir hacia la izquierda. Siempre corrige sumando a una rueda y restando a la otra.</p>
+    </div>
+    <div class="explanation"><h4>moveMS()</h4></div>
+    <pre>def moveMS(speed, duration):
+    global power
+    power = speed
+    setPD(gyroPD, 1)
+    startTime = time.time()
+    while(time.time() - startTime &lt;= duration):
+        getYaw()
+        correction = round(PD(yaw, heading))
+        run(speed - correction, speed + correction)
+    stop()</pre>
+    <div class="explanation">
+<p>Como <code>move()</code> pero basado en tiempo (milisegundos) en lugar de distancia.</p>
+<p><code>power = speed</code> se asigna fijo porque no hay aceleración — <code>PDscale</code> usa <code>power</code></p>
+<p>para escalar la corrección, y aquí la velocidad no cambia durante el movimiento.</p>
+    </div>
+    <div class="explanation"><h4>moveWhite() y moveBlack()</h4></div>
+    <pre>def moveWhite(speed):
+    global power
+    power = speed
+    setPD(gyroPD, 1)
+    light = floor.reflection()
+    while(light &lt; whiteThreshold):
+        getYaw()
+        correction = round(PD(yaw, heading))
+        run(power - correction, power + correction)
+        light = floor.reflection()
+    stop()
+
+def moveBlack(speed):
+    global power
+    power = speed
+    setPD(gyroPD, 1)
+    light = floor.reflection()
+    while(light &gt; blackThreshold):
+        getYaw()
+        correction = round(PD(yaw, heading))
+        run(power - correction, power + correction)
+        light = floor.reflection()
+    stop()</pre>
+    <div class="explanation">
+<p>En vez de distancia fija, el robot avanza hasta encontrar un color específico.</p>
+<p>Útil cuando necesitas posicionarte exactamente sobre una línea sin depender de</p>
+<p>que el robot haya empezado en el lugar exacto — <code>moveBlack()</code> siempre para</p>
+<p>sobre la línea negra, independientemente de cuántos mm de variación haya.</p>
+    </div>
+    <div class="explanation"><h4>turn()</h4></div>
+    <pre>def turn(mode, change, speed=100, checking=15):
+    global heading, power
+    resetMotors()
+    heading = heading + change
+    if mode &lt;= 2:
+        setPD([15 - round(3*BatteryScale), 180 + round(50*BatteryScale)], 1)
+    else:
+        setPD([12 - round(3*BatteryScale), 220 + round(50*BatteryScale)], 1)
+    count = 0
+    while(count &lt;= checking):
+        getYaw()
+        # 🔧 MEJORA M4 — sync *= 1 eliminado (ver nota abajo)
+        power = 100
+        correction = round(PD(yaw, heading))
+
+        if abs(correction) &gt; speed:
+            correction = speed * (correction / abs(correction))
+
+        if mode == 1:
+            run(-correction, 0)
+        elif mode == 2:
+            run(0, correction)
+        else:
+            sync = left_motor.angle() + right_motor.angle()
+            run(-correction - sync, correction - sync)
+
+        if abs(yaw - heading) &lt;= 2.5:
+            count += 1
+        else:
+            count = 0
+    stop()</pre>
+    <div class="explanation">
+<p><strong>Modos de giro:</strong></p>
+<ul>
+<li><code>mode=1</code>: solo rueda izquierda → pivote sobre rueda derecha (radio grande)</li>
+<li><code>mode=2</code>: solo rueda derecha → pivote sobre rueda izquierda (radio grande)</li>
+<li><code>mode=3</code>: ambas ruedas en sentido contrario → giro en sitio (más rápido y preciso)</li>
+</ul>
+<p><strong>PD ajustado por batería en los giros:</strong></p>
+<p>Con batería llena los motores son más fuertes y tienden a sobrepasar el ángulo:</p>
+<ul>
+<li><code>kP</code> más bajo → menos agresividad al acercarse al objetivo</li>
+<li><code>kD</code> más alto → más amortiguación para frenar la inercia extra</li>
+</ul>
+<p><strong><code>checking=15</code></strong>: el robot debe estar dentro de ±2.5° durante 15 ciclos consecutivos</p>
+<p>antes de parar. Evita que pare mientras aún tiene inercia y está oscilando.</p>
+<p><strong><code>if abs(correction) &gt; speed</code></strong>: limita la corrección máxima para que no supere</p>
+<p>la velocidad configurada. Sin esto, el PD podría pedir velocidades imposibles.</p>
+<p><strong>[MEJORA M4]</strong> — En el código original había esta línea dentro del while:</p>
+<p>```python</p>
+<p>sync = left_motor.angle() + right_motor.angle()</p>
+<p>sync *= 1   # ← multiplicar por 1 no cambia nada</p>
+<p>```</p>
+<p><code>sync *= 1</code> era código muerto — un placeholder que no tenía efecto funcional.</p>
+<p>En v1, <code>sync</code> solo se calcula en el <code>else</code> de mode=3 donde realmente se usa.</p>
+<p>Eliminar código muerto demuestra que el programador entendió el código.</p>
+    </div>
+    <div class="explanation"><h4>curve()</h4></div>
+    <pre>def curve(speed, totalDistance, change, acc=True, dec=True):
+    global power, heading
+    startHeading = heading
+    resetMotors()
+    movedDistance = 0
+    setPD([gyroPD[0], gyroPD[1]/2], 1)
+    while(movedDistance &lt;= totalDistance):
+        movedDistance = (abs(left_motor.angle()) + abs(right_motor.angle())) / 2
+        power = acceleration(movedDistance, totalDistance, speed, acc, dec)
+        power = round((abs(speed) / speed) * power)
+        heading = (movedDistance / totalDistance) * change + startHeading
+        getYaw()
+        correction = round(PD(yaw, heading))
+        run(power - correction, power + correction)
+    heading = startHeading + change
+    stop()</pre>
+    <div class="explanation">
+<p><code>curve()</code> avanza en arco — el <code>heading</code> objetivo cambia progresivamente durante</p>
+<p>el recorrido: <code>(distancia_recorrida / distancia_total) * cambio_total</code>.</p>
+<p>Si el robot lleva la mitad del recorrido, el heading objetivo es la mitad del cambio.</p>
+<p>Usa <code>gyroPD[1]/2</code> — kD a la mitad — porque el heading cambia continuamente</p>
+<p>y un kD alto resistiría los cambios planificados del objetivo.</p>
+    </div>
+    <div class="explanation"><h4>follow()</h4></div>
+    <pre>def follow(side, speed, totalDistance, acc=True, dec=True, limit=False, reset=False):
+    global power, heading
+    resetMotors()
+    movedDistance = 0
+    setPD(lightPD, 1)
+    raw = floor.reflection()
+    lightFiltered = raw
+    while(movedDistance &lt;= totalDistance):
+        movedDistance = (abs(left_motor.angle()) + abs(right_motor.angle())) / 2
+        LFmovedDistance = movedDistance - LFslowDistance
+        if LFmovedDistance &lt; 0:
+            LFmovedDistance = 0
+        power = acceleration(LFmovedDistance, totalDistance - LFslowDistance, speed, acc, dec)
+        raw = floor.reflection()
+        lightFiltered = (lightFiltered * 3 + raw) / 4   # Filtro promedio móvil
+        light = lightFiltered
+        correction = PD(lightTarget, light)
+        if limit and abs(correction) &gt;= correctionLimit:
+            correction = correctionLimit * (correction / abs(correction))
+        if side == 2:
+            correction = correction * -1
+        run(power - correction, power + correction)
+        wait(3)
+    stop()
+    if reset:
+        resetYaw()</pre>
+    <div class="explanation">
+<p><strong><code>side</code></strong>: en qué borde de la línea sigue el robot.</p>
+<ul>
+<li><code>side=1</code>: sigue el borde izquierdo (el sensor está a la izquierda de la línea)</li>
+<li><code>side=2</code>: sigue el borde derecho → la corrección se invierte (<code>* -1</code>)</li>
+</ul>
+<p><strong>Filtro promedio móvil</strong>: <code>(lightFiltered * 3 + raw) / 4</code></p>
+<p>Suaviza el ruido del sensor de piso. Sin esto, una variación brusca (sombra de</p>
+<p>un juez, polvo en el tapete) causa una corrección violenta. Con el filtro, cada</p>
+<p>lectura nueva solo tiene un peso de 25% sobre el valor filtrado.</p>
+<p><strong><code>reset=True</code></strong>: al terminar, llama <code>resetYaw()</code> para olvidar la deriva acumulada.</p>
+<p>Se usa antes de un movimiento recto con giroscopio para que el heading esté limpio.</p>
+    </div>
+    <div class="explanation"><h4>🔧 followUntilJunction() — con timeout</h4></div>
+    <pre>def followUntilJunction(side, speed, timeout=10000):
+    # 🔧 MEJORA C3 — timeout evita bucle infinito si el robot pierde la línea
+    global power, heading
+    setPD(junctionPD, 0)
+    power = speed
+    startTime = time.time()
+    light = floor.reflection()
+    while(light &gt; blackThreshold):
+        if time.time() - startTime &gt; timeout:
+            print(&quot;ADVERTENCIA: followUntilJunction timeout a los&quot;, timeout, &quot;ms&quot;)
+            break
+        light = floor.reflection()
+        correction = PD(lightTarget, light)
+        if abs(correction) &gt;= correctionLimit:
+            correction = correctionLimit * (correction / abs(correction))
+        if side == 2:
+            correction = correction * -1
+        run(power - correction, power + correction)
+        wait(3)
+    stop()</pre>
+    <div class="explanation">
+<p><strong>[MEJORA C3]</strong> — En el código original, <code>followUntilJunction()</code> era:</p>
+<p>```python</p>
+<p>while(light &gt; blackThreshold):</p>
+<p>    # ... sin ninguna condición de salida de emergencia</p>
+<p>```</p>
+<p>Si el robot se salía de la línea y el sensor nunca veía negro, el loop corría</p>
+<p>hasta que se acabaran los 2 minutos completos del intento. Puntaje: 0.</p>
+<p>En v1, hay un <code>timeout</code> (por defecto 10 segundos). Si el loop lleva más de ese</p>
+<p>tiempo sin encontrar negro, el robot imprime una advertencia, sale del loop con</p>
+<p><code>break</code>, y continúa con la siguiente instrucción del programa.</p>
+<p><strong>¿Por qué esto es tan importante?</strong></p>
+<p>Un robot que pierde la línea en el segundo cable y tiene timeout de 10s puede</p>
+<p>perder los puntos de ese cable, pero llegar al micrófono y a los instrumentos.</p>
+<p>Sin timeout, pierde todo.</p>
+<p><strong><code>timeout=10000</code></strong> es el valor por defecto (10 segundos). Si una misión específica</p>
+<p>tiene una distancia corta, se puede llamar con un valor menor:</p>
+<p><code>followUntilJunction(1, 80, timeout=3000)</code></p>
+    </div>
+    <div class="explanation"><h4>followUntilWhite()</h4></div>
+    <pre>def followUntilWhite(side, speed):
+    # [Not used in this category]
+    global power, heading
+    setPD(junctionPD, 0)
+    power = speed
+    light = floor.reflection()
+    while(light &lt; whiteThreshold):
+        light = floor.reflection()
+        correction = PD(lightTarget, light)
+        if abs(correction) &gt;= correctionLimit:
+            correction = correctionLimit * (correction / abs(correction))
+        if side == 2:
+            correction = correction * -1
+        run(power - correction, power + correction)
+    stop()</pre>
+    <div class="explanation">
+<p>Esta función sigue la línea hasta encontrar superficie blanca (en vez de negra).</p>
+<p>No se usa en la categoría Elementary 2026 — está disponible si se necesita en</p>
+<p>versiones futuras o para pruebas. El comentario <code>[Not used]</code> lo indica.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num red">9</span>
+      Control de grippers
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>def backDegree(speed, angle, pause=False):
+    # angle: 0=cerrado, 100=abierto
+    back.run_target(abs(round(speed * 12)), angle * -1, wait=pause)
+
+def frontDegree(speed, angle, pause=False):
+    # angle: 0=abierto, 100=cerrado
+    front.run_target(abs(round(speed * 12)), abs(angle), wait=pause)</pre>
+    <div class="explanation">
+<p><strong><code>run_target(velocidad, ángulo, wait=...)</code></strong></p>
+<p>El motor usa su controlador PID interno para ir exactamente al ángulo indicado y</p>
+<p>mantenerse allí. Diferente de <code>dc()</code> que solo aplica potencia directa.</p>
+<p><strong><code>speed * 12</code></strong>: convierte la escala 0–100 a grados/segundo para <code>run_target</code>.</p>
+<p><code>speed=100</code> → 1200 deg/s (el límite configurado en <code>control.limits</code>).</p>
+<p><strong><code>angle * -1</code> en backDegree</strong>: el motor B tiene <code>COUNTERCLOCKWISE</code> como dirección.</p>
+<p>Invertir el signo hace que &quot;0=cerrado, 100=abierto&quot; sea consistente con el gesto</p>
+<p>físico del gripper trasero independientemente del montaje del motor.</p>
+<p><strong><code>pause=False</code> (default) → ejecución en paralelo:</strong></p>
+<p>El código llama a <code>run_target</code> y continúa inmediatamente sin esperar que el gripper</p>
+<p>llegue a la posición. El robot puede avanzar mientras el gripper se mueve al mismo</p>
+<p>tiempo — ahorra tiempo en las misiones.</p>
+<p><strong><code>pause=True</code> → esperar posición:</strong></p>
+<p>El código espera a que el motor llegue exactamente a la posición antes de continuar.</p>
+<p>Usar cuando el robot necesita que el gripper esté en posición antes de avanzar.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num orange">10</span>
+      Misiones — 🔧 comentarios de distancias
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <div class="explanation">
+<p>Las misiones (<code>Start</code>, <code>Scan</code>, <code>ProcessColour</code>, etc.) contienen la lógica específica</p>
+<p>de competencia. No se explican línea por línea aquí porque cambian con el tapete</p>
+<p>y los ajustes. Lo importante es entender el flujo general y los parámetros a ajustar.</p>
+    </div>
+    <div class="explanation"><h4>🔧 Scan() — con comentarios de distancias</h4></div>
+    <pre>def Scan():
+    global block, blue, white, yellow, black
+    for section in range(2):
+        for blocks in range(2):
+            followUntilJunction(2, 90)
+            move(90, 20, acc=False, dec=False)  # posición de escaneo: 20 grados desde cruce
+            readColour()
+            move(90, 110, acc=False, dec=False)
+        if section &lt; 1:
+            follow(2, 100, 500, acc=False, dec=False)  # cruzar de bloque 2 a bloque 5 (~27cm)
+        else:
+            follow(2, 90, 300, acc=False, reset=True)  # fin del escaneo (~16cm)</pre>
+    <div class="explanation">
+<p><strong>[MEJORA M3]</strong> — Los comentarios de distancias aproximadas en cm ayudan a</p>
+<p>entender la geometría del tapete sin tener que calcular: 360° ≈ 19.6 cm.</p>
+<p><strong>El offset de 20°</strong>: después de detectar el cruce, el robot avanza 20° antes de</p>
+<p>escanear. Esto compensa la distancia física entre el sensor de piso (que detecta</p>
+<p>el cruce) y el sensor lateral (que escanea el bloque). Sin este offset, el sensor</p>
+<p>lateral escanearía el bloque anterior.</p>
+    </div>
+    <div class="explanation"><h4>ProcessColour()</h4></div>
+    <pre>def ProcessColour():
+    # MODIFY AT YOUR OWN RISK
+    # OTHERWISE, DO NOT CHANGE
+    global blue, white, yellow, black, green, red
+    green = 2  # Fijo — siempre en posición 2
+    red   = 3  # Fijo — siempre en posición 3
+
+    top2 = sorted(range(len(s)), key=lambda i: (-s[i], i))[:2]
+    low2 = sorted(range(len(s)), key=lambda i: (s[i], i))[:2]
+    test1, test2 = top2[0], top2[1]
+    blue, yellow = (test1, test2) if h[test1] &gt; h[test2] else (test2, test1)
+    test1, test2 = low2[0], low2[1]
+    white, black = (test1, test2) if v[test1] &gt; v[test2] else (test2, test1)
+
+    blue, white, yellow, black = (
+        x + 2 if x &gt; 1 else x
+        for x in (blue, white, yellow, black)
+    )
+    print(blue, white, yellow, black)</pre>
+    <div class="explanation">
+<p><strong>Algoritmo de clasificación:</strong></p>
+<p><strong>Paso 1 — Separar por saturación alta (azul y amarillo):</strong></p>
+<p><code>top2</code> toma los 2 índices con mayor S (saturación). Azul y amarillo son colores</p>
+<p>vivos → S alto. Blanco y negro no tienen color → S bajo.</p>
+<p><strong>Paso 2 — Dentro de alta saturación, separar por Hue:</strong></p>
+<p>Amarillo ≈ H=60°, Azul ≈ H=240°. El que tiene mayor H es azul.</p>
+<p><strong>Paso 3 — Separar por saturación baja (blanco y negro):</strong></p>
+<p><code>low2</code> toma los 2 con menor S. Dentro de ellos, el que tiene mayor V (brillo)</p>
+<p>es blanco; el de menor V es negro.</p>
+<p><strong>Paso 4 — Ajustar índices:</strong></p>
+<p>Los índices 0,1,2,3 corresponden a las 4 lecturas de Scan(). Pero verde está fijo</p>
+<p>en posición 2 y rojo en posición 3 del tapete. Cualquier índice &gt; 1 se suma +2</p>
+<p>para que las posiciones queden en el rango 1–6 del tapete real.</p>
+<p>⚠️ <strong>No modificar esta función sin entenderla completamente.</strong></p>
+    </div>
+    <div class="explanation"><h4>🔧 Cable1() y Cable2() — con comentarios de distancias</h4></div>
+    <pre>def Cable1():
+    # M3 — distancias aproximadas: cruce~19cm, cable~31cm, retorno~56cm
+    move(-100, 350)
+    moveBlack(-minSpeed)
+    # ... resto de la misión ...</pre>
+    <div class="explanation">
+<p><strong>[MEJORA M3]</strong> — Los comentarios con distancias aproximadas en cm en Cable1()</p>
+<p>y Cable2() ayudan a entender qué parte del tapete corresponde a cada instrucción.</p>
+<p>Cable1 y Cable2 son las misiones con más instrucciones de movimiento — sin</p>
+<p>comentarios es muy difícil saber qué hace cada <code>move()</code>.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num orange">11</span>
+      🔧 Main() con timestamps
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>def Main():
+    setup()
+
+    print(&quot;--- Inicio de misiones ---&quot;)   # 🔧 MEJORA M2
+    Start()
+    print(&quot;Hora Start:&quot;, time.time(), &quot;ms&quot;)
+    Scan()
+    ProcessColour()
+    print(&quot;Hora post-Scan:&quot;, time.time(), &quot;ms&quot;)
+    TakeBlueWhite()
+    TakeGreen()
+    Put1()
+    print(&quot;Hora Put1:&quot;, time.time(), &quot;ms&quot;)
+    TakeRed()
+    TakeBlackYellow()
+    GoToJunction()
+    Put2()
+    print(&quot;Hora Put2:&quot;, time.time(), &quot;ms&quot;)
+    Cable1()
+    Cable2()
+    print(&quot;Hora post-Cables:&quot;, time.time(), &quot;ms&quot;)
+    Microphone()
+    Instruments()
+
+    print(&quot;Tiempo total:&quot;, time.time() / 1000, &quot;s&quot;)
+    stop(1000)</pre>
+    <div class="explanation">
+<p><strong>[MEJORA M2]</strong> — En el código original, <code>Main()</code> no tenía ningún <code>print()</code> más</p>
+<p>allá del tiempo final. En v1, hay un timestamp después de cada fase importante.</p>
+<p><strong>¿Para qué sirven los timestamps?</strong></p>
+<p>Con la laptop conectada por USB al Hub, la salida de <code>print()</code> aparece en la</p>
+<p>consola de PyBricks en tiempo real. Esto te permite:</p>
+<p>1. <strong>Saber dónde falló</strong>: si el run termina abruptamente, el último print visible</p>
+<p>   te dice exactamente en qué misión ocurrió.</p>
+<p>2. <strong>Medir tiempos por fase</strong>: si el tiempo total es 2:20 y necesitas ganar 10s,</p>
+<p>   los timestamps te muestran qué fase tarda más y dónde optimizar.</p>
+<p>3. <strong>Verificar ProcessColour</strong>: el print de <code>blue, white, yellow, black</code> dentro</p>
+<p>   de ProcessColour() confirma que la clasificación fue correcta antes de que</p>
+<p>   el robot empiece a buscar bloques.</p>
+<p>Ejemplo de salida en consola:</p>
+<p>```</p>
+<p>Battery Voltage: 8.1 V</p>
+<p>Battery Level: 88.0 %</p>
+<p>From storage: Low = 9 | High = 87</p>
+<p>--- Inicio de misiones ---</p>
+<p>Hora Start: 1823 ms</p>
+<p>3 1 5 4</p>
+<p>Hora post-Scan: 18450 ms</p>
+<p>Hora Put1: 45230 ms</p>
+<p>Hora Put2: 78900 ms</p>
+<p>Hora post-Cables: 108200 ms</p>
+<p>Tiempo total: 131.4 s</p>
+<p>```</p>
+    </div>
+  </div>
+</div>
+
+<div class="section-block" onclick="toggleSection(this)">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="section-num blue">12</span>
+      Selector de modo con botones
+    </div>
+    <span class="chevron">&#9660;</span>
+  </div>
+  <div class="section-body">
+    <pre>if Button.RIGHT in hub.buttons.pressed():
+    Calibrate()
+elif Button.LEFT in hub.buttons.pressed():
+    hub.speaker.beep(880, 100)
+    hub.speaker.beep(1760, 100)
+    while(True):
+        run(100, 100)
+else:
+    Main()</pre>
+    <div class="explanation">
+<p><strong>¿Por qué esto está al final del archivo y no en una función?</strong></p>
+<p>Este código se ejecuta cuando el Hub carga el programa — no dentro de ninguna</p>
+<p>función. Python ejecuta el código de nivel superior de arriba a abajo al inicio.</p>
+<p><strong>Los tres modos:</strong></p>
+<ul>
+<li><strong>Botón DERECHO</strong> al encender → <code>Calibrate()</code> — guardar negro y blanco del tapete</li>
+<li><strong>Botón IZQUIERDO</strong> al encender → limpiar ruedas — corre indefinidamente hasta apagar</li>
+<li><strong>Sin botón</strong> → <code>Main()</code> — run normal de competencia</li>
+</ul>
+<p><strong>Protocolo correcto:</strong></p>
+<p>1. Encender → botón derecho → calibrar</p>
+<p>2. Apagar el Hub</p>
+<p>3. Encender de nuevo sin botón → Main() corre automáticamente</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<div id="tab-quiz" class="tab-content">
+  <div class="intro-card">
+    Haz clic en cada pregunta para revelar la respuesta. Intenta responderla mentalmente antes de ver. Si no puedes, vuelve a la sección correspondiente del código.
+  </div>
+
+  <div class="level-label basic">&#9679; Nivel básico — cualquier integrante del equipo debe poder responder</div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num basic">B1</span>
+      <span class="q-text">¿Qué puertos tienen los motores de tracción? ¿Y los grippers? ¿Y los sensores?</span>
+    </div>
+    <div class="quiz-answer">Tracción: <code>Puerto A</code> (izquierda, COUNTERCLOCKWISE) y <code>Puerto E</code> (derecha). Grippers: <code>Puerto B</code> (trasero) y <code>Puerto F</code> (frontal). Sensores: <code>Puerto C</code> (piso, seguimiento de línea) y <code>Puerto D</code> (lateral, escaneo de bloques).</div>
+  </div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num basic">B2</span>
+      <span class="q-text">¿Qué hace el botón derecho del Hub al encender? ¿Qué hace el izquierdo?</span>
+    </div>
+    <div class="quiz-answer"><strong>Botón derecho → Calibrate():</strong> el robot avanza sobre el tapete durante 1.5 segundos registrando los valores de reflexión negro y blanco del sensor de piso, y los guarda en la memoria permanente del Hub.<br><br><strong>Botón izquierdo → limpieza de ruedas:</strong> el robot corre en línea recta sin parar — útil para limpiar las ruedas antes de un intento.<br><br><strong>Sin botón → Main():</strong> run normal de competencia.</div>
+  </div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num basic">B3</span>
+      <span class="q-text">¿Por qué hay que calibrar en el lugar de competencia y no solo en casa?</span>
+    </div>
+    <div class="quiz-answer">La cantidad de luz que refleja el tapete depende de la iluminación del lugar. Un tapete blanco bajo luz LED da valores distintos que bajo luz fluorescente o luz natural. Si calibras en casa y compites en otro lugar, el robot puede ver negro donde hay blanco — el seguimiento de línea falla completamente porque <code>blackThreshold</code> y <code>whiteThreshold</code> estarán calculados para la iluminación incorrecta.</div>
+  </div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num basic">B4</span>
+      <span class="q-text">¿Qué pasa si la batería está baja durante el intento?</span>
+    </div>
+    <div class="quiz-answer">Los motores giran más despacio con el mismo comando de voltaje. El código compensa con <code>BatteryScale</code>: ajusta la velocidad mínima, las rampas de aceleración y desaceleración, y las constantes kP/kD de los giros. Sin embargo, la compensación no es perfecta — siempre competir con batería recién cargada (>90%, >8.0V).</div>
+  </div>
+
+  <div class="level-label inter">&#9679; Nivel intermedio — Rafael debe dominar completamente</div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num inter">I1</span>
+      <span class="q-text">¿Qué hace el componente Proporcional del PD? ¿Y el Derivativo? ¿Por qué se necesitan los dos?</span>
+    </div>
+    <div class="quiz-answer"><strong>Proporcional (P):</strong> corrige el error actual. Si el robot se desvió 10°, aplica corrección de 10×kP. Problema: solo con P, el robot sobrepasa el objetivo y oscila indefinidamente.<br><br><strong>Derivativo (D):</strong> corrige la velocidad de cambio del error. Si el error está disminuyendo rápido (el robot se está corrigiendo agresivamente), D aplica un freno para que no sobrepase. Es la amortiguación del sistema.<br><br>Juntos logran llegada rápida y precisa sin oscilación — P lleva al objetivo, D frena para no pasarse.</div>
+  </div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num inter">I2</span>
+      <span class="q-text">¿Por qué lightTarget = promedio − 10 y no el promedio exacto entre negro y blanco?</span>
+    </div>
+    <div class="quiz-answer">Si el target fuera el promedio exacto, el robot seguiría el centro de la línea negra. Al restar 10, el punto de seguimiento se mueve hacia el negro — el robot "prefiere" estar un poco sobre el lado oscuro. Esto lo hace más robusto ante sombras de jueces, ondulaciones del tapete o variaciones de luz en competencia: ya estaba sesgado hacia donde la línea es más fácil de detectar.</div>
+  </div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num inter">I3</span>
+      <span class="q-text">¿Qué hace gyroRatio y cómo sabes si necesitas ajustarlo?</span>
+    </div>
+    <div class="quiz-answer"><code>gyroRatio</code> compensa si el Hub sobreestima o subestima los ángulos reales. Algunos Hubs registran 92° cuando el robot giró 90° físicamente — acumulado en muchos giros, esto causa derivas importantes.<br><br><strong>Cómo verificar:</strong> haz 4 veces <code>turn(3, 90)</code>. El robot debe quedar exactamente donde empezó. Si queda desviado a la derecha → gira de más → bajar <code>gyroRatio</code> a ~0.98. Si queda desviado a la izquierda → subir a ~1.02. Ajustar en pasos de 0.01.</div>
+  </div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num inter">I4</span>
+      <span class="q-text">¿Por qué followUntilJunction usa un PD diferente al de follow?</span>
+    </div>
+    <div class="quiz-answer">Al llegar a un cruce, el robot necesita detectar negro y parar rápidamente. <code>junctionPD = [0.45, 5]</code> es más conservador que <code>lightPD = [0.55, 9]</code> — menos agresivo en la corrección para que el robot no pase de largo el cruce por corregir demasiado fuerte justo en el momento crítico.<br><br>Además, se llama con <code>setPD(..., 0)</code> sin resetear <code>lastError</code>, para que la transición desde el <code>follow()</code> previo sea suave en lugar de abrupta.</div>
+  </div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num inter">I5</span>
+      <span class="q-text">¿Qué significa pause=False en backDegree() y cuándo usarías pause=True?</span>
+    </div>
+    <div class="quiz-answer"><strong>pause=False (default):</strong> el código llama a <code>run_target</code> y continúa inmediatamente sin esperar que el gripper llegue. El gripper se mueve en paralelo con el movimiento del robot — ahorra tiempo valioso en las misiones.<br><br><strong>pause=True:</strong> el código espera a que el motor llegue exactamente a la posición antes de continuar. Usar cuando el robot necesita que el gripper esté en posición antes de avanzar hacia el bloque, para no chocar con él o fallar el agarre.</div>
+  </div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num inter">I6</span>
+      <span class="q-text">¿Por qué move() promedia los dos encoders en vez de usar solo uno?</span>
+    </div>
+    <div class="quiz-answer">Si el robot está girando para corregir el rumbo con el PD giroscópico, una rueda avanza más que la otra. Si usara solo el encoder izquierdo y ese motor está corrigiendo menos (más lento), el robot avanzaría más de la distancia esperada antes de parar.<br><br>Al promediar <code>(abs(left) + abs(right)) / 2</code>, los efectos de la corrección se cancelan mutuamente — el promedio refleja la distancia lineal real del centro del robot, independientemente de cuánto corrija el PD en cada ciclo.</div>
+  </div>
+
+  <div class="level-label adv">&#9679; Nivel avanzado — para impresionar a los jueces</div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num adv">A1</span>
+      <span class="q-text">¿Qué es el anti-wraparound en getYaw() y por qué es necesario?</span>
+    </div>
+    <div class="quiz-answer">El giroscopio acumula ángulos — si el robot hace varios giros puede llegar a valores como 375° o 450°. Si el heading objetivo es 15°, la diferencia real es 0°, pero <code>375 - 15 = 360°</code>. El controlador PD vería un error enorme y haría girar el robot en círculos.<br><br>La fórmula <code>yaw - round((yaw - heading) / 370) × 360</code> detecta cuántas vueltas completas de diferencia hay entre yaw y heading, y las resta. Así yaw siempre queda en el rango correcto relativo al heading. Se usa 370 en vez de 360 para evitar ambigüedad en el borde exacto de 180°.</div>
+  </div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num adv">A2</span>
+      <span class="q-text">Explica cómo ProcessColour() distingue azul de amarillo usando HSV.</span>
+    </div>
+    <div class="quiz-answer"><strong>Paso 1:</strong> separar los 4 bloques escaneados en dos grupos por saturación (S). Azul y amarillo son colores puros → S alto. Blanco y negro no tienen color definido → S bajo. <code>top2</code> toma los 2 índices con mayor S.<br><br><strong>Paso 2:</strong> dentro del grupo de alta saturación, separar por Hue (H). Amarillo tiene H ≈ 60°. Azul tiene H ≈ 240°. El que tiene mayor H es azul: <code>blue, yellow = (test1, test2) if h[test1] > h[test2]</code>.<br><br><strong>Paso 3:</strong> ajustar índices sumando 2 a los que están después de las posiciones fijas de verde (2) y rojo (3).</div>
+  </div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num adv">A3</span>
+      <span class="q-text">¿Por qué el giro tiene kP más bajo con batería llena?</span>
+    </div>
+    <div class="quiz-answer">Con batería llena los motores responden con más fuerza al mismo comando. El robot tiende a sobrepasar el ángulo objetivo — la inercia es mayor. Para compensar:<br><br>- <strong>kP más bajo</strong>: menos agresividad en la corrección → no empuja tan fuerte al acercarse al objetivo<br>- <strong>kD más alto</strong>: más amortiguación → frena el exceso de inercia más efectivamente<br><br>Con batería baja ocurre lo contrario: motores débiles, tienden a quedarse cortos → kP más alto y kD más bajo para que corrija con más fuerza.</div>
+  </div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num adv">A4</span>
+      <span class="q-text">¿Para qué sirve el offset de 20° después de followUntilJunction en Scan()?</span>
+    </div>
+    <div class="quiz-answer">El robot detecta el cruce cuando el sensor C (piso, debajo del centro) ve negro. Pero el sensor D (lateral, escaneo) está físicamente más adelante en el chasis.<br><br>Sin el <code>move(90, 20)</code>, el sensor D escanearía todavía frente al bloque anterior, no frente al bloque que acaba de detectar el cruce. Los 20° (~1.1 cm) compensan exactamente la distancia física entre los dos sensores — es como hacer un "paso extra" para que el sensor correcto quede frente al objeto correcto.</div>
+  </div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num adv">A5</span>
+      <span class="q-text">¿Cómo sabe el robot en TakeBlueWhite() si el próximo bloque está más cerca o más lejos de casa?</span>
+    </div>
+    <div class="quiz-answer">Después de recoger el primer bloque, el código compara <code>target[taking]</code> (posición del siguiente bloque a recoger) con <code>currentPosition</code> (dónde está el robot ahora):<br><br>- Si <code>target[taking] &gt; currentPosition</code> → el siguiente está más lejos de casa → <code>currentDirection = 1</code> (avanzar alejándose)<br>- Si <code>target[taking] &lt; currentPosition</code> → está más cerca → <code>currentDirection = -1</code> (retroceder hacia casa)<br><br>Luego <code>turn(3, -90 * currentDirection)</code> gira al lado correcto para ir en esa dirección.</div>
+  </div>
+
+  <div class="quiz-question">
+    <div class="quiz-q" onclick="toggleAnswer(this)">
+      <span class="q-num adv">A6</span>
+      <span class="q-text">¿Qué pasaría si se calibra pero el robot no pasa por zona negra durante la calibración?</span>
+    </div>
+    <div class="quiz-answer"><code>CalibrateLow</code> quedaría en su valor inicial de 100 — el robot nunca vio un valor bajo durante el recorrido. Entonces <code>lightLow = 100</code> y <code>blackThreshold = 105</code> (mayor que cualquier lectura real posible). El resultado: el robot nunca detectaría negro — <code>moveBlack()</code> correría infinitamente y <code>followUntilJunction()</code> nunca pararía.<br><br>Por eso el recorrido de calibración debe pasar OBLIGATORIAMENTE por zona negra Y zona blanca.</div>
+  </div>
+</div>
+
+<div id="tab-protocolo" class="tab-content">
+  <div class="intro-card">
+    Haz clic en cada ítem para marcarlo como completado. El progreso se mantiene mientras la página esté abierta.
+  </div>
+
+  <div class="checklist-group" id="group-previa">
+    <div class="checklist-title">Noche anterior a la competencia</div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Cargar la batería del Hub completa</div>
+        <div class="check-note">Verificar que llega a >8.2V antes de desconectar el cargador</div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Verificar que el código en el Hub es la versión final</div>
+        <div class="check-note">Encender el Hub, confirmar que el archivo cargado es el correcto</div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Preparar el kit completo</div>
+        <div class="check-note">Hub + 4 motores + 2 sensores + cables + destornillador Technic</div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">No hacer runs la noche anterior</div>
+        <div class="check-note">Descansar — la fatiga afecta el juicio en momentos de presión</div>
+      </div>
+    </div>
+    <div class="progress-label" id="label-previa">0 / 4 completados</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="bar-previa" style="width:0%"></div></div>
+    <button class="reset-btn" onclick="resetGroup('group-previa');event.stopPropagation()">Resetear</button>
+  </div>
+
+  <div class="checklist-group" id="group-llegada">
+    <div class="checklist-title">Al llegar al lugar de competencia</div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Observar la iluminación del área antes de cualquier otra cosa</div>
+        <div class="check-note">¿Luz directa sobre el tapete? ¿Sombras de estructuras? ¿LED o fluorescente?</div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Calibrar durante el tiempo de práctica (botón DERECHO del Hub)</div>
+        <div class="check-note">Hacerlo SIEMPRE — no reutilizar la calibración de casa</div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Hacer al menos 1 run completo durante el tiempo de práctica</div>
+        <div class="check-note">Verificar que el comportamiento es igual al de los ensayos</div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Rafael decide si ajustar algún parámetro antes del intento oficial</div>
+        <div class="check-note">Solo Rafael — él conoce el código y puede evaluar qué ajustar</div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Verificar batería antes del intento oficial</div>
+        <div class="check-note">Si bajó de 7.8V durante los ensayos → cargar antes del intento</div>
+      </div>
+    </div>
+    <div class="progress-label" id="label-llegada">0 / 5 completados</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="bar-llegada" style="width:0%"></div></div>
+    <button class="reset-btn" onclick="resetGroup('group-llegada');event.stopPropagation()">Resetear</button>
+  </div>
+
+  <div class="checklist-group" id="group-intento">
+    <div class="checklist-title">Antes de cada intento oficial</div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Encender Hub → botón DERECHO → calibrar</div>
+        <div class="check-note">Esperar el beep de confirmación — el robot avanza y para</div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Apagar y volver a encender (sin presionar nada)</div>
+        <div class="check-note">El Hub carga el programa principal — un toque del centro inicia Main()</div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Posicionar el robot en la zona de inicio exactamente</div>
+        <div class="check-note">Consistencia de posición entre rondas es crítica</div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Verificar que los grippers están en posición inicial</div>
+        <div class="check-note">Start() asume una posición específica de los grippers al arrancar</div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Un solo toque del botón CENTRAL para iniciar</div>
+        <div class="check-note">Una vez iniciado, no tocar el robot ni las piezas del tapete</div>
+      </div>
+    </div>
+    <div class="progress-label" id="label-intento">0 / 5 completados</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="bar-intento" style="width:0%"></div></div>
+    <button class="reset-btn" onclick="resetGroup('group-intento');event.stopPropagation()">Resetear</button>
+  </div>
+
+  <div class="checklist-group" id="group-reglas">
+    <div class="checklist-title">Reglas críticas — todos deben saber</div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Los adultos NO pueden entrar al área del equipo durante la competencia</div>
+        <div class="check-note">Regla 3.3 — ni Andrés, ni los papás, ni el coach Julio</div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Los integrantes NO pueden llevar teléfonos ni smartwatches al área</div>
+        <div class="check-note">Regla 3.5 — dispositivos de comunicación están prohibidos</div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Si los jueces preguntan: Rafael responde código, Néstor construcción, Guillermo estrategia</div>
+        <div class="check-note">Los tres deben poder explicar el flujo general de Main() con sus propias palabras</div>
+      </div>
+    </div>
+    <div class="check-item" onclick="toggleCheck(this)">
+      <div class="check-box"></div>
+      <div>
+        <div class="check-text">Firmar la hoja de puntuación solo cuando estén seguros del conteo</div>
+        <div class="check-note">Una vez firmada no hay reclamos posibles</div>
+      </div>
+    </div>
+    <div class="progress-label" id="label-reglas">0 / 4 completados</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="bar-reglas" style="width:0%"></div></div>
+    <button class="reset-btn" onclick="resetGroup('group-reglas');event.stopPropagation()">Resetear</button>
+  </div>
+</div>
+
+
+
+<script>
+  // ── Tokenizador de MicroPython para tabs de código ───────────────────────
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function highlightPython(code) {
+    const KW = new Set(['from','import','def','class','if','elif','else','while','for','in',
+      'return','pass','global','True','False','None','and','or','not','break','continue',
+      'try','except','with','as','lambda','yield','raise','print','int','str','bytes',
+      'len','abs','round','min','max','range','list','dict','tuple','set','type','wait']);
+    let out = '', i = 0;
+    while (i < code.length) {
+      let c = code[i];
+      if (c === '\n') { out += '\n'; i++; continue; }
+      // Comment
+      if (c === '#') {
+        let j = i; while (j < code.length && code[j] !== '\n') j++;
+        out += '<span class="cm">' + escHtml(code.slice(i,j)) + '</span>'; i = j; continue;
+      }
+      // String
+      if (c === '"' || c === "'") {
+        let q = c, j = i+1, tri = code.slice(i,i+3) === q+q+q;
+        if (tri) { j = i+3; while (j < code.length && code.slice(j,j+3) !== q+q+q) j++; j+=3; }
+        else { while (j < code.length && code[j] !== q && code[j] !== '\n') { if(code[j]==='\\')j++; j++; } j++; }
+        out += '<span class="str">' + escHtml(code.slice(i,j)) + '</span>'; i = j; continue;
+      }
+      // Number
+      if (/[0-9]/.test(c)) {
+        let j = i; while (j < code.length && /[0-9._xXa-fA-F]/.test(code[j])) j++;
+        out += '<span class="num">' + escHtml(code.slice(i,j)) + '</span>'; i = j; continue;
+      }
+      // Identifier / keyword / class / function
+      if (/[a-zA-Z_]/.test(c)) {
+        let j = i; while (j < code.length && /[a-zA-Z0-9_]/.test(code[j])) j++;
+        let word = code.slice(i,j);
+        if (KW.has(word))               out += '<span class="kw">'  + word + '</span>';
+        else if (/^[A-Z]/.test(word))   out += '<span class="cls">' + word + '</span>';
+        else if (code[j] === '(')       out += '<span class="fn">'  + word + '</span>';
+        else                            out += word;
+        i = j; continue;
+      }
+      out += escHtml(c); i++;
+    }
+    return out;
+  }
+  document.addEventListener('DOMContentLoaded', function() {
+    ['tab-guia-orig','tab-guia-v1'].forEach(function(tabId) {
+      const tab = document.getElementById(tabId);
+      if (!tab) return;
+      tab.querySelectorAll('pre').forEach(function(pre) {
+        pre.innerHTML = highlightPython(pre.textContent);
+      });
+    });
+  });
+  // ─────────────────────────────────────────────────────────────────────────
+
+  function switchTab(name, el) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    el.classList.add('active');
+  }
+  function toggleSection(block) { block.classList.toggle('open'); }
+  function toggleAnswer(el) { el.nextElementSibling.classList.toggle('visible'); }
+  function toggleCheck(item) {
+    item.classList.toggle('checked');
+    item.querySelector('.check-box').textContent = item.classList.contains('checked') ? '✓' : '';
+    updateProgress(item.closest('.checklist-group'));
+  }
+  function updateProgress(group) {
+    const items   = group.querySelectorAll('.check-item');
+    const checked = group.querySelectorAll('.check-item.checked').length;
+    const total   = items.length;
+    const pct     = total ? (checked / total * 100) : 0;
+    const id      = group.id.replace('group-', '');
+    const bar     = document.getElementById('bar-'   + id);
+    const label   = document.getElementById('label-' + id);
+    if (bar)   bar.style.width  = pct + '%';
+    if (label) label.textContent = checked + ' / ' + total + ' completados';
+  }
+  function resetGroup(groupId) {
+    const group = document.getElementById(groupId);
+    group.querySelectorAll('.check-item').forEach(item => {
+      item.classList.remove('checked');
+      item.querySelector('.check-box').textContent = '';
+    });
+    updateProgress(group);
+  }
+</script>
+</body>
+</html>
