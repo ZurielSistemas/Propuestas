@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>El cambio que permite que Paradigma crezca — CT4</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --azul:       #1C1B4D;
+      --fucsia:     #B80E65;
+      --turquesa:   #1791B1;
+      --celeste:    #7CAEF3;
+      --blanco:     #FFFFFF;
+      --gris-10:    #F5F6FA;
+      --gris-20:    #E8EAF2;
+
+      --font-heading: 'Montserrat', sans-serif;
+      --font-body:    'Inter', sans-serif;
+
+      --max-width:    720px;
+      --radius-card:  16px;
+      --transition:   200ms ease;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-weight: 400;
+      color: var(--azul);
+      background: var(--blanco);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ─── HERO ─────────────────────────────────────────────────── */
+    .hero {
+      background-color: var(--azul);
+      position: relative;
+      overflow: hidden;
+      padding: 72px 0 88px;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle, rgba(23,145,177,0.20) 0%, transparent 68%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 40px;
+      left: -100px;
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(184,14,101,0.15) 0%, transparent 68%);
+      pointer-events: none;
+    }
+
+    /* Patrón ecualizador CSS puro */
+    .hero-equalizer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      padding: 0 12px;
+      opacity: 0.16;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .hero-equalizer span {
+      display: block;
+      width: 4px;
+      background: var(--celeste);
+      border-radius: 2px 2px 0 0;
+      flex-shrink: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .hero-eyebrow-line {
+      width: 28px;
+      height: 1px;
+      background: var(--celeste);
+      opacity: 0.55;
+    }
+
+    .hero-eyebrow-text {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--celeste);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(124,174,243,0.14);
+      border: 1px solid rgba(124,174,243,0.35);
+      color: var(--azul);
+      background-color: var(--celeste);
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 5px 16px;
+      border-radius: 999px;
+      margin-bottom: 28px;
+    }
+
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: clamp(26px, 5vw, 42px);
+      font-weight: 800;
+      color: var(--blanco);
+      line-height: 1.2;
+      margin-bottom: 16px;
+      max-width: 580px;
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 400;
+      color: rgba(124,174,243,0.72);
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── SECCIONES — BASE ─────────────────────────────────────── */
+    .section {
+      padding: 64px 0;
+    }
+
+    .section--gray {
+      background: var(--gris-10);
+    }
+
+    .section--dark {
+      background: var(--azul);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section--dark::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 340px;
+      height: 340px;
+      background: radial-gradient(circle, rgba(23,145,177,0.13) 0%, transparent 68%);
+      pointer-events: none;
+    }
+
+    .section--dark::after {
+      content: '';
+      position: absolute;
+      bottom: -40px;
+      left: -80px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(184,14,101,0.11) 0%, transparent 68%);
+      pointer-events: none;
+    }
+
+    .section-label {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--turquesa);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .section-label--light {
+      color: var(--celeste);
+    }
+
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: clamp(21px, 4vw, 29px);
+      font-weight: 800;
+      color: var(--azul);
+      line-height: 1.25;
+      margin-bottom: 20px;
+    }
+
+    .section-title--light {
+      color: var(--blanco);
+    }
+
+    .section-body {
+      font-size: 15px;
+      font-weight: 400;
+      color: #3D3B6E;
+      line-height: 1.72;
+      max-width: 620px;
+    }
+
+    .section-body + .section-body {
+      margin-top: 16px;
+    }
+
+    .divider {
+      width: 40px;
+      height: 3px;
+      background: var(--fucsia);
+      border-radius: 2px;
+      margin: 16px 0 28px;
+    }
+
+    .divider--light {
+      background: rgba(184,14,101,0.65);
+    }
+
+    /* ─── SECCIÓN 1 — LA SEÑAL ─────────────────────────────────── */
+    /* Sin estilos especiales adicionales — usa los de base */
+
+    /* ─── SECCIÓN 2 — LA FRICCIÓN ──────────────────────────────── */
+    .friction-intro {
+      font-size: 15px;
+      font-weight: 400;
+      color: #3D3B6E;
+      line-height: 1.72;
+      margin-bottom: 32px;
+      max-width: 620px;
+    }
+
+    .friction-items {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .friction-card {
+      background: var(--blanco);
+      border: 1px solid var(--gris-20);
+      border-left: 4px solid var(--fucsia);
+      border-radius: var(--radius-card);
+      padding: 16px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: box-shadow var(--transition), transform var(--transition);
+    }
+
+    .friction-card:hover {
+      box-shadow: 0 6px 24px rgba(184,14,101,0.10);
+      transform: translateY(-2px);
+    }
+
+    .friction-icon-wrap {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      background: var(--fucsia);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .friction-icon-wrap svg {
+      width: 17px;
+      height: 17px;
+      stroke: var(--blanco);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .friction-card-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: #3D3B6E;
+      line-height: 1.55;
+      padding-top: 8px;
+    }
+
+    /* ─── SECCIÓN 3 — LA RESOLUCIÓN ────────────────────────────── */
+    .resolution-intro {
+      font-size: 15px;
+      font-weight: 400;
+      color: #3D3B6E;
+      line-height: 1.72;
+      margin-bottom: 36px;
+      max-width: 620px;
+    }
+
+    .resolution-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .resolution-col {
+      border-radius: var(--radius-card);
+      padding: 24px;
+    }
+
+    .resolution-col--before {
+      background: var(--gris-10);
+      border-top: 3px solid rgba(184,14,101,0.35);
+      border: 1px solid var(--gris-20);
+      border-top: 3px solid rgba(184,14,101,0.35);
+    }
+
+    .resolution-col--after {
+      background: rgba(28,27,77,0.04);
+      border: 1px solid rgba(23,145,177,0.20);
+      border-top: 3px solid var(--turquesa);
+    }
+
+    .resolution-col-label {
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .resolution-col--before .resolution-col-label {
+      color: rgba(184,14,101,0.65);
+    }
+
+    .resolution-col--after .resolution-col-label {
+      color: var(--turquesa);
+    }
+
+    .resolution-col-title {
+      font-family: var(--font-heading);
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--azul);
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .resolution-col-text {
+      font-size: 13px;
+      font-weight: 400;
+      color: #4A4880;
+      line-height: 1.65;
+    }
+
+    /* ─── SECCIÓN 4 — EL DESTINO ───────────────────────────────── */
+    .destination-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .destination-quote {
+      border-left: 4px solid var(--fucsia);
+      background: rgba(255,255,255,0.06);
+      border-radius: 0 12px 12px 0;
+      padding: 28px 32px;
+      margin-bottom: 36px;
+    }
+
+    .destination-quote p {
+      font-size: clamp(15px, 2.5vw, 17px);
+      font-weight: 300;
+      color: rgba(255,255,255,0.90);
+      line-height: 1.78;
+      font-style: italic;
+    }
+
+    .destination-bots {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .bot-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.20);
+      border-radius: 999px;
+      padding: 9px 20px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--blanco);
+      transition: background var(--transition), border-color var(--transition);
+      cursor: default;
+    }
+
+    .bot-pill:hover {
+      background: rgba(255,255,255,0.18);
+      border-color: rgba(255,255,255,0.35);
+    }
+
+    .bot-pill svg {
+      width: 15px;
+      height: 15px;
+      stroke: var(--celeste);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    /* ─── FOOTER ───────────────────────────────────────────────── */
+    .footer {
+      background: var(--azul);
+      padding: 44px 0;
+      text-align: center;
+    }
+
+    .footer-brand {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--celeste);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .footer-meta {
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: rgba(255,255,255,0.30);
+      letter-spacing: 0.05em;
+    }
+
+    /* ─── RESPONSIVE ───────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .hero {
+        padding: 56px 0 76px;
+      }
+
+      .section {
+        padding: 48px 0;
+      }
+
+      .resolution-columns {
+        grid-template-columns: 1fr;
+      }
+
+      .destination-bots {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .destination-quote {
+        padding: 20px 22px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        padding: 0 40px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .friction-card,
+      .bot-pill {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ HERO ════════════════════════════════════════════════════ -->
+  <section class="hero">
+
+    <!-- Patrón de ecualizador CSS puro — 20 barras con alturas variables -->
+    <div class="hero-equalizer" aria-hidden="true">
+      <span style="height:12px"></span>
+      <span style="height:24px"></span>
+      <span style="height:16px"></span>
+      <span style="height:32px"></span>
+      <span style="height:20px"></span>
+      <span style="height:28px"></span>
+      <span style="height:10px"></span>
+      <span style="height:36px"></span>
+      <span style="height:22px"></span>
+      <span style="height:30px"></span>
+      <span style="height:14px"></span>
+      <span style="height:26px"></span>
+      <span style="height:18px"></span>
+      <span style="height:38px"></span>
+      <span style="height:20px"></span>
+      <span style="height:28px"></span>
+      <span style="height:12px"></span>
+      <span style="height:34px"></span>
+      <span style="height:24px"></span>
+      <span style="height:16px"></span>
+    </div>
+
+    <div class="container">
+      <div class="hero-content">
+
+        <div class="hero-eyebrow">
+          <span class="hero-eyebrow-line" aria-hidden="true"></span>
+          <span class="hero-eyebrow-text">CT4 · Automatización</span>
+          <span class="hero-eyebrow-line" aria-hidden="true"></span>
+        </div>
+
+        <div class="hero-badge">Actualización de Arquitectura</div>
+
+        <h1 class="hero-title">El cambio que permite que Paradigma crezca</h1>
+
+        <p class="hero-subtitle">Paradigma Music Station &nbsp;·&nbsp; Abril 2026</p>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══ SECCIÓN 1 — LA SEÑAL ════════════════════════════════════ -->
+  <section class="section">
+    <div class="container">
+
+      <p class="section-label">La señal</p>
+      <h2 class="section-title">Sol, Do y Fa necesitaban más que responder preguntas</h2>
+      <div class="divider"></div>
+
+      <p class="section-body">
+        Cuando arrancó el CT4, el plan era directo: un asistente recibía a los clientes, respondía sus preguntas y los pasaba al equipo. Eso funcionó. Pero Sol, Do y Fa fueron tomando forma — inscripciones, cobros, servicio técnico, horarios — y quedó claro que el alcance era mucho mayor de lo que el sistema podía sostener.
+      </p>
+      <p class="section-body">
+        El Bot Builder de SalesIQ, con el que se arrancó, no podía conectarse a ningún sistema externo. Cada vez que Paradigma quisiera incorporar algo nuevo, habría que rehacer los flujos desde cero. No era crecer: era acumular deuda.
+      </p>
+
+    </div>
+  </section>
+
+
+  <!-- ═══ SECCIÓN 2 — LA FRICCIÓN ════════════════════════════════ -->
+  <section class="section section--gray">
+    <div class="container">
+
+      <p class="section-label">La fricción</p>
+      <h2 class="section-title">Construir adentro de una caja no escala</h2>
+      <div class="divider"></div>
+
+      <p class="friction-intro">
+        Diseñar dentro de una caja cerrada tiene un costo que no siempre se ve al principio. Cada conversación empezaba desde cero. El asistente no tenía acceso a nada fuera del chat, y agregar cualquier sistema nuevo significaba rehacer todo lo que ya funcionaba.
+      </p>
+
+      <div class="friction-items">
+
+        <!-- Item 1: candado cerrado -->
+        <div class="friction-card">
+          <div class="friction-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+          </div>
+          <p class="friction-card-text">Sin memoria entre conversaciones — cada cliente llega como si fuera la primera vez</p>
+        </div>
+
+        <!-- Item 2: enlace roto -->
+        <div class="friction-card">
+          <div class="friction-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M18.84 12.25l1.72-1.71A4.5 4.5 0 0014.2 4.2l-1.7 1.72M5.16 11.75l-1.72 1.71a4.5 4.5 0 006.36 6.36l1.71-1.72"/>
+              <path d="M8 16l-1 1M16 8l1-1M2 2l20 20"/>
+            </svg>
+          </div>
+          <p class="friction-card-text">Sin conexión con otros sistemas — cobros, horarios y registros siguen siendo manuales</p>
+        </div>
+
+        <!-- Item 3: caja cerrada -->
+        <div class="friction-card">
+          <div class="friction-icon-wrap" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+              <line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+          </div>
+          <p class="friction-card-text">Sin capacidad de escalar — cada mejora requiere reconstruir lo que ya existe</p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══ SECCIÓN 3 — LA RESOLUCIÓN ══════════════════════════════ -->
+  <section class="section">
+    <div class="container">
+
+      <p class="section-label">La resolución</p>
+      <h2 class="section-title">La decisión: mover los asistentes a un sistema abierto</h2>
+      <div class="divider"></div>
+
+      <p class="resolution-intro">
+        La decisión fue sacar la lógica de los asistentes del Bot Builder y moverla a Make, una plataforma de automatización que se conecta con cualquier sistema externo. Sol arranca con esta arquitectura — Do y Fa la seguirán. Las conversaciones dejan de seguir un guión fijo: el asistente entiende la intención del cliente, navega entre flujos y consulta los sistemas del negocio cuando lo necesita.
+      </p>
+
+      <div class="resolution-columns">
+
+        <div class="resolution-col resolution-col--before">
+          <p class="resolution-col-label">Antes</p>
+          <h3 class="resolution-col-title">Bot Builder</h3>
+          <p class="resolution-col-text">La lógica del bot vivía dentro del Bot Builder. Conectarse con el mundo exterior no era una opción.</p>
+        </div>
+
+        <div class="resolution-col resolution-col--after">
+          <p class="resolution-col-label">Ahora</p>
+          <h3 class="resolution-col-title">Automatización conectada</h3>
+          <p class="resolution-col-text">La lógica vive en Make, una plataforma de automatización. Cada sistema nuevo que Paradigma adopte se conecta desde ahí — el asistente simplemente lo usa.</p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══ SECCIÓN 4 — EL DESTINO ══════════════════════════════════ -->
+  <section class="section section--dark">
+    <div class="container destination-content">
+
+      <p class="section-label section-label--light">El destino</p>
+      <div class="divider divider--light"></div>
+
+      <blockquote class="destination-quote">
+        <p>Paradigma opera con asistentes digitales que crecen con el negocio. Cada sistema que se incorpore — cobros, horarios, registros, contabilidad — se conecta directamente a los flujos existentes. No hay que reconstruir. Solo agregar.</p>
+      </blockquote>
+
+      <div class="destination-bots" role="list">
+
+        <!-- Sol · Escuela — ícono nota musical -->
+        <div class="bot-pill" role="listitem">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 18V5l12-2v13"/>
+            <circle cx="6" cy="18" r="3"/>
+            <circle cx="18" cy="16" r="3"/>
+          </svg>
+          Sol · Escuela
+        </div>
+
+        <!-- Do · Tienda · Taller — ícono tienda -->
+        <div class="bot-pill" role="listitem">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path d="M16 10a4 4 0 01-8 0"/>
+          </svg>
+          Do · Tienda · Taller
+        </div>
+
+        <!-- Fa · Institucional — ícono personas -->
+        <div class="bot-pill" role="listitem">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+            <path d="M16 3.13a4 4 0 010 7.75"/>
+          </svg>
+          Fa · Institucional
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══ FOOTER ═══════════════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-brand">Zuriel Sistemas</p>
+      <p class="footer-meta">CT4 · Automatización · Paradigma Music Station · 2026</p>
+    </div>
+  </footer>
+
+</body>
+</html>
