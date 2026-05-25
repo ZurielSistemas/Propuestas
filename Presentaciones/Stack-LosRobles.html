@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa de Arquitectura Digital — Liceo Los Robles</title>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* Semántica de integración */
+    --c-sso:       #1a73e8;
+    --c-api:       #1e3a8a;
+    --c-lti:       #065f46;
+    --c-nativo:    #b45309;
+    --c-enlace:    #6b7280;
+    /* Nodos */
+    --gws-bg:      #e3f2fd; --gws-bd:  #90caf9; --gws-tx: #1565c0;
+    --sis-bg:      #1a472a; --sis-bd:  #52b788; --sis-tx: #ffffff;
+    --moo-bg:      #2d6a4f; --moo-bd:  #74c69d; --moo-tx: #ffffff;
+    --cls-bg:      #eef2ff; --cls-bd:  #a5b4fc; --cls-tx: #3730a3;
+    --lti-bg:      #d1fae5; --lti-bd:  #34d399; --lti-tx: #065f46;
+    --nat-bg:      #eff6ff; --nat-bd:  #93c5fd; --nat-tx: #1e40af;
+    --enl-bg:      #f9fafb; --enl-bd:  #d1d5db; --enl-tx: #374151;
+    --dual-bg:     #fef3c7; --dual-bd: #fbbf24; --dual-tx: #92400e;
+    /* UI */
+    --page-bg:     #f1f3f0;
+    --white:       #ffffff;
+    --border:      #e5e7eb;
+    --text:        #1f2937;
+    --muted:       #6b7280;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--page-bg);
+    min-height: 100vh;
+    color: var(--text);
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 36px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .header-logo {
+    height: 52px;
+    width: auto;
+    flex-shrink: 0;
+  }
+  .header-divider {
+    width: 1px; height: 40px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .header-text { flex: 1; }
+  .header-text h1 {
+    font-family: 'Merriweather', Georgia, serif;
+    font-size: 19px; font-weight: 700;
+    color: var(--text); line-height: 1.2;
+  }
+  .header-text .sub {
+    font-size: 11.5px; color: var(--muted); margin-top: 3px;
+  }
+  .header-right { text-align: right; }
+  .header-right .tag {
+    display: inline-block;
+    background: #1a472a; color: #d8f3dc;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px;
+    margin-bottom: 4px;
+  }
+  .header-right .date { font-size: 11px; color: var(--muted); }
+
+  /* ── CONTENEDOR ── */
+  .container { padding: 18px 36px 40px; }
+
+  /* ── LEYENDA ── */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 6px 22px;
+    align-items: center;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-bottom: 12px;
+  }
+  .leg-title { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+  .leg-item  { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--text); }
+  .leg-swatch {
+    width: 30px; height: 4px; border-radius: 2px; flex-shrink: 0;
+  }
+  .ls-sso    { background: var(--c-sso);    border: none; }
+  .ls-api    { background: var(--c-api);    border: none; }
+  .ls-lti    { background: var(--c-lti);    border: none; }
+  .ls-nativo { background: var(--c-nativo); border: none; }
+  .ls-enlace { background: repeating-linear-gradient(90deg, var(--c-enlace) 0, var(--c-enlace) 5px, transparent 5px, transparent 10px); }
+
+  .hint { font-size: 11px; color: var(--muted); text-align: center; margin-bottom: 10px; }
+
+  /* ── CANVAS ── */
+  .map-scroll { overflow-x: auto; border-radius: 10px; box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+  .map-canvas {
+    position: relative; width: 1150px; height: 680px;
+    background: var(--white); border-radius: 10px; overflow: hidden;
+  }
+  .map-canvas::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0,0,0,0.022) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.022) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  #svgLayer {
+    position: absolute; top: 0; left: 0;
+    width: 1150px; height: 680px;
+    pointer-events: none; z-index: 1;
+  }
+
+  /* ── NODOS ── */
+  .node {
+    position: absolute; z-index: 2; cursor: pointer;
+    border: 2px solid transparent; border-radius: 10px;
+    padding: 8px 11px;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.2s;
+    user-select: none;
+  }
+  .node:hover  { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,0.16); }
+  .node.selected { outline: 3px solid #f59e0b; outline-offset: 2px; box-shadow: 0 8px 22px rgba(0,0,0,0.12); }
+  .node.dimmed { opacity: 0.12; }
+
+  .node-inner { display: flex; align-items: flex-start; gap: 8px; }
+  .node-emoji { font-size: 19px; flex-shrink: 0; line-height: 1.25; }
+  .node-text  { flex: 1; min-width: 0; }
+  .node-label { font-size: 11.5px; font-weight: 700; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .node-sub   { font-size: 9.5px; margin-top: 2px; opacity: 0.78; line-height: 1.3; }
+  .node-badge {
+    display: inline-flex; margin-top: 4px;
+    padding: 1px 7px; border-radius: 20px;
+    font-size: 9px; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase;
+  }
+  .badge-1edtech { background: #1e3a8a !important; color: #dbeafe !important; letter-spacing: 0.6px; }
+
+  /* Tipos */
+  .node-base      { background: var(--gws-bg); border-color: var(--gws-bd); }
+  .node-base .node-label { color: var(--gws-tx); }
+  .node-base .node-sub   { color: #1976d2; }
+  .node-base .node-badge { background: #bbdefb; color: #0d47a1; }
+
+  .node-master    { background: var(--sis-bg); border-color: var(--sis-bd); }
+  .node-master .node-label { color: var(--sis-tx); }
+  .node-master .node-sub   { color: #95d5b2; }
+  .node-master .node-badge { background: #f59e0b; color: #1a1a1a; }
+
+  .node-lms-rec   { background: var(--moo-bg); border-color: var(--moo-bd); }
+  .node-lms-rec .node-label { color: var(--moo-tx); }
+  .node-lms-rec .node-sub   { color: #b7e4c7; }
+  .node-lms-rec .node-badge { background: #f59e0b; color: #1a1a1a; }
+
+  .node-lms-alt   { background: var(--cls-bg); border-color: var(--cls-bd); }
+  .node-lms-alt .node-label { color: var(--cls-tx); }
+  .node-lms-alt .node-sub   { color: #4338ca; }
+  .node-lms-alt .node-badge { background: #6366f1; color: white; }
+
+  .node-tool-lti    { background: var(--lti-bg); border-color: var(--lti-bd); }
+  .node-tool-lti .node-label { color: var(--lti-tx); }
+  .node-tool-lti .node-sub   { color: #047857; }
+  .node-tool-lti .node-badge { background: var(--lti-tx); color: white; }
+
+  .node-tool-nativo { background: var(--nat-bg); border-color: var(--nat-bd); }
+  .node-tool-nativo .node-label { color: var(--nat-tx); }
+  .node-tool-nativo .node-sub   { color: #1d4ed8; }
+  .node-tool-nativo .node-badge { background: #1e40af; color: white; }
+
+  .node-tool-enlace { background: var(--enl-bg); border-color: var(--enl-bd); }
+  .node-tool-enlace .node-label { color: var(--enl-tx); }
+  .node-tool-enlace .node-sub   { color: var(--muted); }
+  .node-tool-enlace .node-badge { background: #6b7280; color: white; }
+
+  .node-tool-dual   { background: var(--dual-bg); border-color: var(--dual-bd); border-width: 2px; }
+  .node-tool-dual .node-label { color: var(--dual-tx); }
+  .node-tool-dual .node-sub   { color: #a16207; }
+  .node-tool-dual .node-badge { background: #92400e; color: white; }
+
+  /* ── PANEL DE DETALLE ── */
+  .detail-panel {
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 10px; margin-top: 14px; min-height: 52px;
+    overflow: hidden;
+  }
+  .detail-empty { padding: 16px 24px; font-size: 11.5px; color: var(--muted); text-align: center; }
+  .detail-content { display: none; }
+  .detail-content.visible { display: block; }
+
+  .detail-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-emoji { font-size: 26px; }
+  .detail-title { font-family: 'Merriweather', serif; font-size: 15px; font-weight: 700; color: var(--text); }
+  .detail-subtitle { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+  .detail-close { margin-left: auto; cursor: pointer; font-size: 18px; color: var(--muted); padding: 4px 8px; border-radius: 6px; transition: background 0.15s; }
+  .detail-close:hover { background: #f3f4f6; color: var(--text); }
+
+  .detail-body { padding: 16px 20px 20px; display: flex; gap: 32px; flex-wrap: wrap; }
+  .detail-desc { flex: 1; min-width: 240px; font-size: 12.5px; line-height: 1.7; color: #374151; }
+  .detail-items { flex: 1; min-width: 200px; }
+  .detail-items ul { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+  .detail-items li { font-size: 11.5px; color: #374151; padding-left: 16px; position: relative; line-height: 1.4; }
+  .detail-items li::before { content: '→'; position: absolute; left: 0; color: #059669; }
+  .detail-conn { flex-shrink: 0; }
+  .detail-conn-title { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin-bottom: 6px; }
+  .conn-tag { display: inline-flex; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; margin: 3px 3px 0 0; border: 1px solid transparent; }
+  .conn-sso    { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+  .conn-api    { background: #e0e7ff; color: #3730a3; border-color: #a5b4fc; }
+  .conn-lti    { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+  .conn-nativo { background: #fef3c7; color: #92400e; border-color: #fbbf24; }
+  .conn-enlace { background: #f3f4f6; color: #374151; border-color: #d1d5db; }
+
+  /* ── FOOTER ── */
+  .footer {
+    max-width: 100%; margin: 16px 36px 0;
+    padding-top: 14px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <img class="header-logo"
+    src="https://losroblesenlinea.com.ve/site/wp-content/uploads/2015/02/logo2021.png"
+    alt="Liceo Los Robles"
+    onerror="this.style.display='none'">
+  <div class="header-divider"></div>
+  <div class="header-text">
+    <h1>Mapa de Arquitectura Digital</h1>
+    <div class="sub">Sistema de información · Plataforma de aprendizaje · Herramientas educativas</div>
+  </div>
+  <div class="header-right">
+    <div class="tag">RT1 — Transformación Institucional</div>
+    <div class="date">Mayo 2026</div>
+  </div>
+</div>
+
+<!-- CONTENIDO -->
+<div class="container">
+
+  <div class="legend">
+    <span class="leg-title">Estándar de integración</span>
+    <span class="leg-item"><span class="leg-swatch ls-sso"></span>SSO · OAuth 2.0</span>
+    <span class="leg-item"><span class="leg-swatch ls-api"></span>OneRoster / API REST</span>
+    <span class="leg-item"><span class="leg-swatch ls-lti"></span>LTI 1.3 — incrustado + calificaciones</span>
+    <span class="leg-item"><span class="leg-swatch ls-nativo"></span>Nativo — mismo ecosistema</span>
+    <span class="leg-item"><span class="leg-swatch ls-enlace"></span>Enlace externo</span>
+  </div>
+
+  <p class="hint">Haz clic en un nodo para explorar sus detalles · Hover para resaltar conexiones</p>
+
+  <div class="map-scroll">
+    <div class="map-canvas" id="mapCanvas">
+      <svg id="svgLayer" width="1150" height="680" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr-sso"    markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0,0 7,3.5 0,7" fill="#1a73e8"/></marker>
+          <marker id="arr-api"    markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0,0 7,3.5 0,7" fill="#1e3a8a"/></marker>
+          <marker id="arr-lti"    markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0,0 7,3.5 0,7" fill="#065f46"/></marker>
+          <marker id="arr-nativo" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0,0 7,3.5 0,7" fill="#b45309"/></marker>
+          <marker id="arr-enlace" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><polygon points="0,0 7,3.5 0,7" fill="#6b7280"/></marker>
+        </defs>
+      </svg>
+    </div>
+  </div>
+
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-empty" id="detailEmpty">↑ Haz clic en un nodo para explorar sus detalles</div>
+    <div class="detail-content" id="detailContent"></div>
+  </div>
+
+  <div class="footer">
+    <span>RT1 — Transformación Institucional · Tekton Framework</span>
+    <span>Liceo Los Robles · Mayo 2026</span>
+  </div>
+
+</div>
+
+<script>
+const NODES = [
+  {
+    id: 'gws', cx: 575, cy: 85, w: 230, h: 58,
+    type: 'base', emoji: '🔐',
+    label: 'Google Workspace', sub: 'Base Digital · SSO · Gratuito', badge: null,
+    detail: {
+      title: 'Google Workspace for Education',
+      sub: 'Base digital institucional — ya operativa',
+      desc: 'Plataforma base ya activa en el Liceo. Funciona como proveedor de identidad (SSO) para todo el ecosistema. El Liceo tiene carta abierta con Google, que da acceso gratuito a Gemini for Education y tokens de IA para instituciones que compiten.',
+      items: ['Correo @losroblesenlinea.com.ve', 'Drive · Docs · Sheets · Slides', 'Google Meet para clases virtuales', 'SSO / OAuth 2.0 — autenticación única', 'Gemini for Education (gratuito)', 'NotebookLM — ya en uso activo'],
+      conns: [{ label: 'SSO hacia SIS', type: 'sso' }]
+    }
+  },
+  {
+    id: 'sis', cx: 575, cy: 240, w: 240, h: 78,
+    type: 'master', emoji: '🏛',
+    label: 'SIS — Sist. de Información', sub: 'Sistema Maestro · Fuente única de verdad', badge: null,
+    detail: {
+      title: 'SIS — Sistema de Información Escolar',
+      sub: 'Fuente única de verdad · Núcleo administrativo',
+      desc: 'Núcleo administrativo del Liceo. Todos los demás sistemas sincronizan desde aquí. El SIS es quien conoce quiénes son los alumnos, qué cursan, si pagaron y si asistieron. El LMS es solo una vista de aprendizaje sobre estos datos.',
+      items: ['Gestión de alumnos, roles y accesos', 'Inscripciones y matrículas por año escolar', 'Control de asistencias y alertas automáticas', 'Pagos y morosidad — bloqueo de acceso al LMS', 'Portal de familias en tiempo real', 'API REST para sincronización con LMS'],
+      conns: [{ label: 'SSO desde GWS', type: 'sso' }, { label: 'OneRoster / API → LMS', type: 'api' }]
+    }
+  },
+  {
+    id: 'moodle', cx: 225, cy: 415, w: 195, h: 75,
+    type: 'lms-rec', emoji: '🎓',
+    label: 'Moodle / Canvas OSS', sub: 'LMS · LTI 1.3 completo', badge: '1EdTech', badgeClass: 'badge-1edtech',
+    detail: {
+      title: 'Moodle OSS / Canvas OSS',
+      sub: 'LMS open source — integración LTI completa',
+      desc: 'LMS open source recomendado por su soporte completo de LTI 1.3. Las herramientas educativas se lanzan desde dentro del LMS y sincronizan calificaciones automáticamente al gradebook. Integración fuerte con el SIS vía OneRoster.',
+      items: ['LTI 1.3 — herramientas incrustadas dentro del LMS', 'Calificaciones de herramientas → gradebook automático', 'OneRoster / API REST — integración con SIS', 'SCORM y xAPI — contenido e-learning empaquetado', 'Quizzes, foros, evaluaciones avanzadas', 'Login único vía Google SSO'],
+      conns: [{ label: 'OneRoster desde SIS', type: 'api' }, { label: 'LTI 1.3 → GeoGebra, PhET', type: 'lti' }, { label: 'Enlace → SPIKE3, Khan', type: 'enlace' }]
+    }
+  },
+  {
+    id: 'classroom', cx: 925, cy: 415, w: 195, h: 75,
+    type: 'lms-alt', emoji: '📋',
+    label: 'Google Classroom', sub: 'LMS alternativo · Ecosistema Google', badge: null,
+    detail: {
+      title: 'Google Classroom',
+      sub: 'Alternativa gratuita — ecosistema Google nativo',
+      desc: 'Alternativa de adopción rápida dentro del ecosistema Google. Integración nativa con Khan Academy, Gemini y NotebookLM. Limitación clave: LTI muy limitado — las herramientas no se incrustan y las calificaciones no se sincronizan automáticamente.',
+      items: ['⚠ LTI muy limitado — herramientas solo se enlazan', '⚠ Calificaciones externas: registro manual', '✓ Khan Academy nativo vía Google Classroom API', '✓ Gemini y NotebookLM: integración nativa', '✓ Adopción rápida — interfaz conocida por docentes', '✓ Completamente gratuito'],
+      conns: [{ label: 'API desde SIS', type: 'api' }, { label: 'Nativo → Khan, Gemini, NLM', type: 'nativo' }, { label: 'Enlace → MagicSchool', type: 'enlace' }]
+    }
+  },
+  {
+    id: 'geo', cx: 72, cy: 585, w: 132, h: 64,
+    type: 'tool-lti', emoji: '📐',
+    label: 'GeoGebra', sub: 'Geometría · Álgebra', badge: '1EdTech', badgeClass: 'badge-1edtech',
+    detail: {
+      title: 'GeoGebra',
+      sub: 'Matemáticas interactivas · LTI 1.3 con Moodle/Canvas',
+      desc: 'Plataforma de matemáticas interactiva. Soporta LTI 1.3 completo: se incrusta dentro del LMS y envía calificaciones automáticamente al gradebook.',
+      items: ['Geometría dinámica e interactiva', 'Álgebra, cálculo y estadística visual', 'LTI 1.3 — calificaciones automáticas', 'Gratuito para instituciones educativas', 'En español completo'],
+      conns: [{ label: 'LTI 1.3 desde Moodle/Canvas', type: 'lti' }]
+    }
+  },
+  {
+    id: 'phet', cx: 218, cy: 585, w: 132, h: 64,
+    type: 'tool-lti', emoji: '🔬',
+    label: 'PhET Simulations', sub: 'Física · Química · Bio', badge: '1EdTech', badgeClass: 'badge-1edtech',
+    detail: {
+      title: 'PhET Simulations',
+      sub: 'Ciencias experimentales · Universidad de Colorado',
+      desc: 'Simulaciones interactivas de física, química, biología y matemáticas. Soporta LTI con Moodle/Canvas para tracking de actividad.',
+      items: ['Física: mecánica, electricidad, óptica', 'Química: reacciones, átomos, moléculas', 'Biología e introducción a ciencias', 'LTI disponible con Moodle/Canvas', 'Gratuito y en español'],
+      conns: [{ label: 'LTI 1.3 desde Moodle/Canvas', type: 'lti' }]
+    }
+  },
+  {
+    id: 'spike', cx: 368, cy: 585, w: 132, h: 64,
+    type: 'tool-enlace', emoji: '🤖',
+    label: 'LEGO SPIKE 3', sub: 'Robótica · Programación', badge: 'Enlace',
+    detail: {
+      title: 'LEGO Education SPIKE 3',
+      sub: 'Robótica y programación — hardware existente en el Liceo',
+      desc: 'El Liceo ya tiene el hardware SPIKE 3. Se accede vía enlace externo desde el LMS. Su valor es articular la robótica existente con el currículo de matemáticas y ciencias.',
+      items: ['Hardware ya presente en el Liceo', 'Programación visual y Python (MicroPython)', 'Compatible con WRO y competencias internacionales', 'Acceso vía enlace externo desde el LMS', 'Articular con Matemáticas y Ciencias'],
+      conns: [{ label: 'Enlace desde Moodle/Canvas', type: 'enlace' }]
+    }
+  },
+  {
+    id: 'khan', cx: 575, cy: 585, w: 132, h: 64,
+    type: 'tool-dual', emoji: '📊',
+    label: 'Khan Academy', sub: 'Matemáticas · Adaptativa', badge: 'Dual',
+    detail: {
+      title: 'Khan Academy',
+      sub: 'Conexión dual: Nativo en Classroom · Enlace en Moodle',
+      desc: 'Plataforma adaptativa de matemáticas en español. Tiene conexión DUAL: integración nativa con Google Classroom vía API, y enlace externo con Moodle/Canvas.',
+      items: ['Matemáticas K-12 adaptativa en español completo', '✓ Nativo con Google Classroom (API Google)', '⚠ Enlace externo con Moodle/Canvas (sin LTI nativo)', 'Dashboard de docente con progreso por alumno', 'Completamente gratuito — sin costo de licencia'],
+      conns: [{ label: 'Nativo desde Classroom', type: 'nativo' }, { label: 'Enlace desde Moodle/Canvas', type: 'enlace' }]
+    }
+  },
+  {
+    id: 'gemini', cx: 740, cy: 585, w: 132, h: 64,
+    type: 'tool-nativo', emoji: '✨',
+    label: 'Gemini Edu', sub: 'IA Docentes · Nativo GWS', badge: 'Nativo',
+    detail: {
+      title: 'Gemini for Education',
+      sub: 'IA de Google para docentes — gratuito vía carta Google',
+      desc: 'IA de Google integrada en Workspace for Education. Acceso gratuito para docentes vía carta Google que ya tiene el Liceo.',
+      items: ['Creación de planes de clase y rúbricas', 'Generación de evaluaciones adaptadas', 'Diferenciación pedagógica por nivel', 'Integración nativa en Docs, Sheets y Meet', 'Gratuito vía Google for Education'],
+      conns: [{ label: 'Nativo desde Classroom/GWS', type: 'nativo' }]
+    }
+  },
+  {
+    id: 'nlm', cx: 882, cy: 585, w: 132, h: 64,
+    type: 'tool-nativo', emoji: '📓',
+    label: 'NotebookLM', sub: 'Síntesis IA · Ya en uso', badge: 'Nativo',
+    detail: {
+      title: 'NotebookLM',
+      sub: 'Síntesis IA — ya en uso activo por el Director',
+      desc: 'Herramienta de síntesis IA de Google. El Director ya la usa activamente: graba reuniones y las procesa en NLM para alinear con docentes vía audio generado.',
+      items: ['Ya en uso activo por el Director', 'Flujo: reunión grabada → NLM → audio para docentes', 'Análisis de documentos propios del Liceo', 'Síntesis de materiales y fuentes propias', 'Gratuito vía Google for Education'],
+      conns: [{ label: 'Nativo desde Classroom/GWS', type: 'nativo' }]
+    }
+  },
+  {
+    id: 'magic', cx: 1078, cy: 585, w: 132, h: 64,
+    type: 'tool-enlace', emoji: '🪄',
+    label: 'MagicSchool AI', sub: 'IA Docentes · Freemium', badge: 'Enlace',
+    detail: {
+      title: 'MagicSchool AI',
+      sub: 'IA especializada para docentes — freemium',
+      desc: 'Herramienta IA diseñada específicamente para docentes. Genera rúbricas, diferenciación pedagógica, comunicados a representantes y planes de clase.',
+      items: ['Generación de rúbricas y criterios', 'Diferenciación automática por nivel', 'Redacción de comunicados a familias', 'Planes de clase con objetivos pedagógicos', 'Freemium — versión básica gratuita'],
+      conns: [{ label: 'Enlace desde Classroom', type: 'enlace' }]
+    }
+  }
+];
+
+const EDGES = [
+  { from: 'gws',       to: 'sis',       type: 'sso',    label: 'SSO · OAuth 2.0' },
+  { from: 'sis',       to: 'moodle',    type: 'api',    label: 'OneRoster · API REST' },
+  { from: 'sis',       to: 'classroom', type: 'api',    label: 'Google Classroom API' },
+  { from: 'moodle',    to: 'geo',       type: 'lti',    label: 'LTI 1.3' },
+  { from: 'moodle',    to: 'phet',      type: 'lti',    label: 'LTI 1.3' },
+  { from: 'moodle',    to: 'spike',     type: 'enlace', label: 'Enlace' },
+  { from: 'moodle',    to: 'khan',      type: 'enlace', label: 'Enlace' },
+  { from: 'classroom', to: 'khan',      type: 'nativo', label: 'Nativo' },
+  { from: 'classroom', to: 'gemini',    type: 'nativo', label: 'Nativo GWS' },
+  { from: 'classroom', to: 'nlm',       type: 'nativo', label: 'Nativo Google' },
+  { from: 'classroom', to: 'magic',     type: 'enlace', label: 'Enlace' }
+];
+
+const EDGE_STYLES = {
+  sso:    { stroke: '#1a73e8', width: 2,   dash: '6,4', marker: 'url(#arr-sso)',    labelBg: '#dbeafe', labelColor: '#1e40af' },
+  api:    { stroke: '#1e3a8a', width: 3,   dash: '',    marker: 'url(#arr-api)',    labelBg: '#e0e7ff', labelColor: '#1e3a8a' },
+  lti:    { stroke: '#065f46', width: 2.5, dash: '',    marker: 'url(#arr-lti)',    labelBg: '#d1fae5', labelColor: '#065f46' },
+  nativo: { stroke: '#b45309', width: 2,   dash: '',    marker: 'url(#arr-nativo)', labelBg: '#fef3c7', labelColor: '#92400e' },
+  enlace: { stroke: '#9ca3af', width: 1.5, dash: '5,5', marker: 'url(#arr-enlace)', labelBg: '#f9fafb', labelColor: '#6b7280' }
+};
+
+// ─── RENDER ────────────────────────────────────────────────────────────────
+const nodeMap = {};
+NODES.forEach(n => nodeMap[n.id] = n);
+
+const canvas = document.getElementById('mapCanvas');
+const svg    = document.getElementById('svgLayer');
+
+NODES.forEach(n => {
+  const div = document.createElement('div');
+  div.className = `node node-${n.type}`;
+  div.id = `node-${n.id}`;
+  div.style.left      = (n.cx - n.w/2) + 'px';
+  div.style.top       = (n.cy - n.h/2) + 'px';
+  div.style.width     = n.w + 'px';
+  div.style.minHeight = n.h + 'px';
+  const badgeHtml = n.badge ? `<span class="node-badge${n.badgeClass ? ' ' + n.badgeClass : ''}">${n.badge}</span>` : '';
+  div.innerHTML = `<div class="node-inner"><span class="node-emoji">${n.emoji}</span><div class="node-text"><div class="node-label">${n.label}</div><div class="node-sub">${n.sub}</div>${badgeHtml}</div></div>`;
+  div.addEventListener('mouseenter', () => highlightNode(n.id));
+  div.addEventListener('mouseleave', () => resetHighlight());
+  div.addEventListener('click',      () => selectNode(n.id));
+  canvas.appendChild(div);
+});
+
+const inCount = {}, inIndex = {};
+EDGES.forEach(e => { inCount[e.to] = (inCount[e.to] || 0) + 1; inIndex[e.to] = 0; });
+
+EDGES.forEach(e => {
+  const fn = nodeMap[e.from], tn = nodeMap[e.to];
+  const style = EDGE_STYLES[e.type];
+  const fx = fn.cx, fy = fn.cy + fn.h/2;
+  const total = inCount[e.to], idx = inIndex[e.to]++;
+  const spread = total > 1 ? ((idx - (total-1)/2) / Math.max(total-1,1)) * tn.w * 0.5 : 0;
+  const tx = tn.cx + spread, ty = tn.cy - tn.h/2;
+  const dy = ty - fy, dx = tx - fx;
+  const c1x = fx + dx*0.15, c1y = fy + Math.abs(dy)*0.45;
+  const c2x = tx - dx*0.15, c2y = ty - Math.abs(dy)*0.35;
+  const d = `M ${fx} ${fy} C ${c1x} ${c1y} ${c2x} ${c2y} ${tx} ${ty}`;
+  const mx = 0.125*fx + 0.375*c1x + 0.375*c2x + 0.125*tx;
+  const my = 0.125*fy + 0.375*c1y + 0.375*c2y + 0.125*ty;
+
+  const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  g.setAttribute('class', `edge edge-${e.from} edge-${e.to}`);
+  g.setAttribute('data-from', e.from); g.setAttribute('data-to', e.to);
+
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', d); path.setAttribute('fill', 'none');
+  path.setAttribute('stroke', style.stroke); path.setAttribute('stroke-width', style.width);
+  if (style.dash) path.setAttribute('stroke-dasharray', style.dash);
+  path.setAttribute('marker-end', style.marker);
+
+  const lblW = e.label.length * 5.8 + 16, lblH = 16;
+  const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+  rect.setAttribute('x', mx - lblW/2); rect.setAttribute('y', my - lblH/2);
+  rect.setAttribute('width', lblW); rect.setAttribute('height', lblH); rect.setAttribute('rx', 8);
+  rect.setAttribute('fill', style.labelBg); rect.setAttribute('stroke', style.stroke); rect.setAttribute('stroke-width', '0.8');
+
+  const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  txt.setAttribute('x', mx); txt.setAttribute('y', my + 4.5);
+  txt.setAttribute('text-anchor', 'middle'); txt.setAttribute('font-size', '9');
+  txt.setAttribute('font-family', 'Inter, sans-serif'); txt.setAttribute('font-weight', '700');
+  txt.setAttribute('fill', style.labelColor); txt.textContent = e.label;
+
+  g.appendChild(path); g.appendChild(rect); g.appendChild(txt);
+  svg.appendChild(g);
+});
+
+// ─── INTERACTIVIDAD ────────────────────────────────────────────────────────
+let selectedId = null;
+
+function getConnectedIds(id) {
+  const s = new Set([id]);
+  EDGES.forEach(e => { if (e.from === id) s.add(e.to); if (e.to === id) s.add(e.from); });
+  return s;
+}
+
+function highlightNode(id) {
+  if (selectedId) return;
+  const conn = getConnectedIds(id);
+  NODES.forEach(n => document.getElementById(`node-${n.id}`).classList.toggle('dimmed', !conn.has(n.id)));
+  document.querySelectorAll('.edge').forEach(g => {
+    g.style.opacity = (g.getAttribute('data-from') === id || g.getAttribute('data-to') === id) ? '1' : '0.06';
+  });
+}
+
+function resetHighlight() {
+  if (selectedId) return;
+  NODES.forEach(n => document.getElementById(`node-${n.id}`).classList.remove('dimmed'));
+  document.querySelectorAll('.edge').forEach(g => g.style.opacity = '1');
+}
+
+function selectNode(id) {
+  if (selectedId === id) { closeDetail(); return; }
+  if (selectedId) document.getElementById(`node-${selectedId}`).classList.remove('selected');
+  selectedId = id;
+  document.getElementById(`node-${id}`).classList.add('selected');
+  highlightNode(id);
+  showDetail(id);
+}
+
+function showDetail(id) {
+  const n = nodeMap[id], d = n.detail;
+  document.getElementById('detailEmpty').style.display = 'none';
+  const content = document.getElementById('detailContent');
+  const connsHtml = d.conns.map(c => `<span class="conn-tag conn-${c.type}">${c.label}</span>`).join('');
+  content.innerHTML = `
+    <div class="detail-header">
+      <span class="detail-emoji">${n.emoji}</span>
+      <div><div class="detail-title">${d.title}</div><div class="detail-subtitle">${d.sub}</div></div>
+      <span class="detail-close" onclick="closeDetail()">✕</span>
+    </div>
+    <div class="detail-body">
+      <div class="detail-desc">${d.desc}</div>
+      <div class="detail-items"><ul>${d.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>
+      <div class="detail-conn"><div class="detail-conn-title">Tipo de conexión</div>${connsHtml}</div>
+    </div>`;
+  content.style.display = 'block'; content.classList.add('visible');
+  document.getElementById('detailPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function closeDetail() {
+  if (selectedId) { document.getElementById(`node-${selectedId}`).classList.remove('selected'); selectedId = null; }
+  resetHighlight();
+  document.getElementById('detailEmpty').style.display = 'block';
+  const c = document.getElementById('detailContent');
+  c.style.display = 'none'; c.classList.remove('visible');
+}
+
+canvas.addEventListener('click', e => { if (e.target === canvas || e.target.tagName === 'svg') closeDetail(); });
+</script>
+</body>
+</html>
