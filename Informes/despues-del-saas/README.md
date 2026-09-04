@@ -18,6 +18,8 @@ Publicacion aprobada el 2026-09-04 en `ZurielSistemas/Propuestas`, carpeta `Info
 
 Esta carpeta conserva la copia local editable. El informe es independiente de la presentacion de FGA.
 
+Vista previa para compartir: titulo, descripcion y etiquetas Open Graph en el HTML inicial. Imagen de marca `assets/zuriel-compartir-v1.jpg` (1200 x 630), reutilizada del recurso social de Zuriel. La presentacion y la cache de la tarjeta dependen de WhatsApp.
+
 ## Criterio editorial
 
 - Publico: propietarios y directivos no tecnicos.
