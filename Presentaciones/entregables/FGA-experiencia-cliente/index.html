@@ -29,11 +29,11 @@
     html{background:#0b0b0b;color-scheme:dark}
     body{margin:0;height:100dvh;overflow:hidden;background:radial-gradient(circle at 50% -10%,#3a3423 0,#151515 32%,#090909 72%);color:var(--white);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
     button,input{font:inherit}
-    button{touch-action:manipulation}.icon-button,.video-toggle,.series-control button,.complete,.timer-actions button{transition:filter .12s ease,transform .12s ease}.icon-button:active,.video-toggle:active,.series-control button:active,.complete:active,.timer-actions button:active{filter:brightness(.86);transform:scale(.98)}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+    button{touch-action:manipulation}.icon-button,.video-toggle,.audio-toggle,.series-control button,.complete,.timer-actions button{transition:filter .12s ease,transform .12s ease}.icon-button:active,.video-toggle:active,.audio-toggle:active,.series-control button:active,.complete:active,.timer-actions button:active{filter:brightness(.86);transform:scale(.98)}button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
     .app{width:100%;max-width:460px;height:100dvh;margin:0 auto;background:var(--black);position:relative;overflow:hidden;display:flex;flex-direction:column}
     .app-header{flex:0 0 auto;padding:calc(8px + var(--safe-top)) 12px 7px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #1b1b1b;background:rgba(7,7,7,.96);z-index:20}.brand{display:flex;align-items:center;gap:8px}.brand img{width:44px;height:auto;display:block}.brand-copy span{display:block;color:var(--gold);font-size:8px;font-weight:900;letter-spacing:.14em}.brand-copy strong{display:block;margin-top:2px;font-size:14px}.header-actions{display:flex;gap:8px}.icon-button{width:48px;height:48px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--gold);font-size:24px;font-weight:900;cursor:pointer}.icon-button:disabled{opacity:.25;cursor:not-allowed}
     .progress-block{flex:0 0 auto;padding:8px 14px 9px}.progress-copy{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--muted)}.progress-copy strong{color:var(--gold);font-size:9px;letter-spacing:.08em}.progress{height:3px;margin-top:6px;border-radius:99px;background:#282828;overflow:hidden}.progress span{display:block;height:100%;background:var(--gold);border-radius:inherit;transition:width .25s ease}
-    .video-shell{position:relative;flex:0 0 auto;aspect-ratio:4/3;margin:0 10px;border:1px solid rgba(247,212,115,.28);border-radius:20px;overflow:hidden;background:#050505;box-shadow:0 14px 40px rgba(0,0,0,.3)}.video-shell video{display:block;width:100%;height:100%;object-fit:cover;object-position:center;cursor:pointer}.video-shell video[hidden]{display:none}.video-toggle{position:absolute;right:10px;bottom:10px;min-width:118px;height:50px;padding:0 18px;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;background:var(--gold);color:#080808;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.36)}.video-toggle[hidden]{display:none}.toggle-label{display:inline}.exercise-placeholder{position:absolute;inset:0;background:#050505}.exercise-placeholder[hidden]{display:none}.exercise-placeholder img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+    .video-shell{position:relative;flex:0 0 auto;aspect-ratio:4/3;margin:0 10px;border:1px solid rgba(247,212,115,.28);border-radius:20px;overflow:hidden;background:#050505;box-shadow:0 14px 40px rgba(0,0,0,.3)}.video-shell video{display:block;width:100%;height:100%;object-fit:cover;object-position:center;cursor:pointer}.video-shell video[hidden]{display:none}.video-toggle{position:absolute;right:10px;bottom:10px;min-width:118px;height:50px;padding:0 18px;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;background:var(--gold);color:#080808;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.36)}.video-toggle[hidden]{display:none}.audio-toggle{position:absolute;left:10px;bottom:10px;height:50px;padding:0 15px;display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid rgba(247,212,115,.48);border-radius:999px;background:rgba(10,10,10,.86);color:var(--gold);font-size:12px;font-weight:900;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,.28)}.audio-toggle[hidden]{display:none}.toggle-label{display:inline}.exercise-placeholder{position:absolute;inset:0;background:#050505}.exercise-placeholder[hidden]{display:none}.exercise-placeholder img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
     .content{flex:1;min-height:0;padding:9px 12px calc(9px + var(--safe-bottom));display:flex;flex-direction:column}.exercise-meta{display:flex;align-items:center;justify-content:space-between;gap:10px}.category{color:var(--gold);font-size:8px;font-weight:900;letter-spacing:.12em}.exercise-position{font-size:8px;color:#777}.content h1{font-size:23px;line-height:1.02;letter-spacing:-.02em;margin:4px 0 4px}.instruction{margin:0;color:#aaa;font-size:11px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .series-card{flex:0 0 clamp(260px,35dvh,330px);min-height:0;margin-top:7px;padding:10px 11px;border:1px solid #282828;border-radius:17px;background:linear-gradient(145deg,#181818,#101010);display:flex;flex-direction:column;justify-content:space-between}.series-card-header{display:flex;align-items:center;justify-content:space-between}.series-card-header span{font-size:9px;color:#888}.series-card-header strong{font-size:9px;color:var(--gold);letter-spacing:.07em}.series-control{display:grid;grid-template-columns:minmax(64px,.8fr) minmax(120px,1.7fr) minmax(64px,.8fr);gap:9px;align-items:center;margin-top:5px}.series-control button{height:54px;border:1px solid #3a3a3a;border-radius:14px;background:#232323;color:var(--gold);font-size:25px;font-weight:900;cursor:pointer}.series-control button:disabled{opacity:.28;cursor:not-allowed}.series-focus{height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:14px;background:#1d1d1d;text-align:center}.series-focus strong{display:block;font-size:22px}.series-focus small{display:block;margin-top:1px;color:#858585;font-size:8px;letter-spacing:.1em}.targets{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:7px}.target{min-height:48px;padding:7px;border-radius:12px;background:#202020;text-align:center}.target small{display:block;color:#818181;font-size:7px;letter-spacing:.1em}.target strong{display:block;margin-top:2px;font-size:14px}.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.field{display:block;min-height:54px;padding:7px 9px;border:1px solid #292929;border-radius:12px;background:#171717;color:#8f8f8f;font-size:8px}.field input{display:inline-block;width:calc(100% - 24px);margin-top:2px;padding:0;border:0;outline:0;background:transparent;color:#fff;font-size:18px;font-weight:800}.field:focus-within{border-color:var(--gold)}.complete{width:100%;min-height:52px;margin-top:8px;padding:11px;border:0;border-radius:14px;background:var(--gold);color:#050505;font-size:12px;font-weight:950;letter-spacing:.02em;cursor:pointer}
     .rest-overlay{position:absolute;z-index:50;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(5,5,5,.94);backdrop-filter:blur(16px)}.rest-overlay[hidden]{display:none}.rest-card{width:100%;text-align:center}.rest-eyebrow{color:var(--gold);font-size:10px;font-weight:900;letter-spacing:.16em}.rest-card h2{margin:8px 0 5px;font-size:30px}.rest-next{margin:0;color:#a7a7a7;font-size:12px}.timer-ring{--progress:100;width:210px;height:210px;margin:22px auto;display:grid;place-items:center;border-radius:50%;background:conic-gradient(var(--gold) calc(var(--progress)*1%),#292929 0);box-shadow:0 0 50px rgba(247,212,115,.12)}.timer-ring::before{content:"";position:absolute;width:184px;height:184px;border-radius:50%;background:#0a0a0a}.timer-value{position:relative;z-index:1;font-size:52px;font-weight:900;letter-spacing:-.04em}.timer-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.timer-actions button{min-height:52px;padding:14px;border:1px solid #353535;border-radius:14px;background:#181818;color:#fff;font-size:11px;font-weight:900;cursor:pointer}.timer-actions button:last-child{border-color:rgba(247,212,115,.45);color:var(--gold)}.toast{position:absolute;z-index:60;left:50%;bottom:calc(18px + var(--safe-bottom));transform:translate(-50%,16px);width:max-content;max-width:calc(100% - 40px);padding:10px 14px;border:1px solid rgba(247,212,115,.35);border-radius:999px;background:#242018;color:#fff;font-size:10px;font-weight:800;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s}.toast.show{opacity:1;transform:translate(-50%,0)}
@@ -57,7 +57,7 @@
     <section class="video-shell">
       <video id="exercise-video" src="videos/sentadilla-fga-v3.mp4" autoplay muted loop playsinline aria-label="Demostración del ejercicio"></video>
       <div class="exercise-placeholder" id="exercise-placeholder" hidden><img id="exercise-guide" src="" alt=""></div>
-      <button class="video-toggle" type="button" aria-label="Pausar video"><span class="toggle-icon">❚❚</span><span class="toggle-label">Pausar</span></button>
+      <button class="audio-toggle" type="button" aria-label="Activar sonido"><span class="audio-icon">🔇</span><span class="audio-label">Sonido</span></button><button class="video-toggle" type="button" aria-label="Pausar video"><span class="toggle-icon">❚❚</span><span class="toggle-label">Pausar</span></button>
     </section>
 
     <section class="content">
@@ -119,6 +119,7 @@
     const exercisePlaceholder = document.querySelector('#exercise-placeholder');
     const exerciseGuide = document.querySelector('#exercise-guide');
     const videoToggle = document.querySelector('.video-toggle');
+    const audioToggle = document.querySelector('.audio-toggle');
     const exercisePrevious = document.querySelector('#exercise-previous');
     const exerciseNext = document.querySelector('#exercise-next');
     const seriesPrevious = document.querySelector('#series-previous');
@@ -146,6 +147,20 @@
       videoToggle.querySelector('.toggle-icon').textContent = paused ? '▶' : '❚❚';
       videoToggle.querySelector('.toggle-label').textContent = paused ? 'Reanudar' : 'Pausar';
       videoToggle.setAttribute('aria-label', paused ? 'Reanudar video' : 'Pausar video');
+    };
+
+    const syncAudioControl = () => {
+      const muted = video.muted;
+      audioToggle.querySelector('.audio-icon').textContent = muted ? '🔇' : '🔊';
+      audioToggle.querySelector('.audio-label').textContent = muted ? 'Sonido' : 'Sonido activo';
+      audioToggle.setAttribute('aria-label', muted ? 'Activar sonido' : 'Silenciar video');
+    };
+
+    const toggleAudio = async () => {
+      if(!exercises[exerciseIndex].video) return;
+      video.muted = !video.muted;
+      if(!video.muted && video.paused) await video.play().catch(() => {});
+      syncAudioControl();
     };
 
     const toggleVideo = async () => {
@@ -223,6 +238,7 @@
       const hasGuide = Boolean(exercise.guide);
       video.hidden = !hasVideo;
       videoToggle.hidden = !hasVideo;
+      audioToggle.hidden = !hasVideo;
       exercisePlaceholder.hidden = hasVideo || !hasGuide;
       if(hasVideo && hasGuide) video.setAttribute('poster',exercise.guide);
       else video.removeAttribute('poster');
@@ -241,9 +257,11 @@
     };
 
     videoToggle.addEventListener('click',toggleVideo);
+    audioToggle.addEventListener('click',toggleAudio);
     video.addEventListener('click',toggleVideo);
     video.addEventListener('play',syncVideoControl);
     video.addEventListener('pause',syncVideoControl);
+    video.addEventListener('volumechange',syncAudioControl);
     seriesPrevious.addEventListener('click',()=>{seriesIndex=Math.max(0,seriesIndex-1);render();});
     seriesNext.addEventListener('click',()=>{seriesIndex=Math.min(exercises[exerciseIndex].targets.length-1,seriesIndex+1);render();});
     exercisePrevious.addEventListener('click',()=>{exerciseIndex=Math.max(0,exerciseIndex-1);seriesIndex=Math.min(2,exercises[exerciseIndex].targets.length-1);render({reloadVideo:true});});
@@ -269,6 +287,7 @@
     timerSkip.addEventListener('click',closeRest);
     render();
     syncVideoControl();
+    syncAudioControl();
   </script>
 </body>
 </html>
