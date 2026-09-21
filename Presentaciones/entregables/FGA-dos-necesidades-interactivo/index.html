@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090a0a">
+  <meta name="description" content="Propuesta para FGA Fitness: una aplicación SaaS para escalar la membresía digital y una plataforma BOS para unificar la operación.">
+  <link rel="canonical" href="https://propuestas.zuriel.cloud/Presentaciones/entregables/FGA-dos-necesidades-interactivo/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_VE">
+  <meta property="og:title" content="FGA Fitness · Aplicación SaaS y plataforma BOS">
+  <meta property="og:description" content="Dos propuestas para FGA Fitness, comenzando por la prioridad actual: escalar la membresía mediante una aplicación SaaS.">
+  <meta property="og:url" content="https://propuestas.zuriel.cloud/Presentaciones/entregables/FGA-dos-necesidades-interactivo/">
+  <meta property="og:image" content="https://propuestas.zuriel.cloud/Presentaciones/entregables/FGA-dos-necesidades-interactivo/assets/hero-fga.png">
+  <meta property="og:image:width" content="1942">
+  <meta property="og:image:height" content="809">
+  <meta property="og:image:alt" content="Presentación de las propuestas SaaS y BOS para FGA Fitness">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FGA Fitness · Aplicación SaaS y plataforma BOS">
+  <meta name="twitter:description" content="Dos propuestas para FGA Fitness, comenzando por la aplicación SaaS.">
+  <meta name="twitter:image" content="https://propuestas.zuriel.cloud/Presentaciones/entregables/FGA-dos-necesidades-interactivo/assets/hero-fga.png">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%23090a0a%22/><path d=%22M14 18h36v28H14z%22 fill=%22none%22 stroke=%22%23f7d473%22 stroke-width=%224%22/><path d=%22M21 37V25h9M43 25H32v12h11%22 fill=%22none%22 stroke=%22%23f7d473%22 stroke-width=%224%22/></svg>">
+  <title>FGA Fitness · Aplicación SaaS y plataforma BOS</title>
+  <style>
+    :root {
+      --ink: #252422;
+      --black: #090a0a;
+      --paper: #fffdf8;
+      --cream: #f7f2e7;
+      --muted: #726e66;
+      --line: #d8d1c4;
+      --orange: #c94e19;
+      --gold: #f7d473;
+      --gold-dark: #2a2414;
+      --white: #fff;
+      --slide-pad: clamp(1.35rem, 5vw, 5.5rem);
+      --display: Georgia, "Times New Roman", serif;
+      --body: Arial, Helvetica, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
+    body { font-family: var(--body); color: var(--ink); background: var(--black); }
+    button, input { font: inherit; }
+    a { color: inherit; }
+
+    .deck {
+      display: flex;
+      width: 100vw;
+      height: 100dvh;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      overscroll-behavior-x: contain;
+    }
+    .deck::-webkit-scrollbar { display: none; }
+
+    .slide {
+      position: relative;
+      flex: 0 0 100vw;
+      width: 100vw;
+      height: 100dvh;
+      min-height: 34rem;
+      padding: var(--slide-pad);
+      overflow: hidden auto;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      isolation: isolate;
+    }
+
+    .slide-inner {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 92rem);
+      min-height: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .light { background: var(--cream); }
+    .paper { background: var(--paper); }
+    .dark { color: var(--white); background: var(--black); }
+
+    .kicker {
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      margin: 0 0 clamp(1rem, 2.4vh, 1.8rem);
+      color: var(--orange);
+      font-size: clamp(.72rem, 1.2vw, .95rem);
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .kicker::before { content: ""; width: 2.1rem; height: 3px; background: currentColor; }
+    .dark .kicker { color: var(--gold); }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3 { font-family: var(--display); line-height: .96; letter-spacing: -.035em; }
+    h1 { max-width: 66rem; font-size: clamp(3rem, 6.2vw, 6.6rem); margin-bottom: 2rem; }
+    h2 { max-width: 72rem; font-size: clamp(2.45rem, 5vw, 5.3rem); margin-bottom: clamp(1.5rem, 4vh, 3.5rem); }
+    h3 { font-size: clamp(1.65rem, 2.6vw, 3rem); }
+    .lead { max-width: 52rem; font-size: clamp(1.18rem, 2vw, 1.75rem); line-height: 1.38; }
+    .muted { color: var(--muted); }
+    .dark .muted { color: #c2bdb3; }
+
+    .topbar {
+      position: fixed;
+      z-index: 40;
+      top: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 4rem;
+      padding: .7rem clamp(1rem, 3vw, 2.5rem);
+      color: var(--white);
+      background: linear-gradient(180deg, rgba(9,10,10,.88), rgba(9,10,10,0));
+      pointer-events: none;
+    }
+    .topbar img { object-fit: contain; pointer-events: auto; }
+    .topbar .fga { width: 4.7rem; height: 3.25rem; }
+    .topbar .zuriel { width: 5.6rem; height: 2.8rem; }
+
+    .progress {
+      position: fixed;
+      z-index: 45;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,.13);
+    }
+    .progress span { display: block; width: 10%; height: 100%; background: linear-gradient(90deg, var(--orange), var(--gold)); transition: width .35s ease; }
+
+    .controls {
+      position: fixed;
+      z-index: 50;
+      left: 50%;
+      bottom: max(1rem, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      padding: .45rem;
+      color: var(--white);
+      background: rgba(9,10,10,.78);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 999px;
+      box-shadow: 0 1rem 3rem rgba(0,0,0,.25);
+      backdrop-filter: blur(18px);
+    }
+    .controls button {
+      width: 2.65rem;
+      height: 2.65rem;
+      color: inherit;
+      background: transparent;
+      border: 0;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .controls button:hover, .controls button:focus-visible { color: var(--black); background: var(--gold); outline: none; }
+    .counter { min-width: 4.5rem; text-align: center; font-size: .85rem; font-weight: 700; }
+
+    .hero { padding: 0; background: var(--black); }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: url("assets/hero-fga.png") center right / cover no-repeat;
+      transform: scale(1.025);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(90deg, #070808 0%, rgba(7,8,8,.96) 34%, rgba(7,8,8,.65) 62%, rgba(7,8,8,.12) 100%);
+    }
+    .hero .slide-inner { padding: var(--slide-pad); color: var(--white); }
+    .hero .eyebrow { color: var(--gold); font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+    .hero h1 { max-width: 62rem; text-wrap: balance; }
+    .hero-meta { margin-top: clamp(1rem, 4vh, 4rem); color: var(--gold); font-weight: 800; font-size: clamp(1.1rem, 1.8vw, 1.55rem); }
+    .hero-note { color: #d7d2c8; font-size: clamp(.95rem, 1.2vw, 1.1rem); }
+    .hint { position: absolute; right: 3rem; bottom: 2.3rem; z-index: 3; display: flex; align-items: center; gap: .8rem; color: rgba(255,255,255,.78); font-size: .85rem; }
+    .hint b { display: grid; place-items: center; width: 2.3rem; height: 2.3rem; border: 1px solid rgba(255,255,255,.35); border-radius: 50%; }
+
+    .choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1rem, 2vw, 2rem); }
+    .choice {
+      position: relative;
+      min-height: min(52vh, 31rem);
+      padding: clamp(1.6rem, 3vw, 3.1rem);
+      border: 1px solid var(--line);
+      border-radius: 1.6rem;
+      overflow: hidden;
+      transition: transform .35s ease, box-shadow .35s ease;
+    }
+    .choice:hover { transform: translateY(-.55rem); box-shadow: 0 1.8rem 4rem rgba(35,28,18,.12); }
+    .choice.black { color: var(--white); background: var(--black); border-color: var(--black); }
+    .choice .num { display: block; margin-bottom: 2rem; color: var(--orange); font: 800 clamp(2rem, 4vw, 4rem)/1 var(--display); }
+    .choice.black .num, .choice.black .result { color: var(--gold); }
+    .choice p { max-width: 34rem; font-size: clamp(1rem, 1.55vw, 1.35rem); line-height: 1.48; }
+    .choice .result { position: absolute; left: clamp(1.6rem, 3vw, 3.1rem); bottom: clamp(1.6rem, 3vw, 3rem); right: 2rem; color: var(--orange); font-weight: 800; }
+
+    .split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(22rem, .82fr); gap: clamp(2rem, 6vw, 7rem); align-items: center; }
+    .journey { padding: clamp(1.4rem, 2.8vw, 2.8rem); color: var(--white); background: var(--ink); border-radius: 1.5rem; }
+    .journey-row { display: grid; grid-template-columns: 3rem 1fr; gap: 1rem; padding: 1.2rem 0; border-bottom: 1px solid rgba(255,255,255,.12); }
+    .journey-row:last-child { border-bottom: 0; }
+    .journey-row strong:first-child { color: var(--orange); }
+    .journey-row h3 { margin: 0 0 .35rem; font: 800 clamp(1.05rem, 1.5vw, 1.35rem)/1.2 var(--body); letter-spacing: 0; }
+    .journey-row p { margin: 0; color: #c5c0b7; line-height: 1.4; }
+
+    .browser-card {
+      position: relative;
+      overflow: hidden;
+      background: #eeece6;
+      border: 1px solid rgba(37,36,34,.12);
+      border-radius: 1.15rem;
+      box-shadow: 0 2rem 5rem rgba(37,36,34,.16);
+    }
+    .browser-bar { display: flex; align-items: center; gap: .45rem; height: 2.2rem; padding: 0 .9rem; background: #181919; }
+    .browser-bar i { width: .55rem; height: .55rem; border-radius: 50%; background: #8d7740; }
+    .browser-card img { display: block; width: 100%; height: auto; }
+    .browser-card.fga-bos { border-color: #b89a43; box-shadow: 0 2rem 5rem rgba(84,65,16,.18); }
+    .fga-bos-header {
+      position: absolute;
+      z-index: 3;
+      top: 2.2rem;
+      left: 0;
+      right: 0;
+      height: 4.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .45rem 1.15rem;
+      color: var(--white);
+      background: rgba(9,10,10,.98);
+      border-bottom: 2px solid var(--gold);
+      box-shadow: 0 .5rem 1.2rem rgba(0,0,0,.26);
+    }
+    .fga-bos-brand { display: flex; align-items: center; gap: .7rem; min-width: 0; }
+    .fga-bos-brand img { width: 4.3rem; height: 3.2rem; object-fit: contain; }
+    .fga-bos-brand strong, .fga-bos-brand small { display: block; white-space: nowrap; }
+    .fga-bos-brand strong { font-size: .88rem; }
+    .fga-bos-brand small { margin-top: .12rem; color: #bdb7aa; font-size: .65rem; }
+    .fga-bos-nav { display: flex; align-items: center; gap: 1.25rem; font-size: .72rem; font-weight: 800; }
+    .fga-bos-nav span:not(.profile) { padding: .45rem .55rem; border-radius: .45rem; }
+    .fga-bos-nav .active { color: var(--black); background: var(--gold); }
+    .fga-bos-nav .profile { display: grid; place-items: center; width: 2rem; height: 2rem; color: var(--black); background: var(--gold); border-radius: 50%; }
+    .bos-ui {
+      height: 31.5rem;
+      padding-top: 4.6rem;
+      display: grid;
+      grid-template-columns: 9.4rem 1fr;
+      color: #f7f3e9;
+      background: #0b0c0c;
+      font-family: var(--body);
+      font-size: .74rem;
+    }
+    .bos-sidebar { padding: 1rem .7rem; background: #111212; border-right: 1px solid #3d351f; }
+    .bos-sidebar-title { margin: 0 0 .8rem .45rem; color: var(--gold); font-size: .63rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+    .bos-menu { display: grid; gap: .28rem; }
+    .bos-menu-item { display: flex; align-items: center; gap: .55rem; padding: .62rem .65rem; color: #d4d0c6; border-radius: .55rem; font-weight: 700; }
+    .bos-menu-item .icon { display: grid; place-items: center; width: 1.55rem; height: 1.55rem; color: var(--gold); border: 1px solid #5b512e; border-radius: .42rem; font-size: .72rem; }
+    .bos-menu-item.active { color: var(--black); background: var(--gold); }
+    .bos-menu-item.active .icon { color: var(--black); border-color: rgba(9,10,10,.25); }
+    .bos-main { min-width: 0; padding: 1rem 1.1rem; overflow: hidden; }
+    .bos-main-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: .75rem; }
+    .bos-main-head small { color: #967213; font-weight: 900; letter-spacing: .07em; text-transform: uppercase; }
+    .bos-main-head h4 { margin: .22rem 0 0; font-size: 1.5rem; line-height: 1; }
+    .bos-user { color: #bdb7aa; font-weight: 700; }
+    .bos-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; margin-bottom: .65rem; }
+    .bos-kpi { padding: .75rem; background: #171818; border: 1px solid #3c3420; border-radius: .55rem; }
+    .bos-kpi span { display: block; margin-bottom: .35rem; color: #aaa397; font-size: .63rem; }
+    .bos-kpi strong { color: var(--gold); font-size: 1.35rem; }
+    .bos-kpi.alert strong { color: #f0b757; }
+    .bos-data-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: .65rem; }
+    .bos-panel { min-width: 0; padding: .8rem; background: #171818; border: 1px solid #3c3420; border-radius: .6rem; }
+    .bos-panel-head { display: flex; justify-content: space-between; gap: .7rem; margin-bottom: .55rem; }
+    .bos-panel-head strong { font-size: .9rem; }
+    .bos-panel-head span { color: #967213; font-weight: 800; }
+    .bos-list { display: grid; }
+    .bos-list-row { display: grid; grid-template-columns: 1fr auto; gap: .6rem; align-items: center; padding: .55rem 0; border-top: 1px solid #302c22; }
+    .bos-list-row:first-child { border-top: 0; }
+    .bos-person { display: flex; align-items: center; gap: .55rem; min-width: 0; }
+    .bos-avatar { display: grid; flex: 0 0 auto; place-items: center; width: 1.75rem; height: 1.75rem; color: var(--black); background: #f1d980; border-radius: 50%; font-size: .62rem; font-weight: 900; }
+    .bos-person strong, .bos-person small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bos-person small { margin-top: .12rem; color: #aaa397; }
+    .bos-tag { padding: .3rem .45rem; color: var(--gold); background: #2b2517; border: 1px solid #5b4d26; border-radius: 999px; font-size: .58rem; font-weight: 900; white-space: nowrap; }
+    .bos-client-name { margin: .35rem 0 .7rem; font-size: 1.18rem; font-weight: 900; }
+    .bos-client-meta { display: grid; grid-template-columns: 1fr 1fr; gap: .55rem; margin: .65rem 0; }
+    .bos-client-meta div { padding: .5rem; background: #212222; border: 1px solid #332d1e; border-radius: .45rem; }
+    .bos-client-meta small { display: block; margin-bottom: .2rem; color: #aaa397; font-size: .57rem; text-transform: uppercase; }
+    .bos-action { display: flex; align-items: center; justify-content: space-between; gap: .7rem; margin-top: .7rem; padding: .62rem .7rem; color: var(--black); background: var(--gold); border-radius: .5rem; font-weight: 900; }
+    .demo-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(20rem, .55fr); gap: clamp(2rem, 4vw, 4rem); align-items: center; }
+    .demo-copy p { font-size: clamp(1.08rem, 1.65vw, 1.45rem); line-height: 1.43; }
+    .brand-delivery {
+      display: grid;
+      grid-template-columns: 5.2rem 1fr;
+      gap: 1rem;
+      align-items: center;
+      margin: 1.4rem 0;
+      padding: 1rem;
+      color: var(--white);
+      background: var(--black);
+      border: 1px solid #55491f;
+      border-radius: 1rem;
+    }
+    .brand-delivery img { width: 5.2rem; height: 3.7rem; object-fit: contain; }
+    .brand-delivery strong { display: block; margin-bottom: .28rem; color: var(--gold); font-size: 1.05rem; }
+    .brand-delivery span { color: #c8c3b9; font-size: .88rem; line-height: 1.35; }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: .75rem;
+      margin-top: 1rem;
+      padding: .9rem 1.2rem;
+      color: var(--white);
+      background: var(--orange);
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 800;
+      transition: transform .25s ease, filter .25s ease;
+    }
+    .dark .cta { color: var(--black); background: var(--gold); }
+    .cta:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    .reference-note { margin-top: 1rem; font-size: .78rem !important; opacity: .7; }
+
+    .price-layout { display: grid; grid-template-columns: minmax(24rem, 1.1fr) minmax(20rem, .7fr); gap: clamp(2rem, 5vw, 6rem); align-items: stretch; }
+    .big-price { color: var(--orange); font: 800 clamp(4rem, 7.4vw, 7.5rem)/.9 var(--display); letter-spacing: -.04em; }
+    .dark .big-price { color: var(--gold); }
+    .duration { margin: 1rem 0 2.2rem; font-size: clamp(1.1rem, 1.7vw, 1.45rem); font-weight: 800; }
+    .phases { display: grid; gap: .5rem; }
+    .phase { display: grid; grid-template-columns: 2.6rem 1fr auto; gap: 1rem; align-items: start; padding: 1rem 0; border-top: 1px solid var(--line); }
+    .dark .phase { border-color: rgba(255,255,255,.15); }
+    .phase .n { color: var(--orange); font-weight: 900; }
+    .dark .phase .n { color: var(--gold); }
+    .phase h3 { margin: 0 0 .28rem; font: 800 clamp(1rem, 1.55vw, 1.3rem)/1.2 var(--body); letter-spacing: 0; }
+    .phase p { margin: 0; color: var(--muted); line-height: 1.35; }
+    .dark .phase p { color: #bcb7ad; }
+    .phase .amount { font-weight: 900; white-space: nowrap; }
+    .result-card { padding: clamp(1.7rem, 3.5vw, 3.4rem); background: var(--paper); border: 1px solid var(--line); border-radius: 1.5rem; }
+    .dark .result-card { background: var(--gold-dark); border-color: #5d4d22; }
+    .result-card small { color: var(--orange); font-weight: 900; }
+    .dark .result-card small { color: var(--gold); }
+    .result-card h3 { margin: 2rem 0; }
+    .result-card .foot { margin-top: 2rem; font-weight: 800; }
+
+    .saas-need::before {
+      content: "";
+      position: absolute;
+      width: 42vw;
+      height: 42vw;
+      min-width: 32rem;
+      min-height: 32rem;
+      right: -13vw;
+      top: -13vw;
+      border: 1px solid rgba(247,212,115,.22);
+      border-radius: 50%;
+      box-shadow: 0 0 0 5vw rgba(247,212,115,.03), 0 0 0 10vw rgba(247,212,115,.02);
+    }
+    .service-card { padding: clamp(1.7rem, 3vw, 3rem); background: var(--gold-dark); border: 1px solid #5d4d22; border-radius: 1.5rem; }
+    .service-card small { color: var(--gold); font-weight: 800; }
+    .service-card h3 { margin: .9rem 0 1.25rem; color: var(--white); font-size: clamp(1.55rem, 2.1vw, 2.35rem); }
+    .solution-flow { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+    .solution-step { min-height: 7.2rem; padding: .85rem; background: rgba(255,255,255,.055); border: 1px solid #5d4d22; border-radius: .8rem; }
+    .solution-step b { display: block; margin-bottom: .55rem; color: var(--gold); font-size: .72rem; }
+    .solution-step strong { display: block; margin-bottom: .28rem; color: var(--white); font-size: 1rem; }
+    .solution-step span { color: #c9c3b7; font-size: .82rem; line-height: 1.3; }
+
+    .phone-stage { position: relative; min-height: 60vh; display: grid; place-items: center; }
+    .phone-stage::before { content: ""; position: absolute; width: min(34rem, 70vw); aspect-ratio: 1; background: radial-gradient(circle, rgba(247,212,115,.18), rgba(247,212,115,0) 66%); }
+    .phone { position: relative; z-index: 1; width: min(35rem, 85%); overflow: hidden; border: .6rem solid #1c1d1d; border-radius: 2.5rem; box-shadow: 0 2rem 6rem rgba(0,0,0,.55); }
+    .phone::before { content: ""; position: absolute; z-index: 2; top: .55rem; left: 50%; width: 5rem; height: .7rem; transform: translateX(-50%); background: #171818; border-radius: 1rem; }
+    .phone img { display: block; width: 100%; }
+
+    .architecture { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; align-items: stretch; }
+    .arch-card { position: relative; min-height: 14rem; padding: 1.7rem; border: 1px solid var(--line); border-radius: 1.2rem; background: rgba(255,255,255,.56); }
+    .arch-card:not(:last-child)::after { content: "→"; position: absolute; z-index: 3; right: -.95rem; top: 50%; transform: translate(50%,-50%); display: grid; place-items: center; width: 2.6rem; height: 2.6rem; background: var(--gold); border-radius: 50%; font-weight: 900; }
+    .arch-card span { color: var(--orange); font-size: .8rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+    .arch-card h3 { margin: 1rem 0; font-size: clamp(1.5rem, 2vw, 2.2rem); }
+    .arch-card p { margin: 0; color: var(--muted); line-height: 1.45; }
+    .checks { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem 2.4rem; margin-top: 2rem; }
+    .check { display: flex; gap: .8rem; line-height: 1.4; }
+    .check::before { content: "✓"; color: var(--orange); font-weight: 900; }
+
+    .monthly-grid { display: grid; grid-template-columns: 1.38fr .62fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; }
+    .bos-monthly { order: 2; padding-left: 3rem; border-left: 1px solid var(--line); }
+    .bos-monthly .big { margin: 1.2rem 0 .8rem; font: 800 clamp(3.2rem, 5.3vw, 5.5rem)/1 var(--display); }
+    .tier-panel { order: 1; padding: clamp(1.5rem, 3vw, 2.8rem); background: var(--paper); border: 1px solid var(--line); border-radius: 1.4rem; }
+    .range-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
+    .tier-price { color: var(--orange); font: 800 clamp(2.8rem, 5vw, 5rem)/1 var(--display); }
+    input[type="range"] { width: 100%; margin: 2rem 0 1.2rem; accent-color: var(--orange); cursor: pointer; }
+    .range-labels { display: flex; justify-content: space-between; color: var(--muted); font-size: .78rem; font-weight: 700; }
+    .service-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+    .service-strip div { padding-top: 1rem; border-top: 2px solid var(--line); }
+    .service-strip strong { color: var(--orange); }
+    .service-strip p { margin: .6rem 0 0; color: var(--muted); line-height: 1.35; font-size: .94rem; }
+
+    .final-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 7rem); }
+    .route { padding-top: 1.3rem; border-top: 4px solid var(--orange); }
+    .route.saas { border-color: var(--gold); }
+    .route .price { margin-top: 2rem; font-size: clamp(1.35rem, 2vw, 1.8rem); font-weight: 900; }
+    .next-step { margin-top: clamp(2rem, 5vh, 4rem); padding-top: 1.5rem; border-top: 1px solid var(--line); }
+    .next-step strong { display: block; margin-bottom: .7rem; color: var(--orange); }
+    .next-step p { max-width: 68rem; font: 800 clamp(1.5rem, 2.5vw, 2.6rem)/1.15 var(--display); }
+
+    .reveal { opacity: 0; transform: translateY(1.4rem); transition: opacity .65s ease, transform .65s ease; }
+    .slide.active .reveal { opacity: 1; transform: none; }
+    .slide.active .reveal:nth-child(2) { transition-delay: .08s; }
+    .slide.active .reveal:nth-child(3) { transition-delay: .16s; }
+    .slide.active .reveal:nth-child(4) { transition-delay: .24s; }
+
+    @media (max-width: 860px) {
+      .slide { min-height: 40rem; padding-top: 5.5rem; padding-bottom: 5.5rem; }
+      .hero .slide-inner { padding-top: 6rem; padding-bottom: 6rem; }
+      .choice-grid, .split, .demo-grid, .price-layout, .monthly-grid, .final-grid { grid-template-columns: 1fr; }
+      .choice { min-height: 17rem; }
+      .choice .result { position: static; margin-top: 2rem; }
+      .journey { margin-top: 1rem; }
+      .demo-grid { align-content: start; }
+      .browser-card { max-width: 58rem; }
+      .architecture { grid-template-columns: 1fr; }
+      .arch-card { min-height: 0; }
+      .arch-card:not(:last-child)::after { content: "↓"; right: 50%; top: auto; bottom: -1.3rem; transform: translate(50%,50%); }
+      .checks, .service-strip { grid-template-columns: 1fr; }
+      .bos-monthly { order: 2; padding: 2rem 0 0; border-left: 0; border-top: 1px solid var(--line); }
+      .tier-panel { order: 1; }
+      .phone-stage { min-height: 31rem; }
+      .topbar .zuriel { display: none; }
+      .hint { display: none; }
+    }
+
+    @media (max-width: 560px) {
+      h1 { font-size: clamp(2.6rem, 13vw, 4rem); }
+      h2 { font-size: clamp(2.25rem, 11vw, 3.6rem); }
+      .phase { grid-template-columns: 2rem 1fr; }
+      .phase .amount { grid-column: 2; }
+      .phone { width: 100%; border-radius: 1.6rem; }
+      .range-head { align-items: start; flex-direction: column; }
+      .controls { bottom: .55rem; }
+      .fga-bos-header { height: 3.65rem; padding: .3rem .65rem; }
+      .fga-bos-brand img { width: 3.25rem; height: 2.5rem; }
+      .fga-bos-brand strong { font-size: .72rem; }
+      .fga-bos-brand small, .fga-bos-nav span:not(.active):not(.profile) { display: none; }
+      .bos-ui { height: 17rem; padding-top: 3.65rem; grid-template-columns: 1fr; font-size: .62rem; }
+      .bos-sidebar { display: none; }
+      .bos-main { padding: .55rem .65rem; }
+      .bos-main-head { margin-bottom: .45rem; }
+      .bos-main-head h4 { font-size: 1rem; }
+      .bos-user { font-size: .58rem; }
+      .bos-kpis { grid-template-columns: 1fr 1fr; gap: .35rem; margin-bottom: .4rem; }
+      .bos-kpi { padding: .45rem; }
+      .bos-kpi:nth-child(n+3) { display: none; }
+      .bos-kpi strong { font-size: .92rem; }
+      .bos-data-grid { grid-template-columns: 1fr; }
+      .bos-panel { padding: .45rem; }
+      .bos-detail { display: none; }
+      .bos-list-row { padding: .3rem 0; }
+      .bos-list-row:nth-child(n+3) { display: none; }
+      .bos-avatar { width: 1.35rem; height: 1.35rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+  <header class="topbar" aria-label="Marcas">
+    <img class="fga" src="assets/fga-logo.png" alt="FGA Fitness">
+    <img class="zuriel" src="assets/zuriel-logo.png" alt="Zuriel Sistemas">
+  </header>
+
+  <main class="deck" id="deck" aria-label="Presentación interactiva FGA">
+    <section class="slide hero active" data-order="1" data-title="Portada">
+      <div class="slide-inner">
+        <p class="eyebrow reveal">Dos necesidades · dos propuestas</p>
+        <h1 class="reveal">Una aplicación para escalar.<br>Una plataforma para operar.</h1>
+        <p class="hero-meta reveal">FGA Fitness · Sistema 333</p>
+        <p class="hero-note reveal">Propuesta comercial en revisión</p>
+      </div>
+      <div class="hint"><span>Avanza</span><b>→</b></div>
+    </section>
+
+    <section class="slide light" data-order="2" data-title="Dos necesidades">
+      <div class="slide-inner">
+        <p class="kicker reveal">El punto de partida</p>
+        <h2 class="reveal">FGA tiene dos necesidades, con una prioridad clara</h2>
+        <div class="choice-grid reveal">
+          <article class="choice black">
+            <span class="num">01</span>
+            <h3>Escalar una membresía digital</h3>
+            <p class="muted">Captación digital, pago dentro de la app, asignación de programas y entrenamiento guiado para un volumen creciente de miembros.</p>
+            <p class="result">Respuesta: SaaS de membresía FGA</p>
+          </article>
+          <article class="choice">
+            <span class="num">02</span>
+            <h3>Operar el servicio personalizado</h3>
+            <p class="muted">Clientes, entrenadores, revisiones, seguimiento y renovación dentro de una operación compartida.</p>
+            <p class="result">Respuesta: BOS a la medida de FGA</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide light" data-order="7" data-title="Necesidad BOS">
+      <div class="slide-inner">
+        <p class="kicker reveal">Necesidad 2 · BOS</p>
+        <div class="split">
+          <div>
+            <h2 class="reveal">La operación personalizada necesita continuidad</h2>
+            <p class="lead reveal">El servicio premium reúne trabajo humano, decisiones y datos que cambian durante cada programa.</p>
+            <p class="lead muted reveal">El BOS organiza ese recorrido para que el equipo sepa qué ocurre, quién responde y qué sigue con cada cliente, dentro de una experiencia completamente identificada con FGA.</p>
+          </div>
+          <div class="journey reveal">
+            <div class="journey-row"><strong>01</strong><div><h3>Alta y onboarding</h3><p>Información inicial, responsables y próximos pasos.</p></div></div>
+            <div class="journey-row"><strong>02</strong><div><h3>Seguimiento</h3><p>Revisiones, ajustes, pausas y comunicación.</p></div></div>
+            <div class="journey-row"><strong>03</strong><div><h3>Continuidad</h3><p>Renovación, historial y visión de la operación.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide paper" data-order="8" data-title="Experiencia BOS">
+      <div class="slide-inner">
+        <p class="kicker reveal">Experiencia BOS FGA</p>
+        <h2 class="reveal">BOS: una operación unificada con identidad FGA</h2>
+        <div class="demo-grid">
+          <div class="browser-card fga-bos reveal">
+            <div class="browser-bar"><i></i><i></i><i></i></div>
+            <div class="fga-bos-header">
+              <div class="fga-bos-brand">
+                <img src="assets/fga-logo.png" alt="FGA Fitness">
+                <div><strong>Sistema 333</strong><small>Operación FGA Fitness</small></div>
+              </div>
+              <div class="fga-bos-nav" aria-label="Aplicaciones del BOS"><span>Ventas</span><span class="active">Coaching</span><span>Soporte</span><span>Reclutamiento</span><span class="profile">FG</span></div>
+            </div>
+            <div class="bos-ui" role="img" aria-label="Vista conceptual del BOS personalizado para la operación de FGA Fitness">
+              <aside class="bos-sidebar">
+                <p class="bos-sidebar-title">Sistema 333</p>
+                <div class="bos-menu">
+                  <div class="bos-menu-item active"><span class="icon">⌂</span><span>Mi día</span></div>
+                  <div class="bos-menu-item"><span class="icon">◉</span><span>Clientes</span></div>
+                  <div class="bos-menu-item"><span class="icon">◎</span><span>Entrenadores</span></div>
+                  <div class="bos-menu-item"><span class="icon">▤</span><span>Programas</span></div>
+                  <div class="bos-menu-item"><span class="icon">↻</span><span>Seguimiento</span></div>
+                  <div class="bos-menu-item"><span class="icon">◇</span><span>Renovaciones</span></div>
+                </div>
+              </aside>
+              <div class="bos-main">
+                <div class="bos-main-head">
+                  <div><small>Operación FGA</small><h4>Mi día</h4></div>
+                  <span class="bos-user">Mariana López · Administradora</span>
+                </div>
+                <div class="bos-kpis">
+                  <div class="bos-kpi"><span>Clientes activos</span><strong>86</strong></div>
+                  <div class="bos-kpi"><span>Revisiones esta semana</span><strong>14</strong></div>
+                  <div class="bos-kpi"><span>Renovaciones próximas</span><strong>8</strong></div>
+                  <div class="bos-kpi alert"><span>Requieren atención</span><strong>3</strong></div>
+                </div>
+                <div class="bos-data-grid">
+                  <section class="bos-panel">
+                    <div class="bos-panel-head"><strong>Por atender</strong><span>Ver agenda →</span></div>
+                    <div class="bos-list">
+                      <div class="bos-list-row"><div class="bos-person"><span class="bos-avatar">CM</span><div><strong>Carlos M.</strong><small>Revisión semanal del programa</small></div></div><span class="bos-tag">Hoy</span></div>
+                      <div class="bos-list-row"><div class="bos-person"><span class="bos-avatar">AP</span><div><strong>Ana P.</strong><small>Ajuste solicitado por entrenador</small></div></div><span class="bos-tag">Programa</span></div>
+                      <div class="bos-list-row"><div class="bos-person"><span class="bos-avatar">LR</span><div><strong>Luis R.</strong><small>Renovación próxima</small></div></div><span class="bos-tag">3 días</span></div>
+                    </div>
+                  </section>
+                  <aside class="bos-panel bos-detail">
+                    <div class="bos-panel-head"><strong>Cliente seleccionado</strong><span>CLI-086</span></div>
+                    <div class="bos-client-name">Carlos M.</div>
+                    <div class="bos-client-meta">
+                      <div><small>Programa</small><strong>Sistema 333</strong></div>
+                      <div><small>Entrenador</small><strong>Gabriel Peña</strong></div>
+                      <div><small>Semana</small><strong>7 de 12</strong></div>
+                      <div><small>Próxima revisión</small><strong>Hoy</strong></div>
+                    </div>
+                    <div class="bos-action"><span>Abrir seguimiento</span><span>→</span></div>
+                  </aside>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="demo-copy reveal">
+            <p>La experiencia BOS de FGA reúne aplicaciones conectadas y una operación compartida bajo la identidad de la marca.</p>
+            <div class="brand-delivery">
+              <img src="assets/fga-logo.png" alt="FGA Fitness">
+              <div><strong>Se entrega como una plataforma FGA</strong><span>Logo, colores, lenguaje, dominio y experiencia visual personalizados para su marca.</span></div>
+            </div>
+            <p class="muted">La operación se configura alrededor de clientes, entrenadores, programas y renovación de FGA.</p>
+            <a class="cta" href="https://zuriel.cloud/experiencia-bos/" target="_blank" rel="noopener">Abrir referencia BOS <span>↗</span></a>
+            <p class="reference-note">Vista conceptual personalizada para FGA. El enlace externo permite explorar la lógica funcional con datos ficticios.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide light" data-order="9" data-title="Propuesta BOS">
+      <div class="slide-inner">
+        <p class="kicker reveal">Propuesta 2</p>
+        <h2 class="reveal">BOS para el Sistema 333</h2>
+        <div class="price-layout">
+          <div class="reveal">
+            <div class="big-price" data-count="12000">US$12.000</div>
+            <p class="duration">18 semanas estimadas</p>
+            <div class="phases">
+              <div class="phase"><span class="n">01</span><div><h3>Implementación inicial</h3><p>Clientes, seguimiento, arquitectura e identidad FGA.</p></div><span class="amount">US$3.950</span></div>
+              <div class="phase"><span class="n">02</span><div><h3>Herramienta del entrenador</h3><p>Programas, ejercicios, videos y rutinas.</p></div><span class="amount">US$3.000</span></div>
+              <div class="phase"><span class="n">03</span><div><h3>Aplicación del cliente</h3><p>Entrenamiento, progreso y transición desde Hexfit.</p></div><span class="amount">US$5.050</span></div>
+            </div>
+          </div>
+          <aside class="result-card reveal">
+            <small>RESULTADO</small>
+            <h3>Una plataforma propia, con la identidad de FGA, para dirigir la operación y acompañar a cada cliente.</h3>
+            <p class="muted">Logo, colores, lenguaje, dominio y experiencia visual de FGA; además de código específico, datos, diseños y cuentas bajo su control, según las condiciones de entrega.</p>
+            <p class="foot">Hexfit permanece activo hasta validar la transición.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide dark saas-need" data-order="3" data-title="Necesidad SaaS">
+      <div class="slide-inner">
+        <p class="kicker reveal">Necesidad 1 · SaaS</p>
+        <div class="split">
+          <div>
+            <h2 class="reveal">La membresía debe captar, convertir y entrenar desde una sola aplicación</h2>
+            <p class="lead muted reveal">La app se promociona desde redes sociales, landing pages y los canales de FGA. El miembro se registra, paga la membresía dentro de la aplicación, completa el cuestionario, recibe un programa aprobado y comienza a entrenar.</p>
+          </div>
+          <aside class="service-card reveal">
+            <small>SOLUCIÓN PROPUESTA</small>
+            <h3>Del interés al entrenamiento en una sola experiencia</h3>
+            <div class="solution-flow">
+              <div class="solution-step"><b>01</b><strong>Descubre</strong><span>Redes, campañas y landing pages.</span></div>
+              <div class="solution-step"><b>02</b><strong>Se suscribe</strong><span>Registro y pago dentro de la app.</span></div>
+              <div class="solution-step"><b>03</b><strong>Recibe su programa</strong><span>Cuestionario y asignación automática.</span></div>
+              <div class="solution-step"><b>04</b><strong>Entrena y progresa</strong><span>Rutinas, seguimiento y continuidad.</span></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide dark" data-order="4" data-title="Experiencia SaaS">
+      <div class="slide-inner">
+        <p class="kicker reveal">Experiencia de referencia</p>
+        <div class="split">
+          <div class="phone-stage reveal">
+            <div class="phone"><img src="assets/saas-entrenamiento.png" alt="Experiencia FGA de entrenamiento guiado"></div>
+          </div>
+          <div class="reveal">
+            <h2>SaaS: el entrenamiento en manos del miembro</h2>
+            <p class="lead">La referencia muestra el núcleo de la experiencia: ejercicio, video, series, peso, repeticiones, descanso y progreso.</p>
+            <p class="lead muted">El MVP suma pago en la app, asignación automática, administración bilingüe, publicación móvil y recomendaciones de productos.</p>
+            <a class="cta" href="https://fga-experiencia-cliente.vercel.app/" target="_blank" rel="noopener">Abrir experiencia SaaS <span>↗</span></a>
+            <p class="reference-note">Referencia del recorrido de entrenamiento; no prueba pagos, sincronización o administración ya implementados.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide paper" data-order="5" data-title="Alcance SaaS">
+      <div class="slide-inner">
+        <p class="kicker reveal">Alcance del MVP</p>
+        <h2 class="reveal">Un recorrido digital completo, desde la captación hasta el entrenamiento</h2>
+        <div class="architecture reveal">
+          <article class="arch-card"><span>Captación</span><h3>Redes y landing pages</h3><p>Campañas y contenidos conducen al público hacia la descarga o acceso a la aplicación.</p></article>
+          <article class="arch-card"><span>Membresía</span><h3>Aplicación móvil especializada</h3><p>Registro, pago, cuestionario y entrenamiento desde una experiencia diseñada para iOS y Android.</p></article>
+          <article class="arch-card"><span>Operación</span><h3>Backend robusto y administrable</h3><p>Preparado para crecer con los miembros activos y administrar usuarios, programas, reglas, videos e idiomas.</p></article>
+          <article class="arch-card"><span>Comercio complementario</span><h3>Productos mediante Shopify</h3><p>Integración para sugerir productos dentro de la app y completar la compra en la tienda existente.</p></article>
+        </div>
+        <div class="checks reveal">
+          <div class="check">Español e inglés desde el lanzamiento</div>
+          <div class="check">Cuestionario y asignación por reglas aprobadas</div>
+          <div class="check">Programas de 12 semanas y biblioteca audiovisual</div>
+          <div class="check">Sincronización del entrenamiento al recuperar conexión</div>
+          <div class="check">Panel administrativo para FGA</div>
+          <div class="check">Sugerencias de productos relacionadas con el programa</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide dark" data-order="6" data-title="Propuesta SaaS">
+      <div class="slide-inner">
+        <p class="kicker reveal">Propuesta 1</p>
+        <h2 class="reveal">MVP SaaS de membresía</h2>
+        <div class="price-layout">
+          <div class="reveal">
+            <div class="big-price">US$9.000</div>
+            <p class="duration">Plazo estimado: aproximadamente 16 semanas</p>
+            <div class="phases">
+              <div class="phase"><span class="n">01</span><div><h3>Base, pagos y membresía</h3><p>Acceso, perfiles, cobro dentro de la app y estructura bilingüe.</p></div><span class="amount">US$3.000</span></div>
+              <div class="phase"><span class="n">02</span><div><h3>Programas y experiencia</h3><p>Cuestionario, reglas, contenido, entrenamiento y administración.</p></div><span class="amount">US$4.000</span></div>
+              <div class="phase"><span class="n">03</span><div><h3>Offline y publicación</h3><p>Sincronización, ajustes móviles, pruebas y tiendas.</p></div><span class="amount">US$2.000</span></div>
+            </div>
+          </div>
+          <aside class="result-card reveal">
+            <small>EN ESTA PROPUESTA</small>
+            <h3>FGA valida una membresía digital separada del servicio premium, con una experiencia móvil propia y una operación administrable.</h3>
+            <p class="muted">El BOS y la migración desde Hexfit permanecen fuera de este MVP.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide light" data-order="10" data-title="Continuidad mensual">
+      <div class="slide-inner">
+        <p class="kicker reveal">Continuidad mensual</p>
+        <h2 class="reveal">Soporte, administración y mantenimiento</h2>
+        <div class="monthly-grid reveal">
+          <div class="bos-monthly">
+            <strong style="color:var(--orange)">BOS</strong>
+            <div class="big">US$450 <span style="font-size:.45em">/ mes</span></div>
+            <p class="muted">Hasta 25 horas mensuales</p>
+          </div>
+          <div class="tier-panel">
+            <div class="range-head">
+              <div><strong>SAAS</strong><p class="muted" id="tierLabel">Hasta 500 miembros activos</p></div>
+              <div class="tier-price" id="tierPrice">US$450</div>
+            </div>
+            <input id="memberRange" type="range" min="0" max="2" value="0" step="1" aria-label="Escala de miembros activos">
+            <div class="range-labels"><span>500</span><span>2.000</span><span>10.000</span></div>
+            <p><strong id="tierHours">25 horas</strong> mensuales de capacidad.</p>
+          </div>
+        </div>
+        <div class="service-strip reveal">
+          <div><strong>Soporte</strong><p>Incidencias y solicitudes de usuarios capacitados.</p></div>
+          <div><strong>Administración</strong><p>Usuarios, contenido, formularios y configuraciones.</p></div>
+          <div><strong>Mantenimiento</strong><p>Actualizaciones y pequeñas mejoras dentro del plan.</p></div>
+        </div>
+        <p class="reference-note reveal">Infraestructura, video, correo, notificaciones, pagos, Shopify y cuentas de tiendas se presupuestan según consumo.</p>
+      </div>
+    </section>
+
+    <section class="slide paper" data-order="11" data-title="Decisión">
+      <div class="slide-inner">
+        <p class="kicker reveal">Prioridad actual</p>
+        <h2 class="reveal">SaaS primero; BOS como segunda ruta</h2>
+        <div class="final-grid reveal">
+          <article class="route saas"><h3>SaaS</h3><p class="lead">Validar y escalar la membresía digital con captación en canales propios, pago dentro de la app y programas estandarizados.</p><p class="price">US$9.000 + mensualidad por escala</p></article>
+          <article class="route"><h3>BOS</h3><p class="lead">Mejorar la operación del servicio personalizado en una plataforma con identidad FGA y sustituir Hexfit progresivamente.</p><p class="price">US$12.000 + US$450/mes</p></article>
+        </div>
+        <div class="next-step reveal">
+          <strong>Siguiente paso</strong>
+          <p>Validar el alcance del MVP SaaS, formalizar la propuesta y establecer la fecha de inicio.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="controls" aria-label="Navegación de la presentación">
+    <button id="prev" type="button" aria-label="Diapositiva anterior">←</button>
+    <span class="counter" id="counter" aria-live="polite">01 / 11</span>
+    <button id="next" type="button" aria-label="Diapositiva siguiente">→</button>
+  </nav>
+
+  <script>
+    const deck = document.getElementById('deck');
+    [...deck.querySelectorAll('.slide')]
+      .sort((a, b) => Number(a.dataset.order) - Number(b.dataset.order))
+      .forEach(slide => deck.appendChild(slide));
+    const slides = [...document.querySelectorAll('.slide')];
+    const prev = document.getElementById('prev');
+    const next = document.getElementById('next');
+    const counter = document.getElementById('counter');
+    const progress = document.getElementById('progressBar');
+    let current = 0;
+    let wheelLock = false;
+
+    const pad = n => String(n).padStart(2, '0');
+    function goTo(index, behavior = 'smooth') {
+      current = Math.max(0, Math.min(slides.length - 1, index));
+      slides[current].scrollIntoView({ behavior, inline: 'start', block: 'nearest' });
+      update();
+    }
+
+    function update() {
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === current));
+      counter.textContent = `${pad(current + 1)} / ${pad(slides.length)}`;
+      progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+      prev.disabled = current === 0;
+      next.disabled = current === slides.length - 1;
+      const title = slides[current].dataset.title;
+      history.replaceState(null, '', `#${current + 1}`);
+      document.title = `${title} · FGA Fitness`;
+    }
+
+    prev.addEventListener('click', () => goTo(current - 1));
+    next.addEventListener('click', () => goTo(current + 1));
+
+    window.addEventListener('keydown', event => {
+      if (event.target.matches('input, button, a')) return;
+      if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(event.key)) { event.preventDefault(); goTo(current + 1); }
+      if (['ArrowLeft', 'PageUp', 'Backspace'].includes(event.key)) { event.preventDefault(); goTo(current - 1); }
+      if (event.key === 'Home') goTo(0);
+      if (event.key === 'End') goTo(slides.length - 1);
+    });
+
+    deck.addEventListener('wheel', event => {
+      if (Math.abs(event.deltaY) < 12 || wheelLock) return;
+      event.preventDefault();
+      wheelLock = true;
+      goTo(current + (event.deltaY > 0 ? 1 : -1));
+      setTimeout(() => wheelLock = false, 650);
+    }, { passive: false });
+
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries.filter(entry => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      current = slides.indexOf(visible.target);
+      update();
+    }, { root: deck, threshold: .62 });
+    slides.forEach(slide => observer.observe(slide));
+
+    const tiers = [
+      { label: 'Hasta 500 miembros activos', price: 'US$450', hours: '25 horas' },
+      { label: 'Hasta 2.000 miembros activos', price: 'US$850', hours: '50 horas' },
+      { label: 'Hasta 10.000 miembros activos', price: 'US$1.600', hours: '100 horas' }
+    ];
+    const memberRange = document.getElementById('memberRange');
+    memberRange.addEventListener('input', () => {
+      const tier = tiers[Number(memberRange.value)];
+      document.getElementById('tierLabel').textContent = tier.label;
+      document.getElementById('tierPrice').textContent = tier.price;
+      document.getElementById('tierHours').textContent = tier.hours;
+    });
+
+    const hashIndex = Number(location.hash.slice(1)) - 1;
+    if (Number.isInteger(hashIndex) && hashIndex >= 0 && hashIndex < slides.length) goTo(hashIndex, 'auto');
+    else update();
+  </script>
+</body>
+</html>
