@@ -250,8 +250,9 @@
       videoToggle.hidden = !hasVideo;
       audioToggle.hidden = !hasVideo;
       exercisePlaceholder.hidden = hasVideo || !hasGuide;
-      if(hasVideo && hasGuide) video.setAttribute('poster',exercise.guide);
-      else video.removeAttribute('poster');
+      // Nunca usar la guía ilustrada como poster de un video:
+      // evita que la "figurita" aparezca mientras carga el clip.
+      video.removeAttribute('poster');
       if(hasGuide && exerciseGuide.getAttribute('src') !== exercise.guide){
         exerciseGuide.setAttribute('src',exercise.guide);
         exerciseGuide.setAttribute('alt',`Guía visual de ${exercise.name}`);
