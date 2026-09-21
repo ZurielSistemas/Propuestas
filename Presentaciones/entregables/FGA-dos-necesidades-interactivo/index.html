@@ -441,6 +441,22 @@
     }
 
     @media (max-width: 560px) {
+      .hero::before {
+        background-size: 100% auto;
+        background-position: center 4.2rem;
+        background-repeat: no-repeat;
+        transform: none;
+      }
+      .hero::after {
+        background:
+          linear-gradient(180deg,
+            rgba(7,8,8,.08) 0%,
+            rgba(7,8,8,.12) 24%,
+            rgba(7,8,8,.58) 40%,
+            rgba(7,8,8,.94) 54%,
+            #070808 68%);
+      }
+
       h1 { font-size: clamp(2.6rem, 13vw, 4rem); }
       h2 { font-size: clamp(2.25rem, 11vw, 3.6rem); }
       .phase { grid-template-columns: 2rem 1fr; }
