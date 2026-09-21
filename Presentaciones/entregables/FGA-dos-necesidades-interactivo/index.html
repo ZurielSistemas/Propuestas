@@ -442,20 +442,41 @@
 
     @media (max-width: 560px) {
       .hero::before {
-        background-size: 100% auto;
-        background-position: center 4.2rem;
+        background-size: auto 100%;
+        background-position: 68% center;
         background-repeat: no-repeat;
         transform: none;
       }
       .hero::after {
         background:
           linear-gradient(180deg,
-            rgba(7,8,8,.08) 0%,
-            rgba(7,8,8,.12) 24%,
-            rgba(7,8,8,.58) 40%,
-            rgba(7,8,8,.94) 54%,
-            #070808 68%);
+            rgba(7,8,8,.12) 0%,
+            rgba(7,8,8,.16) 22%,
+            rgba(7,8,8,.30) 42%,
+            rgba(7,8,8,.78) 68%,
+            rgba(7,8,8,.96) 100%),
+          linear-gradient(90deg,
+            rgba(7,8,8,.94) 0%,
+            rgba(7,8,8,.72) 44%,
+            rgba(7,8,8,.18) 82%,
+            rgba(7,8,8,.08) 100%);
       }
+      .hero .slide-inner {
+        justify-content: flex-end;
+        padding-top: 7rem;
+        padding-bottom: 8.5rem;
+      }
+      .hero h1 {
+        max-width: 9.2ch;
+        font-size: clamp(2.7rem, 12vw, 3.8rem);
+        line-height: .94;
+        margin-bottom: 1.5rem;
+      }
+      .hero .eyebrow {
+        max-width: 20rem;
+        font-size: .78rem;
+      }
+      .hero-meta { margin-top: 1.25rem; }
 
       h1 { font-size: clamp(2.6rem, 13vw, 4rem); }
       h2 { font-size: clamp(2.25rem, 11vw, 3.6rem); }
