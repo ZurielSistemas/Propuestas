@@ -55,7 +55,7 @@
     </section>
 
     <section class="video-shell">
-      <video id="exercise-video" src="videos/sentadilla-fga-v3.mp4" autoplay muted loop playsinline aria-label="Demostración del ejercicio"></video>
+      <video id="exercise-video" src="https://d8j0ntlcm91z4.cloudfront.net/user_3JcMWEbMh9gu88F4qGAP8txBBQL/hf_20260921_022558_db938b90-14ff-443a-8a11-25d09ec6d2cf.mp4" autoplay muted loop playsinline preload="auto" aria-label="Demostración del ejercicio"></video>
       <div class="exercise-placeholder" id="exercise-placeholder" hidden><img id="exercise-guide" src="" alt=""></div>
       <button class="audio-toggle" type="button" aria-label="Activar sonido"><span class="audio-icon">🔇</span><span class="audio-label">Sonido</span></button><button class="video-toggle" type="button" aria-label="Pausar video"><span class="toggle-icon">❚❚</span><span class="toggle-label">Pausar</span></button>
     </section>
@@ -113,6 +113,7 @@
     let restRemaining = 30;
     let restTotal = 30;
     let restPaused = false;
+    let userSoundEnabled = false;
 
     const video = document.querySelector('#exercise-video');
     const videoShell = document.querySelector('.video-shell');
@@ -150,17 +151,26 @@
     };
 
     const syncAudioControl = () => {
-      const muted = video.muted;
-      audioToggle.querySelector('.audio-icon').textContent = muted ? '🔇' : '🔊';
-      audioToggle.querySelector('.audio-label').textContent = muted ? 'Sonido' : 'Sonido activo';
-      audioToggle.setAttribute('aria-label', muted ? 'Activar sonido' : 'Silenciar video');
+      const enabled = userSoundEnabled && !video.muted;
+      audioToggle.querySelector('.audio-icon').textContent = enabled ? '🔊' : '🔇';
+      audioToggle.querySelector('.audio-label').textContent = enabled ? 'Audio ON' : 'Audio';
+      audioToggle.setAttribute('aria-label', enabled ? 'Silenciar video' : 'Activar sonido');
+      audioToggle.setAttribute('aria-pressed', enabled ? 'true' : 'false');
     };
 
-    const toggleAudio = async () => {
-      if(!exercises[exerciseIndex].video) return;
-      video.muted = !video.muted;
-      if(!video.muted && video.paused) await video.play().catch(() => {});
+    const applyAudioPreference = () => {
+      video.muted = !userSoundEnabled;
       syncAudioControl();
+    };
+
+    const toggleAudio = async (event) => {
+      event?.stopPropagation();
+      if(!exercises[exerciseIndex].video) return;
+      userSoundEnabled = !userSoundEnabled;
+      applyAudioPreference();
+      if(userSoundEnabled && video.paused){
+        await video.play().catch(() => {});
+      }
     };
 
     const toggleVideo = async () => {
@@ -246,17 +256,23 @@
         exerciseGuide.setAttribute('src',exercise.guide);
         exerciseGuide.setAttribute('alt',`Guía visual de ${exercise.name}`);
       }
-      if(reloadVideo && !hasVideo) video.pause();
-      if(reloadVideo && hasVideo && video.getAttribute('src') !== exercise.video){
-        video.setAttribute('src',exercise.video);
-        video.load();
-        video.play().catch(() => syncVideoControl());
-      } else if(reloadVideo && hasVideo) {
-        video.play().catch(() => syncVideoControl());
+      if(!hasVideo){
+        video.pause();
+      } else {
+        const sourceChanged = video.getAttribute('src') !== exercise.video;
+        if(sourceChanged){
+          video.setAttribute('src',exercise.video);
+          video.load();
+        }
+        applyAudioPreference();
+        if(reloadVideo || sourceChanged){
+          video.play().catch(() => syncVideoControl());
+        }
       }
     };
 
     videoToggle.addEventListener('click',toggleVideo);
+    audioToggle.addEventListener('pointerdown',(event)=>event.stopPropagation());
     audioToggle.addEventListener('click',toggleAudio);
     video.addEventListener('click',toggleVideo);
     video.addEventListener('play',syncVideoControl);
@@ -285,9 +301,9 @@
       if(restPaused) clearInterval(restInterval); else runRestTimer();
     });
     timerSkip.addEventListener('click',closeRest);
-    render();
+    render({reloadVideo:true});
+    applyAudioPreference();
     syncVideoControl();
-    syncAudioControl();
   </script>
 </body>
 </html>
