@@ -20,6 +20,14 @@
     @media(max-width:360px){.nav{gap:12px}.brand{gap:8px}.brand img{width:34px;height:34px}.brand strong{font-size:13px}.brand small{font-size:7px}.nav-contact{padding:8px 10px}}
     @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important}}
     .plan-bottom{display:block}.extra{grid-template-columns:1fr auto}.extra h3{grid-column:auto}.extra>div{text-align:right}
+    .family-offer{display:grid;grid-template-columns:58px 1fr auto;gap:24px;align-items:center;margin-top:36px;padding:32px;background:#e6f1f2;border:1px solid #bfdcdf;border-left:5px solid var(--aqua);border-radius:12px}
+    .family-symbol{display:grid;place-items:center;width:58px;height:58px;border:1px solid #a5cbd1;border-radius:50%;color:var(--navy);font:800 22px var(--title);background:#f4fbfb}
+    .family-offer .eyebrow{font-size:11px;color:#216777;margin-bottom:9px}
+    .family-offer h2{font-size:29px;letter-spacing:-.035em;margin-bottom:10px}
+    .family-offer p:last-child{max-width:580px;color:#414f61;font-size:16px}
+    .family-offer .btn{white-space:nowrap}
+    @media(max-width:900px){.family-offer{grid-template-columns:58px 1fr}.family-offer .btn{grid-column:2;justify-self:start}}
+    @media(max-width:640px){.family-offer{grid-template-columns:42px 1fr;padding:24px 20px;gap:16px;margin-top:28px}.family-symbol{width:42px;height:42px;font-size:18px}.family-offer h2{font-size:26px}.family-offer p:last-child{font-size:15px}.family-offer .btn{grid-column:1/-1;width:100%}}
   </style>
 </head>
 <body>
@@ -51,6 +59,11 @@
       </div>
       <p class="note" id="condiciones">* Para pagos en bolívares, consulta con la escuela la equivalencia y tasa aplicables.</p>
       <p class="note" id="currency-status" role="status" aria-live="polite">Mostrando tarifas en divisas.</p>
+    </section>
+    <section class="family-offer" id="hermanos" aria-labelledby="hermanos-title">
+      <div class="family-symbol" aria-hidden="true">2+</div>
+      <div><p class="eyebrow">BRO · Beneficio familiar</p><h2 id="hermanos-title">Plan para hermanos</h2><p>¿Dos o más hermanos quieren aprender música? Consulta las opciones familiares para tomar clases juntos o por separado.</p></div>
+      <a class="btn btn-pink" href="https://wa.me/584120509765?text=Hola%2C%20quisiera%20informaci%C3%B3n%20sobre%20el%20plan%20para%20hermanos.%20%C2%BFQu%C3%A9%20opciones%20tienen%3F">Hablar por WhatsApp <span aria-hidden="true">↗</span></a>
     </section>
     <section class="section-block" aria-labelledby="extra-title"><div class="section-head"><div><p class="eyebrow">Sigue explorando</p><h2 id="extra-title">Un poco más de música.</h2></div><p>Consulta cómo incorporar una cátedra o una clase adicional a tu formación.</p></div><div class="extras">
       
