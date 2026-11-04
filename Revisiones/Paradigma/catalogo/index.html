@@ -28,6 +28,14 @@
     .family-offer .btn{white-space:nowrap}
     @media(max-width:900px){.family-offer{grid-template-columns:58px 1fr}.family-offer .btn{grid-column:2;justify-self:start}}
     @media(max-width:640px){.family-offer{grid-template-columns:42px 1fr;padding:24px 20px;gap:16px;margin-top:28px}.family-symbol{width:42px;height:42px;font-size:18px}.family-offer h2{font-size:26px}.family-offer p:last-child{font-size:15px}.family-offer .btn{grid-column:1/-1;width:100%}}
+    .family-description{color:#414f61;font-size:16px;max-width:580px}
+    .family-discounts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0 14px;max-width:370px}
+    .family-discounts>div{padding:14px 16px;border:1px solid #b4d4d8;background:#f5fbfb;border-radius:8px}
+    .family-discounts dt{font:700 12px/1.5 var(--title);color:#345a67;margin-bottom:7px}
+    .family-discounts dd{margin:0;color:var(--navy);font:800 32px/1.2 var(--title);letter-spacing:-.04em}
+    .family-discounts dd span{display:block;font:600 12px/1.6 var(--body);color:#414f61;letter-spacing:0;margin-top:3px}
+    #hermanos .family-terms{font-size:12px;line-height:1.6;color:#465866;max-width:580px}
+    @media(max-width:640px){.family-offer{grid-template-columns:1fr}.family-symbol{display:none}.family-offer .btn{grid-column:1}.family-discounts{gap:10px}.family-discounts>div{padding:13px 12px}}
   </style>
 </head>
 <body>
@@ -62,7 +70,15 @@
     </section>
     <section class="family-offer" id="hermanos" aria-labelledby="hermanos-title">
       <div class="family-symbol" aria-hidden="true">2+</div>
-      <div><p class="eyebrow">BRO · Beneficio familiar</p><h2 id="hermanos-title">Plan para hermanos</h2><p>¿Dos o más hermanos quieren aprender música? Consulta las opciones familiares para tomar clases juntos o por separado.</p></div>
+      <div class="family-content">
+        <p class="eyebrow">BRO · Beneficio familiar</p><h2 id="hermanos-title">Plan para hermanos</h2>
+        <p class="family-description">Un descuento en la mensualidad de cada alumno del Paquete Integral. Pueden tomar clases juntos o por separado.</p>
+        <dl class="family-discounts" aria-label="Descuento por cantidad de hermanos">
+          <div><dt>2 hermanos</dt><dd>10 %<span>por alumno</span></dd></div>
+          <div><dt>3 o más hermanos</dt><dd>15 %<span>por alumno</span></dd></div>
+        </dl>
+        <p class="family-terms">Aplica a hermanos inscritos simultáneamente. Consulta condiciones con la escuela.</p>
+      </div>
       <a class="btn btn-pink" href="https://wa.me/584120509765?text=Hola%2C%20quisiera%20informaci%C3%B3n%20sobre%20el%20plan%20para%20hermanos.%20%C2%BFQu%C3%A9%20opciones%20tienen%3F">Hablar por WhatsApp <span aria-hidden="true">↗</span></a>
     </section>
     <section class="section-block" aria-labelledby="extra-title"><div class="section-head"><div><p class="eyebrow">Sigue explorando</p><h2 id="extra-title">Un poco más de música.</h2></div><p>Consulta cómo incorporar una cátedra o una clase adicional a tu formación.</p></div><div class="extras">
