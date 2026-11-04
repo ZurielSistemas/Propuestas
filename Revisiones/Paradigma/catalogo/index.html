@@ -50,6 +50,14 @@
     .solo-plan>.note{grid-column:1/-1;margin-top:0;font-size:12px}
     @media(max-width:900px){.solo-plan{grid-template-columns:1fr}.solo-variants{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:24px}}
     @media(max-width:640px){.solo-plan{padding:25px;gap:24px}.solo-variants{grid-template-columns:1fr;gap:24px}.solo-price h4{min-height:0}.solo-price+.solo-price{border-top:1px solid var(--line);padding-top:24px}}
+    .currency-dock{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid #cbd0df;box-shadow:0 4px 14px #17163e14}
+    .currency-dock-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:10px;padding-bottom:10px}
+    .currency-dock-label{font:700 12px/1.4 var(--title);color:var(--navy)}
+    .currency-dock .currency{border:1px solid #c6cada;background:#f0f1f6}
+    .currency-dock .currency button{min-height:44px;color:var(--navy)}
+    .currency-dock .currency button[aria-pressed=true]{background:var(--pink);color:#fff;box-shadow:0 2px 5px #17163e1a}
+    .skip{z-index:100}
+    @media(max-width:640px){.currency-dock-inner{gap:8px;padding-top:8px;padding-bottom:8px}.currency-dock-label{font-size:11px;max-width:68px}.currency-dock .currency button{padding:9px 12px;font-size:12px}html{scroll-padding-top:90px}}
   </style>
 </head>
 <body>
@@ -59,6 +67,9 @@
   <a class="brand" href="#inicio"><img src="assets/paradigma.png" width="46" height="46" alt=""><span><strong>PARADIGMA</strong><small>MUSIC STATION</small></span></a>
   <div class="navlinks"><a href="#planes">Planes</a><a href="#catedras">Cátedras</a><a href="#visitanos">Visítanos</a><a class="nav-contact" href="https://wa.me/584120509765?text=Hola%2C%20quiero%20conocer%20los%20planes%20de%20la%20escuela.">Hablemos ↗</a></div>
 </nav></header>
+<aside class="currency-dock" aria-label="Selector de forma de pago">
+  <div class="wrap currency-dock-inner"><span class="currency-dock-label">Forma de pago</span><div class="currency" role="group" aria-label="Forma de pago"><button type="button" data-currency="usd" aria-pressed="true">Divisas</button><button type="button" data-currency="bs" aria-pressed="false">Pago en Bs*</button></div></div>
+</aside>
 <main id="inicio">
   <section class="hero" aria-labelledby="hero-title"><div class="wrap hero-grid">
     <div><p class="eyebrow">Escuela de música · Maracaibo</p><h1 id="hero-title">Tu camino<br>musical empieza <span>aquí.</span></h1><p class="hero-copy">Aprende tu instrumento, descubre el lenguaje de la música y vive la experiencia de tocar con otros.</p><div class="hero-actions"><a class="btn btn-pink" href="#planes">Encuentra tu plan <span class="arrow" aria-hidden="true">↓</span></a><a class="btn btn-light" href="https://wa.me/584120509765?text=Hola%2C%20quisiera%20orientaci%C3%B3n%20para%20elegir%20un%20plan.">Quiero orientación ↗</a></div><p class="hero-foot">A tu nivel. A tu ritmo. Con acompañamiento.</p></div>
@@ -67,7 +78,7 @@
   <div class="wrap">
     <section id="planes" aria-labelledby="planes-title">
       <div class="intro"><div><p class="eyebrow">Una forma de aprender para ti</p><h2 id="planes-title">Encuentra tu ritmo.</h2></div><p>Una experiencia completa, un proceso personalizado o los primeros pasos de los más pequeños.</p></div>
-      <div class="payment"><div class="currency" role="group" aria-label="Forma de pago"><button type="button" data-currency="usd" aria-pressed="true">Divisas</button><button type="button" data-currency="bs" aria-pressed="false">Pago en Bs*</button></div><span class="payment-note">Tarifas de octubre de 2026 · <a href="#condiciones">Condiciones de pago</a></span></div>
+      <div class="payment"><span class="payment-note">Tarifas de octubre de 2026 · <a href="#condiciones">Condiciones de pago</a></span></div>
       <article class="integral" aria-labelledby="integral-title">
         <div class="integral-content"><span class="badge">LA EXPERIENCIA COMPLETA</span><h3 id="integral-title">Paquete Integral</h3><p class="description">Tres clases diferentes que se complementan: desarrolla tu técnica, comprende lo que tocas y comparte la música en grupo.</p>
           <div class="lesson-list"><div class="lesson"><span class="lesson-num">01</span><div><strong>Instrumento</strong><small>Técnica y repertorio, según tu nivel.</small></div><span class="lesson-time">40 min</span></div><div class="lesson"><span class="lesson-num">02</span><div><strong>Laboratorio Musical Integral</strong><small>Lenguaje musical llevado a la práctica.</small></div><span class="lesson-time">40 min</span></div><div class="lesson"><span class="lesson-num">03</span><div><strong>Agrupación</strong><small>Escucha, acople y música con otros.</small></div><span class="lesson-time">40 min</span></div></div>
