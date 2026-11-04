@@ -36,6 +36,20 @@
     .family-discounts dd span{display:block;font:600 12px/1.6 var(--body);color:#414f61;letter-spacing:0;margin-top:3px}
     #hermanos .family-terms{font-size:12px;line-height:1.6;color:#465866;max-width:580px}
     @media(max-width:640px){.family-offer{grid-template-columns:1fr}.family-symbol{display:none}.family-offer .btn{grid-column:1}.family-discounts{gap:10px}.family-discounts>div{padding:13px 12px}}
+    .solo-plan{display:grid;grid-template-columns:1fr 1.2fr;gap:30px;padding:32px;margin-top:24px;background:white;border:1px solid var(--line);border-top:4px solid var(--aqua);border-radius:14px}
+    .solo-intro .eyebrow{color:#216777;font-size:11px;margin-bottom:12px}
+    .solo-intro h3{font-size:29px;margin-bottom:15px}
+    .solo-intro .description{font-size:15px}
+    .solo-intro .pills{margin-bottom:0}
+    .solo-variants{display:grid;grid-template-columns:1fr 1fr;gap:20px;border-left:1px solid var(--line);padding-left:28px}
+    .solo-price{display:flex;flex-direction:column;align-items:start}
+    .solo-price h4{font:700 14px/1.5 var(--title);letter-spacing:-.02em;min-height:44px;margin:0 0 10px}
+    .solo-price .big-price{font-size:39px}
+    .solo-price .price-unit{font-size:13px;margin-bottom:20px}
+    .solo-price .btn{font-size:12px;padding:12px 14px;width:100%;margin-top:auto}
+    .solo-plan>.note{grid-column:1/-1;margin-top:0;font-size:12px}
+    @media(max-width:900px){.solo-plan{grid-template-columns:1fr}.solo-variants{border-left:0;border-top:1px solid var(--line);padding-left:0;padding-top:24px}}
+    @media(max-width:640px){.solo-plan{padding:25px;gap:24px}.solo-variants{grid-template-columns:1fr;gap:24px}.solo-price h4{min-height:0}.solo-price+.solo-price{border-top:1px solid var(--line);padding-top:24px}}
   </style>
 </head>
 <body>
@@ -65,6 +79,14 @@
         <article class="plan pink" aria-labelledby="personal-title"><p class="eyebrow">Un proceso a tu medida</p><h3 id="personal-title">Clase Personalizada</h3><p class="description">Tu profesor organiza cada sesión según tus objetivos y necesidades. Puede combinar instrumento y lenguaje musical en una misma clase, a su criterio.</p><div class="pills"><span class="pill">40 minutos por semana</span><span class="pill">Contenido personalizado</span></div><div class="plan-bottom"><div class="plan-price"><p class="eyebrow">Tarifa mensual</p><div class="big-price" data-usd="$80" data-bs="100*">$80</div><p class="price-unit">al mes · <span data-unit>en divisas</span></p></div></div><a class="btn btn-outline" href="https://wa.me/584120509765?text=Hola%2C%20me%20interesa%20la%20Clase%20Personalizada.%20Quisiera%20consultar%20modalidad%20y%20horarios.">Consultar Personalizada ↗</a></article>
         <article class="plan" aria-labelledby="infantil-title"><p class="eyebrow">Sus primeros descubrimientos</p><h3 id="infantil-title">Iniciación Musical</h3><p class="description">Una experiencia grupal para los más pequeños. Juego, exploración y música para desarrollar el oído, el ritmo y la expresión.</p><div class="pills"><span class="pill">80 minutos por semana</span><span class="pill">Clase grupal</span></div><div class="plan-bottom"><div class="plan-price"><p class="eyebrow">Tarifa mensual</p><div class="big-price" data-usd="$50" data-bs="65*">$50</div><p class="price-unit">al mes · <span data-unit>en divisas</span></p></div></div><a class="btn btn-outline" href="https://wa.me/584120509765?text=Hola%2C%20me%20interesa%20Iniciaci%C3%B3n%20Musical.%20Quisiera%20consultar%20edades%20y%20horarios.">Consultar Iniciación Musical ↗</a></article>
       </div>
+      <article class="solo-plan" id="solo-instrumento" aria-labelledby="solo-title">
+        <div class="solo-intro"><p class="eyebrow">Enfócate en tu instrumento</p><h3 id="solo-title">Solo instrumento</h3><p class="description">Una clase dedicada al instrumento que elijas. Trabaja técnica, práctica y repertorio según tu nivel y objetivos.</p><div class="pills"><span class="pill">40 minutos por clase</span><span class="pill">Tarifas promocionales</span></div></div>
+        <div class="solo-variants" aria-label="Opciones de Solo instrumento">
+          <div class="solo-price"><h4>Solo instrumento</h4><div class="big-price" data-usd="$35" data-bs="45*">$35</div><p class="price-unit"><span data-unit>en divisas</span></p><a class="btn btn-outline" href="https://wa.me/584120509765?text=Hola%2C%20me%20interesa%20Solo%20instrumento.%20Quisiera%20consultar%20horarios%20y%20condiciones%20de%20la%20promoci%C3%B3n.">Consultar esta opción ↗</a></div>
+          <div class="solo-price"><h4>Solo instrumento personalizado</h4><div class="big-price" data-usd="$60" data-bs="75*">$60</div><p class="price-unit"><span data-unit>en divisas</span></p><a class="btn btn-outline" href="https://wa.me/584120509765?text=Hola%2C%20me%20interesa%20Solo%20instrumento%20personalizado.%20Quisiera%20consultar%20horarios%20y%20condiciones%20de%20la%20promoci%C3%B3n.">Consultar esta opción ↗</a></div>
+        </div>
+        <p class="note">Consulta con la escuela la frecuencia de las clases, disponibilidad y condiciones de la promoción.</p>
+      </article>
       <p class="note" id="condiciones">* Para pagos en bolívares, consulta con la escuela la equivalencia y tasa aplicables.</p>
       <p class="note" id="currency-status" role="status" aria-live="polite">Mostrando tarifas en divisas.</p>
     </section>
